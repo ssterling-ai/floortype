@@ -361,12 +361,98 @@ const DEMO_QUOTES=[
 
 let orders=[],quotes=[],curOrderRef=null,curQuoteRef=null,ordersF='all',quotesF='all';
 
-function loadData(){
-  orders=JSON.parse(localStorage.getItem('ft_orders')||'null')||DEMO_ORDERS;
-  quotes=JSON.parse(localStorage.getItem('ft_quotes')||'null')||DEMO_QUOTES;
+const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcGJpZ2J2bHNybHJxbmNmYWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAzMjEsImV4cCI6MjA4NzEzNjMyMX0.rlFyDdgeXHWmqbN_Pu3YHcbWoNqS_gdnuEEv4XyK9yM';
+
+const SB_HEADERS = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': `Bearer ${SUPABASE_KEY}`,
+  'Content-Type': 'application/json'
+};
+
+async function loadData(){
+  try {
+    const [oRes, qRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`, { headers: SB_HEADERS }),
+      fetch(`${SUPABASE_URL}/rest/v1/quotes?select=*&order=created_at.desc`, { headers: SB_HEADERS })
+    ]);
+    const sbOrders = await oRes.json();
+    const sbQuotes = await qRes.json();
+
+    // Map Supabase column names to what the dashboard expects
+    orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
+      ref: o.ref,
+      date: o.created_at,
+      name: o.client_name,
+      email: o.client_email,
+      company: o.client_company || '',
+      address: o.address,
+      floors: o.floors,
+      style: o.style,
+      addons: o.addons || {},
+      total: o.total,
+      deposit: o.deposit,
+      notes: o.notes || '',
+      status: o.status,
+      files: []
+    })) : DEMO_ORDERS;
+
+    quotes = Array.isArray(sbQuotes) && sbQuotes.length ? sbQuotes.map(q => ({
+      ref: q.ref,
+      date: q.created_at,
+      name: q.client_name,
+      email: q.client_email,
+      company: q.client_company || '',
+      role: q.client_role || '',
+      project: q.project_name,
+      type: q.project_type || '',
+      city: q.city || '',
+      phases: q.phases || 1,
+      renders: q.renders || {},
+      complexity: q.complexity || '',
+      timeline: q.timeline || '',
+      estimateLow: q.estimate_low,
+      estimateHigh: q.estimate_high,
+      totalFiles: q.total_files || 0,
+      sharedLink: q.shared_link || '',
+      notes: q.notes || '',
+      status: q.status
+    })) : DEMO_QUOTES;
+
+  } catch(e) {
+    console.warn('Supabase load failed, using localStorage fallback:', e);
+    orders = JSON.parse(localStorage.getItem('ft_orders')||'null') || DEMO_ORDERS;
+    quotes = JSON.parse(localStorage.getItem('ft_quotes')||'null') || DEMO_QUOTES;
+  }
   renderAll();
 }
-function saveData(){localStorage.setItem('ft_orders',JSON.stringify(orders));localStorage.setItem('ft_quotes',JSON.stringify(quotes));}
+
+async function saveData(){
+  // Orders status update
+  if(curOrderRef) {
+    const o = orders.find(x => x.ref === curOrderRef);
+    if(o) {
+      await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${curOrderRef}`, {
+        method: 'PATCH',
+        headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ status: o.status })
+      });
+    }
+  }
+  if(curQuoteRef) {
+    const q = quotes.find(x => x.ref === curQuoteRef);
+    if(q) {
+      await fetch(`${SUPABASE_URL}/rest/v1/quotes?ref=eq.${curQuoteRef}`, {
+        method: 'PATCH',
+        headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ status: q.status, confirmed_low: q.estimateLow, confirmed_high: q.estimateHigh })
+      });
+    }
+  }
+  // Also sync to localStorage for offline fallback
+  localStorage.setItem('ft_orders', JSON.stringify(orders));
+  localStorage.setItem('ft_quotes', JSON.stringify(quotes));
+}
 function renderAll(){renderStats();renderOverview();renderOrdersTable();renderQuotesTable();renderClients();updateCounts();}
 
 function renderStats(){
