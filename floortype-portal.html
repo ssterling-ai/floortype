@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floortype — Client Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white:#FFFFFF; --off-white:#F7F5FF;
+    --purple:#C4B5F4; --purple-mid:#9B87E8;
+    --purple-deep:#6B56C8; --purple-bg:#EDE9FF;
+    --mint:#A8E8DA; --mint-mid:#5DCFB8;
+    --mint-deep:#2BA892; --mint-bg:#DFF6F1;
+    --dark:#120F2A; --mid:#3D3660; --muted:#8880AA;
+    --border:#E8E4FF; --sidebar-w:260px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;display:flex;}
+
+  /* ── LOGIN SCREEN ── */
+  .login-screen{
+    position:fixed;inset:0;background:var(--dark);
+    display:flex;align-items:center;justify-content:center;
+    z-index:200;transition:opacity 0.4s ease;
+  }
+  .login-screen.hidden{opacity:0;pointer-events:none;}
+  .login-box{
+    background:white;border-radius:24px;padding:48px;
+    width:100%;max-width:420px;
+    box-shadow:0 32px 80px rgba(18,15,42,0.4);
+  }
+  .login-logo{
+    font-family:'Bebas Neue',sans-serif;font-size:26px;
+    letter-spacing:0.12em;color:var(--dark);
+    display:flex;align-items:center;gap:8px;margin-bottom:32px;
+  }
+  .login-logo .logo-mark{
+    width:30px;height:30px;
+    background:linear-gradient(135deg,var(--purple),var(--mint));
+    border-radius:7px;display:flex;align-items:center;justify-content:center;
+  }
+  .login-logo .logo-mark svg{width:15px;height:15px;}
+  .login-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:0.04em;color:var(--dark);margin-bottom:6px;}
+  .login-sub{font-size:14px;color:var(--muted);margin-bottom:32px;font-weight:300;line-height:1.6;}
+  .login-field{margin-bottom:16px;}
+  .login-label{display:block;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:7px;}
+  .login-input{
+    width:100%;padding:12px 16px;border:1.5px solid var(--border);
+    border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;
+    color:var(--dark);outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+  }
+  .login-input:focus{border-color:var(--purple-mid);box-shadow:0 0 0 3px rgba(155,135,232,0.12);}
+  .login-btn{
+    width:100%;background:var(--dark);color:white;border:none;
+    padding:15px;border-radius:100px;font-size:15px;font-weight:600;
+    font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;
+    transition:background 0.25s;
+  }
+  .login-btn:hover{background:var(--purple-deep);}
+  .login-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;}
+  .login-hint span{color:var(--purple-deep);cursor:pointer;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{
+    width:var(--sidebar-w);background:white;min-height:100vh;
+    padding:28px 20px;position:fixed;top:0;left:0;bottom:0;
+    display:flex;flex-direction:column;z-index:10;
+    border-right:1px solid var(--border);
+  }
+  .sidebar-logo{
+    font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.12em;
+    color:var(--dark);text-decoration:none;
+    display:flex;align-items:center;gap:8px;margin-bottom:8px;
+  }
+  .logo-mark{
+    width:28px;height:28px;
+    background:linear-gradient(135deg,var(--purple),var(--mint));
+    border-radius:6px;display:flex;align-items:center;justify-content:center;
+  }
+  .logo-mark svg{width:14px;height:14px;}
+  .sidebar-portal-tag{
+    font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:32px;margin-left:36px;margin-top:-4px;
+  }
+  .sidebar-label{
+    font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--muted);margin:20px 0 8px 12px;font-weight:600;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+    color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;
+    transition:all 0.2s;margin-bottom:2px;cursor:pointer;
+    border:none;background:none;width:100%;text-align:left;
+    font-family:'DM Sans',sans-serif;position:relative;
+  }
+  .nav-item:hover{background:var(--purple-bg);color:var(--purple-deep);}
+  .nav-item.active{background:var(--purple-bg);color:var(--purple-deep);font-weight:600;}
+  .nav-item svg{width:16px;height:16px;flex-shrink:0;}
+  .nav-dot{
+    width:8px;height:8px;background:#E85555;border-radius:50%;
+    margin-left:auto;flex-shrink:0;
+  }
+  .sidebar-bottom{
+    margin-top:auto;border-top:1px solid var(--border);padding-top:20px;
+  }
+  .sidebar-user{display:flex;align-items:center;gap:10px;}
+  .user-avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--mint));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;font-size:16px;color:white;
+    flex-shrink:0;
+  }
+  .user-name{font-size:13px;font-weight:600;color:var(--dark);}
+  .user-email{font-size:11px;color:var(--muted);margin-top:1px;}
+  .logout-btn{
+    margin-left:auto;background:none;border:none;color:var(--muted);
+    cursor:pointer;font-size:18px;transition:color 0.2s;padding:4px;
+  }
+  .logout-btn:hover{color:var(--dark);}
+
+  /* ── MAIN ── */
+  .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+  .topbar{
+    background:white;border-bottom:1px solid var(--border);
+    padding:0 36px;height:68px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:5;
+  }
+  .topbar-left{display:flex;flex-direction:column;}
+  .topbar-greeting{font-size:11px;color:var(--muted);letter-spacing:0.04em;}
+  .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.06em;color:var(--dark);line-height:1.1;}
+  .topbar-right{display:flex;align-items:center;gap:12px;}
+  .topbar-cta{
+    background:var(--dark);color:white;text-decoration:none;
+    padding:10px 22px;border-radius:100px;font-size:13px;font-weight:600;
+    font-family:'DM Sans',sans-serif;transition:background 0.2s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .topbar-cta:hover{background:var(--purple-deep);}
+  .notif-btn{
+    width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);
+    background:white;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;position:relative;transition:border-color 0.2s;
+  }
+  .notif-btn:hover{border-color:var(--purple-mid);}
+  .notif-btn svg{width:18px;height:18px;color:var(--muted);}
+  .notif-badge{
+    position:absolute;top:6px;right:6px;width:8px;height:8px;
+    background:#E85555;border-radius:50%;border:2px solid white;
+  }
+  .content{padding:32px 36px;flex:1;}
+
+  /* ── VIEWS ── */
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ── OVERVIEW ── */
+  .welcome-banner{
+    background:linear-gradient(135deg,var(--purple-bg),var(--mint-bg));
+    border:1.5px solid var(--purple);border-radius:20px;padding:32px 36px;
+    margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;
+    gap:24px;position:relative;overflow:hidden;
+  }
+  .welcome-banner::before{
+    content:'';position:absolute;
+    width:300px;height:300px;border-radius:50%;
+    background:radial-gradient(circle,rgba(196,181,244,0.3),transparent 70%);
+    top:-100px;right:-50px;pointer-events:none;
+  }
+  .welcome-text h2{
+    font-family:'Bebas Neue',sans-serif;font-size:34px;
+    letter-spacing:0.04em;color:var(--dark);margin-bottom:6px;
+  }
+  .welcome-text p{font-size:14px;color:var(--mid);font-weight:300;line-height:1.6;max-width:440px;}
+  .welcome-actions{display:flex;gap:10px;flex-shrink:0;position:relative;z-index:1;}
+
+  .btn-primary{
+    background:var(--dark);color:white;border:none;
+    padding:12px 24px;border-radius:100px;font-size:13px;font-weight:600;
+    font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:background 0.2s,transform 0.15s;
+  }
+  .btn-primary:hover{background:var(--purple-deep);transform:translateY(-1px);}
+  .btn-secondary{
+    background:white;color:var(--dark);
+    padding:12px 24px;border-radius:100px;font-size:13px;font-weight:600;
+    font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;
+    border:1.5px solid var(--border);transition:border-color 0.2s,transform 0.15s;
+  }
+  .btn-secondary:hover{border-color:var(--purple-mid);transform:translateY(-1px);}
+
+  .overview-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px;}
+  .ov-stat{
+    background:white;border-radius:16px;border:1px solid var(--border);
+    padding:24px;box-shadow:0 2px 10px rgba(107,86,200,0.05);
+  }
+  .ov-stat-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .ov-stat-num{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:1;color:var(--dark);}
+  .ov-stat-num.purple{color:var(--purple-deep);}
+  .ov-stat-num.mint{color:var(--mint-deep);}
+  .ov-stat-sub{font-size:12px;color:var(--muted);margin-top:6px;}
+
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .section-title-sm{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.06em;color:var(--dark);}
+  .see-all{font-size:13px;color:var(--purple-deep);cursor:pointer;font-weight:500;text-decoration:none;transition:opacity 0.2s;}
+  .see-all:hover{opacity:0.7;}
+
+  /* ── ORDER CARDS ── */
+  .order-cards{display:flex;flex-direction:column;gap:12px;}
+  .order-card{
+    background:white;border-radius:16px;border:1.5px solid var(--border);
+    padding:20px 24px;display:flex;align-items:center;gap:20px;
+    cursor:pointer;transition:border-color 0.25s,box-shadow 0.25s,transform 0.2s;
+  }
+  .order-card:hover{
+    border-color:var(--purple-mid);
+    box-shadow:0 8px 28px rgba(107,86,200,0.1);
+    transform:translateY(-2px);
+  }
+  .order-card.needs-review{border-color:var(--purple);background:var(--purple-bg);}
+  .order-card-icon{
+    width:48px;height:48px;border-radius:12px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-purple{background:var(--purple-bg);}
+  .icon-mint{background:var(--mint-bg);}
+  .order-card-icon svg{width:22px;height:22px;}
+  .order-card-info{flex:1;min-width:0;}
+  .order-card-ref{font-size:12px;font-weight:700;color:var(--purple-deep);letter-spacing:0.06em;margin-bottom:3px;}
+  .order-card-name{font-size:15px;font-weight:600;color:var(--dark);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .order-card-meta{font-size:12px;color:var(--muted);}
+  .order-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
+  .status-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:4px 12px;border-radius:100px;
+    font-size:11px;font-weight:600;white-space:nowrap;
+  }
+  .status-badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .s-received{background:#E8F4FF;color:#1A6FAF;}
+  .s-received::before{background:#1A6FAF;}
+  .s-progress{background:#FFF3E0;color:#C07000;}
+  .s-progress::before{background:#C07000;}
+  .s-review{background:var(--purple-bg);color:var(--purple-deep);}
+  .s-review::before{background:var(--purple-deep);}
+  .s-complete{background:var(--mint-bg);color:var(--mint-deep);}
+  .s-complete::before{background:var(--mint-deep);}
+  .order-card-date{font-size:12px;color:var(--muted);}
+  .review-tag{
+    background:var(--purple-deep);color:white;
+    font-size:11px;font-weight:700;padding:3px 10px;
+    border-radius:100px;letter-spacing:0.04em;
+  }
+
+  /* ── ORDER LIST VIEW ── */
+  .orders-toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  .search-wrap{position:relative;flex:1;max-width:280px;}
+  .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none;}
+  .search-in{
+    width:100%;padding:9px 14px 9px 36px;
+    border:1.5px solid var(--border);border-radius:100px;
+    font-size:13px;font-family:'DM Sans',sans-serif;
+    color:var(--dark);background:white;outline:none;transition:border-color 0.2s;
+  }
+  .search-in:focus{border-color:var(--purple-mid);}
+  .filter-pill{
+    padding:8px 16px;border-radius:100px;border:1.5px solid var(--border);
+    background:white;font-size:12px;font-weight:500;color:var(--muted);
+    cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;
+  }
+  .filter-pill:hover{border-color:var(--purple-mid);color:var(--dark);}
+  .filter-pill.active{background:var(--purple-deep);border-color:var(--purple-deep);color:white;}
+
+  /* ── ORDER DETAIL VIEW ── */
+  .detail-back{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--muted);font-size:14px;font-weight:500;
+    cursor:pointer;margin-bottom:24px;transition:color 0.2s;border:none;background:none;
+    font-family:'DM Sans',sans-serif;padding:0;
+  }
+  .detail-back:hover{color:var(--dark);}
+
+  .detail-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+
+  .detail-card{background:white;border-radius:20px;border:1px solid var(--border);padding:32px;box-shadow:0 2px 12px rgba(107,86,200,0.05);}
+
+  /* Status timeline */
+  .timeline{display:flex;align-items:flex-start;gap:0;margin-bottom:36px;position:relative;}
+  .timeline::before{
+    content:'';position:absolute;top:18px;left:18px;right:18px;height:2px;
+    background:var(--border);z-index:0;
+  }
+  .tl-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+  .tl-dot{
+    width:36px;height:36px;border-radius:50%;border:2px solid var(--border);
+    background:white;display:flex;align-items:center;justify-content:center;
+    font-size:14px;margin-bottom:10px;transition:all 0.3s;
+  }
+  .tl-step.done .tl-dot{background:var(--mint-deep);border-color:var(--mint-deep);color:white;}
+  .tl-step.active .tl-dot{background:var(--purple-deep);border-color:var(--purple-deep);color:white;box-shadow:0 0 0 4px rgba(107,86,200,0.15);}
+  .tl-label{font-size:11px;font-weight:600;letter-spacing:0.04em;color:var(--muted);text-align:center;line-height:1.4;}
+  .tl-step.done .tl-label{color:var(--mint-deep);}
+  .tl-step.active .tl-label{color:var(--purple-deep);}
+  .tl-date{font-size:10px;color:var(--muted);margin-top:3px;text-align:center;}
+
+  /* Revision rounds */
+  .rounds-section{margin-bottom:28px;}
+  .rounds-title{font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .rounds-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .round-item{
+    border:1.5px solid var(--border);border-radius:14px;
+    overflow:hidden;margin-bottom:12px;
+  }
+  .round-header{
+    padding:16px 20px;display:flex;align-items:center;gap:14px;
+    cursor:pointer;transition:background 0.2s;
+    background:var(--off-white);
+  }
+  .round-header:hover{background:var(--purple-bg);}
+  .round-num{
+    width:32px;height:32px;border-radius:8px;flex-shrink:0;
+    background:var(--purple-bg);color:var(--purple-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.04em;
+  }
+  .round-info{flex:1;}
+  .round-name{font-size:14px;font-weight:600;color:var(--dark);}
+  .round-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .round-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+  .rb-pending{background:#FFF3E0;color:#C07000;}
+  .rb-revised{background:var(--mint-bg);color:var(--mint-deep);}
+  .rb-approved{background:var(--mint-bg);color:var(--mint-deep);}
+  .round-toggle{color:var(--muted);font-size:18px;transition:transform 0.3s;}
+  .round-item.open .round-toggle{transform:rotate(180deg);}
+
+  .round-body{display:none;padding:0 20px 20px;}
+  .round-item.open .round-body{display:block;}
+
+  .round-files{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;margin-top:16px;}
+  .round-file{
+    display:flex;align-items:center;gap:10px;
+    background:var(--off-white);border-radius:10px;
+    padding:10px 14px;border:1px solid var(--border);
+  }
+  .file-ext{
+    background:var(--purple-bg);color:var(--purple-deep);
+    font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;
+    letter-spacing:0.04em;flex-shrink:0;
+  }
+  .file-name-sm{flex:1;font-size:13px;color:var(--dark);font-weight:500;}
+  .file-dl{
+    background:none;border:1.5px solid var(--border);border-radius:8px;
+    padding:5px 12px;font-size:12px;font-weight:600;color:var(--purple-deep);
+    cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;
+  }
+  .file-dl:hover{background:var(--purple-bg);border-color:var(--purple-mid);}
+
+  /* Notes / revision thread */
+  .notes-thread{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .note-bubble{
+    padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.65;
+    max-width:90%;
+  }
+  .note-client{background:var(--purple-bg);color:var(--mid);align-self:flex-end;border-bottom-right-radius:4px;}
+  .note-team{background:var(--off-white);border:1px solid var(--border);color:var(--mid);align-self:flex-start;border-bottom-left-radius:4px;}
+  .note-meta{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:0.03em;}
+  .note-client .note-meta{text-align:right;}
+
+  .notes-input-wrap{display:flex;gap:8px;}
+  .note-input{
+    flex:1;padding:11px 16px;
+    border:1.5px solid var(--border);border-radius:10px;
+    font-size:14px;font-family:'DM Sans',sans-serif;
+    color:var(--dark);resize:none;outline:none;
+    transition:border-color 0.2s;
+    min-height:48px;max-height:120px;
+  }
+  .note-input:focus{border-color:var(--purple-mid);}
+  .note-send{
+    background:var(--purple-deep);color:white;border:none;
+    width:44px;height:44px;border-radius:10px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:background 0.2s;
+  }
+  .note-send:hover{background:var(--purple-mid);}
+  .note-send svg{width:18px;height:18px;}
+
+  /* Approve round */
+  .approve-banner{
+    background:linear-gradient(135deg,var(--purple-bg),var(--mint-bg));
+    border:1.5px solid var(--purple);border-radius:12px;
+    padding:16px 20px;display:flex;align-items:center;
+    justify-content:space-between;gap:16px;margin-top:16px;
+  }
+  .approve-text{font-size:13px;color:var(--mid);font-weight:500;line-height:1.5;}
+  .approve-text strong{color:var(--dark);}
+  .approve-btn{
+    background:var(--mint-deep);color:white;border:none;
+    padding:10px 22px;border-radius:100px;font-size:13px;font-weight:700;
+    font-family:'DM Sans',sans-serif;cursor:pointer;
+    white-space:nowrap;transition:background 0.2s;
+  }
+  .approve-btn:hover{background:var(--mint-mid);}
+
+  /* Detail sidebar */
+  .detail-sidebar{display:flex;flex-direction:column;gap:16px;}
+  .sidebar-widget{
+    background:white;border-radius:16px;border:1px solid var(--border);
+    padding:24px;box-shadow:0 2px 10px rgba(107,86,200,0.05);
+  }
+  .widget-title{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+  .info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .info-row:last-child{border-bottom:none;}
+  .info-label{color:var(--muted);font-weight:400;}
+  .info-val{color:var(--dark);font-weight:500;text-align:right;max-width:55%;}
+  .info-val.mint{color:var(--mint-deep);}
+  .info-val.purple{color:var(--purple-deep);}
+
+  .delivery-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .delivery-row:last-child{border-bottom:none;}
+  .delivery-icon{width:32px;height:32px;border-radius:8px;background:var(--off-white);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--muted);}
+  .delivery-name{font-size:13px;font-weight:500;color:var(--dark);flex:1;}
+  .delivery-dl{background:none;border:1.5px solid var(--border);border-radius:8px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--purple-deep);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+  .delivery-dl:hover{background:var(--purple-bg);border-color:var(--purple-mid);}
+
+  /* ── EMPTY STATE ── */
+  .empty-state{text-align:center;padding:64px 32px;color:var(--muted);}
+  .empty-state-icon{width:64px;height:64px;background:var(--purple-bg);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+  .empty-state-icon svg{width:28px;height:28px;color:var(--purple-deep);}
+  .empty-state h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.04em;color:var(--dark);margin-bottom:8px;}
+  .empty-state p{font-size:14px;line-height:1.65;max-width:320px;margin:0 auto 24px;}
+
+  /* ── TOAST ── */
+  .toast{
+    position:fixed;bottom:28px;right:28px;
+    background:var(--dark);color:white;padding:14px 24px;
+    border-radius:12px;font-size:14px;font-weight:500;
+    box-shadow:0 8px 32px rgba(18,15,42,0.25);
+    transform:translateY(80px);opacity:0;
+    transition:all 0.3s ease;z-index:300;
+    display:flex;align-items:center;gap:10px;
+  }
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.success{background:var(--mint-deep);}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    .sidebar{display:none;}
+    .main{margin-left:0;}
+    .detail-layout{grid-template-columns:1fr;}
+    .overview-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
+      FLOORTYPE
+    </div>
+    <h2 class="login-title">Client Portal</h2>
+    <p class="login-sub">Sign in to track your orders, review drafts, and manage your projects.</p>
+    <div class="login-field">
+      <label class="login-label">Email Address</label>
+      <input class="login-input" id="loginEmail" type="email" placeholder="you@example.com" value="sarah.m@meridianre.com">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" value="password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-hint">Don't have an account? <span onclick="doLogin()">Access is created when you place your first order.</span></div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;">Demo: any email + any password</div>
+  </div>
+</div>
+
+<!-- ── SIDEBAR ── -->
+<div class="sidebar" id="appSidebar" style="display:none;">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
+    FLOORTYPE
+  </a>
+  <div class="sidebar-portal-tag">Client Portal</div>
+
+  <div class="sidebar-label">Navigation</div>
+  <button class="nav-item active" id="nav-overview" onclick="showView('overview')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+    Overview
+  </button>
+  <button class="nav-item" id="nav-orders" onclick="showView('orders')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
+    My Orders
+    <span class="nav-dot" id="navReviewDot" style="display:none;"></span>
+  </button>
+  <button class="nav-item" id="nav-files" onclick="showView('files')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z"/><polyline points="9 2 9 6 13 6"/></svg>
+    Delivered Files
+  </button>
+  <button class="nav-item" id="nav-new" onclick="window.open('/order','_blank')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+    New Order
+  </button>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">S</div>
+      <div>
+        <div class="user-name" id="userName">Sarah M.</div>
+        <div class="user-email" id="userEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e19280938089cf8ca18c8493888588808f9384cf828e8c">[email&#160;protected]</a></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Sign out">↩</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main" id="appMain" style="display:none;">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-greeting" id="topbarGreeting">Good morning,</span>
+      <span class="topbar-title" id="topbarName">Sarah</span>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="showToast('No new notifications','')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 1a5 5 0 015 5v3l1 2H2l1-2V6a5 5 0 015-5z"/><path d="M6.5 13a1.5 1.5 0 003 0"/></svg>
+        <span class="notif-badge" id="notifBadge"></span>
+      </button>
+      <a href="/order" target="_blank" class="topbar-cta">+ New Order</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── OVERVIEW VIEW ── -->
+    <div class="view active" id="view-overview">
+      <div class="welcome-banner">
+        <div class="welcome-text">
+          <h2 id="welcomeHeading">Welcome back, Sarah</h2>
+          <p>You have <strong id="activeCount">0</strong> active order(s) in progress. <span id="reviewPrompt" style="display:none;color:var(--purple-deep);font-weight:500;">One project is ready for your review.</span></p>
+        </div>
+        <div class="welcome-actions">
+          <a href="/order" target="_blank" class="btn-primary">+ New Floor Plan</a>
+          <button class="btn-secondary" onclick="showView('orders')">View All Orders</button>
+        </div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="ov-stat">
+          <div class="ov-stat-label">Total Orders</div>
+          <div class="ov-stat-num" id="ovTotal">0</div>
+          <div class="ov-stat-sub">All time</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-label">In Progress</div>
+          <div class="ov-stat-num purple" id="ovProgress">0</div>
+          <div class="ov-stat-sub">Active projects</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-label">Completed</div>
+          <div class="ov-stat-num mint" id="ovComplete">0</div>
+          <div class="ov-stat-sub">Delivered</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title-sm">Recent Orders</div>
+        <span class="see-all" onclick="showView('orders')">See all →</span>
+      </div>
+      <div class="order-cards" id="overviewOrderCards"></div>
+    </div>
+
+    <!-- ── ORDERS VIEW ── -->
+    <div class="view" id="view-orders">
+      <div style="margin-bottom:24px;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--dark);margin-bottom:4px;">My Orders</h2>
+        <p style="font-size:14px;color:var(--muted);font-weight:300;">Track progress, leave revision notes, and download deliverables.</p>
+      </div>
+
+      <div class="orders-toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.3"/><line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <input class="search-in" type="text" placeholder="Search orders…" id="ordersSearch" oninput="renderOrdersList()">
+        </div>
+        <button class="filter-pill active" data-f="all" onclick="setOrderFilter(this)">All</button>
+        <button class="filter-pill" data-f="active" onclick="setOrderFilter(this)">Active</button>
+        <button class="filter-pill" data-f="In Review" onclick="setOrderFilter(this)">Needs Review</button>
+        <button class="filter-pill" data-f="Complete" onclick="setOrderFilter(this)">Complete</button>
+      </div>
+
+      <div class="order-cards" id="ordersListCards"></div>
+    </div>
+
+    <!-- ── ORDER DETAIL VIEW ── -->
+    <div class="view" id="view-detail">
+      <button class="detail-back" onclick="showView('orders')">← Back to My Orders</button>
+
+      <div class="detail-layout">
+        <div>
+          <!-- Status timeline -->
+          <div class="detail-card" style="margin-bottom:20px;">
+            <div id="detailRef" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.06em;color:var(--purple-deep);margin-bottom:4px;"></div>
+            <div id="detailAddress" style="font-size:13px;color:var(--muted);margin-bottom:24px;"></div>
+            <div class="timeline" id="detailTimeline"></div>
+          </div>
+
+          <!-- Revision rounds -->
+          <div class="detail-card">
+            <div class="rounds-title">Revision Rounds</div>
+            <div id="roundsContainer"></div>
+          </div>
+        </div>
+
+        <!-- Detail sidebar -->
+        <div class="detail-sidebar">
+          <div class="sidebar-widget">
+            <div class="widget-title">Order Info</div>
+            <div id="detailInfo"></div>
+          </div>
+          <div class="sidebar-widget" id="finalFilesWidget" style="display:none;">
+            <div class="widget-title">Final Deliverables</div>
+            <div id="finalFilesContainer"></div>
+          </div>
+          <div class="sidebar-widget">
+            <div class="widget-title">Need Help?</div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Questions about your order? Our team typically responds within a few hours.</p>
+            <button class="btn-secondary" style="width:100%;justify-content:center;" onclick="showToast('Message sent to Floortype team ✓','success')">Message Our Team</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FILES VIEW ── -->
+    <div class="view" id="view-files">
+      <div style="margin-bottom:24px;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--dark);margin-bottom:4px;">Delivered Files</h2>
+        <p style="font-size:14px;color:var(--muted);font-weight:300;">All your completed project files in one place.</p>
+      </div>
+      <div id="filesViewContainer"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── DATA ──
+const DEMO_ORDERS = [
+  {
+    ref:'FT-841022', date:'2025-02-10T09:23:00Z',
+    address:'220 Riverside Drive, New York, NY 10025',
+    floors:2, style:'Modern',
+    addons:{'Furnished Version':79,'Rush Delivery':99},
+    total:476, deposit:'238.00', status:'In Review',
+    notes:'Light oak flooring throughout. Minimal furniture placement preferred.',
+    rounds:[
+      {
+        num:1, name:'Draft 1 — Initial Floor Plan',
+        date:'2025-02-12', status:'revised',
+        files:['FT-841022_Draft1_Level1.png','FT-841022_Draft1_Level2.png'],
+        thread:[
+          {role:'team',text:'Hi Sarah, here\'s your first draft for both levels. Please review and let us know if you\'d like any changes.',time:'Feb 12, 10:30am'},
+          {role:'client',text:'Looking good! A few things: can we widen the hallway on level 1, and the kitchen island on level 2 should be slightly larger.',time:'Feb 12, 2:14pm'},
+          {role:'team',text:'Got it — we\'ll update the hallway width and scale up the kitchen island. New draft incoming.',time:'Feb 12, 3:45pm'}
+        ]
+      },
+      {
+        num:2, name:'Draft 2 — Revised',
+        date:'2025-02-14', status:'pending',
+        files:['FT-841022_Draft2_Level1.png','FT-841022_Draft2_Level2.png'],
+        thread:[
+          {role:'team',text:'Here\'s the revised draft — hallway widened and kitchen island updated as requested. Please review!',time:'Feb 14, 11:00am'}
+        ]
+      }
+    ],
+    finalFiles:[]
+  },
+  {
+    ref:'FT-392874', date:'2025-01-28T14:10:00Z',
+    address:'14 Kings Road, London, SW3 4PX',
+    floors:1, style:'Luxury',
+    addons:{'Black & White Version':39},
+    total:188, deposit:'94.00', status:'Complete',
+    notes:'',
+    rounds:[
+      {
+        num:1, name:'Draft 1 — Floor Plan',
+        date:'2025-01-30', status:'approved',
+        files:['FT-392874_Draft1_Ground.png'],
+        thread:[
+          {role:'team',text:'First draft ready for your review!',time:'Jan 30, 9:00am'},
+          {role:'client',text:'Perfect on the first try — no changes needed. Approved!',time:'Jan 30, 11:30am'}
+        ]
+      }
+    ],
+    finalFiles:['FT-392874_Final_Colour.png','FT-392874_Final_BW.png','FT-392874_Final.pdf']
+  },
+  {
+    ref:'FT-203984', date:'2025-01-15T16:45:00Z',
+    address:'7 Orchard Lane, Chicago, IL 60601',
+    floors:1, style:'Traditional',
+    addons:{'Extra View Angle':49},
+    total:198, deposit:'99.00', status:'In Progress',
+    notes:'',
+    rounds:[], finalFiles:[]
+  }
+];
+
+let orders = [];
+let currentUser = null;
+let currentOrderRef = null;
+let orderFilter = 'all';
+
+// ── AUTH ──
+function doLogin(){
+  const email = document.getElementById('loginEmail').value || 'sarah.m@meridianre.com';
+  const name = email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  currentUser = { email, name, initials: name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() };
+  orders = JSON.parse(localStorage.getItem('ft_orders_client') || 'null') || DEMO_ORDERS;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appSidebar').style.display = 'flex';
+  document.getElementById('appMain').style.display = 'flex';
+  initApp();
+}
+
+function doLogout(){
+  currentUser = null;
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('appSidebar').style.display = 'none';
+  document.getElementById('appMain').style.display = 'none';
+}
+
+// ── INIT ──
+function initApp(){
+  document.getElementById('userAvatar').textContent = currentUser.initials;
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('userEmail').textContent = currentUser.email;
+  document.getElementById('topbarName').textContent = currentUser.name.split(' ')[0];
+  const h = new Date().getHours();
+  document.getElementById('topbarGreeting').textContent = h<12?'Good morning,':h<18?'Good afternoon,':'Good evening,';
+  document.getElementById('welcomeHeading').textContent = 'Welcome back, '+currentUser.name.split(' ')[0];
+  renderOverview();
+  renderOrdersList();
+  renderFilesView();
+  checkReviewDot();
+}
+
+// ── OVERVIEW ──
+function renderOverview(){
+  const active = orders.filter(o=>o.status!=='Complete').length;
+  const complete = orders.filter(o=>o.status==='Complete').length;
+  const review = orders.filter(o=>o.status==='In Review').length;
+  document.getElementById('ovTotal').textContent = orders.length;
+  document.getElementById('ovProgress').textContent = active;
+  document.getElementById('ovComplete').textContent = complete;
+  document.getElementById('activeCount').textContent = active;
+  if(review>0){ document.getElementById('reviewPrompt').style.display='inline'; }
+
+  const container = document.getElementById('overviewOrderCards');
+  const recent = [...orders].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3);
+  container.innerHTML = recent.map(o=>orderCardHTML(o)).join('');
+}
+
+// ── ORDER CARD HTML ──
+function orderCardHTML(o){
+  const needsReview = o.status==='In Review';
+  return `<div class="order-card${needsReview?' needs-review':''}" onclick="openOrderDetail('${o.ref}')">
+    <div class="order-card-icon ${o.style==='Luxury'?'icon-purple':'icon-mint'}">
+      <svg viewBox="0 0 22 22" fill="none" stroke="${o.style==='Luxury'?'var(--purple-deep)':'var(--mint-deep)'}" stroke-width="1.3">
+        <rect x="2" y="2" width="18" height="18" rx="2"/>
+        <line x1="2" y1="11" x2="20" y2="11"/>
+        <line x1="11" y1="2" x2="11" y2="20"/>
+      </svg>
+    </div>
+    <div class="order-card-info">
+      <div class="order-card-ref">${o.ref}</div>
+      <div class="order-card-name">${o.address}</div>
+      <div class="order-card-meta">${o.floors} floor${o.floors>1?'s':''} · ${o.style} · $${o.total}</div>
+    </div>
+    <div class="order-card-right">
+      <span class="status-badge ${statusClass(o.status)}">${o.status}</span>
+      ${needsReview?'<span class="review-tag">Action needed</span>':''}
+      <span class="order-card-date">${fmtDate(o.date)}</span>
+    </div>
+  </div>`;
+}
+
+// ── ORDERS LIST ──
+function setOrderFilter(btn){
+  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  orderFilter = btn.dataset.f;
+  renderOrdersList();
+}
+
+function renderOrdersList(){
+  const search = document.getElementById('ordersSearch').value.toLowerCase();
+  let filtered = orders.filter(o=>{
+    const mf = orderFilter==='all'||(orderFilter==='active'&&o.status!=='Complete')||o.status===orderFilter;
+    const ms = !search||o.ref.toLowerCase().includes(search)||o.address.toLowerCase().includes(search);
+    return mf&&ms;
+  });
+  const c = document.getElementById('ordersListCards');
+  if(!filtered.length){
+    c.innerHTML=`<div class="empty-state">
+      <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+      <h3>No Orders Found</h3>
+      <p>No orders match your current filter. Try adjusting your search.</p>
+    </div>`;
+    return;
+  }
+  c.innerHTML = filtered.map(o=>orderCardHTML(o)).join('');
+}
+
+// ── ORDER DETAIL ──
+function openOrderDetail(ref){
+  currentOrderRef = ref;
+  const o = orders.find(x=>x.ref===ref);
+  if(!o) return;
+  showView('detail');
+
+  document.getElementById('detailRef').textContent = o.ref;
+  document.getElementById('detailAddress').textContent = o.address;
+
+  // Timeline
+  const steps=[
+    {label:'Order\nReceived',icon:'📋'},
+    {label:'In\nProduction',icon:'🎨'},
+    {label:'In\nReview',icon:'👁️'},
+    {label:'Complete',icon:'✓'}
+  ];
+  const statusMap={'Received':0,'In Progress':1,'In Review':2,'Complete':3};
+  const cur = statusMap[o.status]??0;
+  const dates=['Feb 10','Feb 11','Feb 14','—'];
+  document.getElementById('detailTimeline').innerHTML = steps.map((s,i)=>{
+    const cls = i<cur?'done':i===cur?'active':'';
+    return `<div class="tl-step ${cls}">
+      <div class="tl-dot">${i<cur?'✓':s.icon}</div>
+      <div class="tl-label">${s.label.replace('\n','<br>')}</div>
+      <div class="tl-date">${cur>=i?dates[i]:''}</div>
+    </div>${i<3?`<div style="flex:1;height:2px;background:${i<cur?'var(--mint-deep)':'var(--border)'};margin-top:18px;transition:background 0.3s;border-radius:2px;"></div>`:''}`;
+  }).join('');
+
+  // Order info sidebar
+  const addons = Object.keys(o.addons||{});
+  document.getElementById('detailInfo').innerHTML = `
+    <div class="info-row"><span class="info-label">Reference</span><span class="info-val purple">${o.ref}</span></div>
+    <div class="info-row"><span class="info-label">Status</span><span class="info-val"><span class="status-badge ${statusClass(o.status)}">${o.status}</span></span></div>
+    <div class="info-row"><span class="info-label">Floors</span><span class="info-val">${o.floors} floor${o.floors>1?'s':''}</span></div>
+    <div class="info-row"><span class="info-label">Style</span><span class="info-val">${o.style}</span></div>
+    <div class="info-row"><span class="info-label">Add-ons</span><span class="info-val">${addons.length?addons.join(', '):'None'}</span></div>
+    <div class="info-row"><span class="info-label">Total</span><span class="info-val">$${o.total}</span></div>
+    <div class="info-row"><span class="info-label">Deposit paid</span><span class="info-val mint">$${o.deposit}</span></div>
+    <div class="info-row"><span class="info-label">Ordered</span><span class="info-val">${fmtDate(o.date)}</span></div>
+    ${o.notes?`<div class="info-row" style="flex-direction:column;gap:6px;"><span class="info-label">Your Notes</span><span style="font-size:13px;color:var(--mid);line-height:1.6;">${o.notes}</span></div>`:''}`;
+
+  // Final files
+  if(o.finalFiles&&o.finalFiles.length){
+    document.getElementById('finalFilesWidget').style.display='block';
+    document.getElementById('finalFilesContainer').innerHTML = o.finalFiles.map(f=>`
+      <div class="delivery-row">
+        <div class="delivery-icon">${f.split('.').pop().toUpperCase()}</div>
+        <div class="delivery-name">${f}</div>
+        <button class="delivery-dl" onclick="showToast('Downloading ${f}…','success')">↓</button>
+      </div>`).join('');
+  } else {
+    document.getElementById('finalFilesWidget').style.display='none';
+  }
+
+  // Rounds
+  renderRounds(o);
+}
+
+function renderRounds(o){
+  const container = document.getElementById('roundsContainer');
+  if(!o.rounds||!o.rounds.length){
+    container.innerHTML=`<div style="text-align:center;padding:32px;color:var(--muted);">
+      <div style="font-size:32px;margin-bottom:12px;">🎨</div>
+      <div style="font-size:14px;font-weight:500;color:var(--dark);margin-bottom:6px;">Production in progress</div>
+      <div style="font-size:13px;line-height:1.6;">Your first draft will appear here when it's ready for review. We'll notify you by email.</div>
+    </div>`;
+    return;
+  }
+  container.innerHTML = o.rounds.map((r,ri)=>{
+    const isLatest = ri===o.rounds.length-1;
+    const isPending = r.status==='pending';
+    const rbCls = r.status==='approved'?'rb-approved':r.status==='revised'?'rb-revised':'rb-pending';
+    const rbLabel = r.status==='approved'?'✓ Approved':r.status==='revised'?'Revised':'Awaiting Review';
+    const openCls = isPending&&isLatest?' open':'';
+    return `<div class="round-item${openCls}" id="round-${ri}">
+      <div class="round-header" onclick="toggleRound(${ri})">
+        <div class="round-num">${r.num}</div>
+        <div class="round-info">
+          <div class="round-name">${r.name}</div>
+          <div class="round-meta">Delivered ${r.date}</div>
+        </div>
+        <span class="round-badge ${rbCls}">${rbLabel}</span>
+        <span class="round-toggle">▾</span>
+      </div>
+      <div class="round-body">
+        <div class="round-files">
+          ${r.files.map(f=>`<div class="round-file">
+            <span class="file-ext">${f.split('.').pop().toUpperCase()}</span>
+            <span class="file-name-sm">${f}</span>
+            <button class="file-dl" onclick="showToast('Downloading ${f}…','success')">↓ Download</button>
+          </div>`).join('')}
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:4px;">Revision Notes</div>
+        <div class="notes-thread" id="thread-${ri}">
+          ${r.thread.map(n=>`
+            <div style="display:flex;flex-direction:column;align-items:${n.role==='client'?'flex-end':'flex-start'};">
+              <div class="note-bubble note-${n.role}">${n.text}</div>
+              <div class="note-meta">${n.role==='client'?'You':'Floortype team'} · ${n.time}</div>
+            </div>`).join('')}
+        </div>
+        ${isPending&&isLatest?`
+        <div class="notes-input-wrap" style="margin-top:10px;">
+          <textarea class="note-input" id="noteInput-${ri}" placeholder="Leave a revision note…" rows="1" oninput="autoResize(this)"></textarea>
+          <button class="note-send" onclick="sendNote(${ri})">
+            <svg viewBox="0 0 18 18" fill="none" stroke="white" stroke-width="1.4"><line x1="2" y1="9" x2="16" y2="9"/><polyline points="10 3 16 9 10 15"/></svg>
+          </button>
+        </div>
+        <div class="approve-banner" style="margin-top:12px;">
+          <div class="approve-text"><strong>Happy with this draft?</strong><br>Approve it to move to final delivery.</div>
+          <button class="approve-btn" onclick="approveRound(${ri})">Approve Draft ✓</button>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRound(ri){
+  document.getElementById('round-'+ri).classList.toggle('open');
+}
+
+function autoResize(ta){
+  ta.style.height='auto';
+  ta.style.height=Math.min(ta.scrollHeight,120)+'px';
+}
+
+function sendNote(ri){
+  const input = document.getElementById('noteInput-'+ri);
+  const text = input.value.trim();
+  if(!text) return;
+  const o = orders.find(x=>x.ref===currentOrderRef);
+  if(!o||!o.rounds[ri]) return;
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+', '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  o.rounds[ri].thread.push({role:'client',text,time:timeStr});
+  saveOrders();
+  renderRounds(o);
+  showToast('Note sent to Floortype team ✓','success');
+}
+
+function approveRound(ri){
+  const o = orders.find(x=>x.ref===currentOrderRef);
+  if(!o||!o.rounds[ri]) return;
+  o.rounds[ri].status='approved';
+  if(ri===o.rounds.length-1){
+    o.status='Complete';
+    o.finalFiles=['FT-'+o.ref.split('-')[1]+'_Final_Colour.png','FT-'+o.ref.split('-')[1]+'_Final.pdf'];
+  }
+  saveOrders();
+  openOrderDetail(currentOrderRef);
+  renderOverview();
+  showToast('Draft approved! Final files incoming ✓','success');
+}
+
+// ── FILES VIEW ──
+function renderFilesView(){
+  const completed = orders.filter(o=>o.status==='Complete'&&o.finalFiles&&o.finalFiles.length);
+  const c = document.getElementById('filesViewContainer');
+  if(!completed.length){
+    c.innerHTML=`<div class="empty-state">
+      <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <h3>No Files Yet</h3>
+      <p>Your delivered files will appear here once a project is complete and approved.</p>
+      <a href="/order" target="_blank" class="btn-primary">Place Your First Order</a>
+    </div>`;
+    return;
+  }
+  c.innerHTML = completed.map(o=>`
+    <div style="background:white;border-radius:16px;border:1px solid var(--border);padding:24px;margin-bottom:16px;box-shadow:0 2px 10px rgba(107,86,200,0.05);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--purple-deep);letter-spacing:0.06em;margin-bottom:2px;">${o.ref}</div>
+          <div style="font-size:15px;font-weight:600;color:var(--dark);">${o.address}</div>
+        </div>
+        <span class="status-badge s-complete">Complete</span>
+      </div>
+      ${o.finalFiles.map(f=>`
+        <div class="delivery-row">
+          <div class="delivery-icon">${f.split('.').pop().toUpperCase()}</div>
+          <div class="delivery-name">${f}</div>
+          <button class="delivery-dl" onclick="showToast('Downloading ${f}…','success')">↓ Download</button>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── NAVIGATION ──
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const ni = document.getElementById('nav-'+v);
+  if(ni) ni.classList.add('active');
+  if(v==='orders') renderOrdersList();
+  if(v==='files') renderFilesView();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function checkReviewDot(){
+  const hasReview = orders.some(o=>o.status==='In Review');
+  document.getElementById('navReviewDot').style.display = hasReview?'block':'none';
+  document.getElementById('notifBadge').style.display = hasReview?'block':'none';
+}
+
+// ── HELPERS ──
+function statusClass(s){
+  return {'Received':'s-received','In Progress':'s-progress','In Review':'s-review','Complete':'s-complete'}[s]||'s-received';
+}
+function fmtDate(iso){
+  return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function saveOrders(){
+  localStorage.setItem('ft_orders_client',JSON.stringify(orders));
+  checkReviewDot();
+}
+function s

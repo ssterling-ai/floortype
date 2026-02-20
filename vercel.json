@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/order",  "destination": "/floortype-order.html" },
+    { "source": "/quote",  "destination": "/floortype-quote.html" },
+    { "source": "/portal", "destination": "/floortype-portal.html" },
+    { "source": "/admin",  "destination": "/floortype-admin.html" }
+  ]
+}

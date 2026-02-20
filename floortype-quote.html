@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floortype — Request a 3D Rendering Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white:#FFFFFF; --off-white:#F7F5FF;
+    --purple:#C4B5F4; --purple-mid:#9B87E8;
+    --purple-deep:#6B56C8; --purple-bg:#EDE9FF;
+    --mint:#A8E8DA; --mint-mid:#5DCFB8;
+    --mint-deep:#2BA892; --mint-bg:#DFF6F1;
+    --dark:#120F2A; --mid:#3D3660; --muted:#8880AA;
+    --border:#E8E4FF; --error:#E85555;
+    --amber:#FFF3E0; --amber-c:#C07000;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;}
+
+  /* ── NAV ── */
+  nav{
+    background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    padding:0 52px;height:68px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:50;
+  }
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.12em;color:var(--dark);text-decoration:none;display:flex;align-items:center;gap:9px;}
+  .logo-mark{width:28px;height:28px;background:linear-gradient(135deg,var(--purple),var(--mint));border-radius:6px;display:flex;align-items:center;justify-content:center;}
+  .logo-mark svg{width:14px;height:14px;}
+  .nav-right{display:flex;align-items:center;gap:16px;}
+  .nav-link{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;}
+  .nav-link:hover{color:var(--dark);}
+  .nav-secure{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+  .nav-secure svg{width:13px;height:13px;color:var(--mint-deep);}
+
+  /* ── HERO BAND ── */
+  .hero-band{
+    background:var(--dark);padding:52px 64px;
+    display:grid;grid-template-columns:1fr auto;
+    align-items:center;gap:48px;
+    position:relative;overflow:hidden;
+  }
+  .hero-band::before{
+    content:'';position:absolute;
+    width:500px;height:500px;border-radius:50%;
+    background:radial-gradient(circle,rgba(196,181,244,0.12),transparent 70%);
+    top:-200px;right:-100px;pointer-events:none;
+  }
+  .hero-band-eyebrow{
+    font-size:11px;font-weight:600;letter-spacing:0.16em;
+    text-transform:uppercase;color:var(--purple);margin-bottom:12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .hero-band-eyebrow::before{content:'';width:20px;height:2px;background:linear-gradient(90deg,var(--purple),var(--mint));border-radius:2px;}
+  .hero-band h1{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(40px,5vw,64px);letter-spacing:0.02em;
+    line-height:0.92;color:white;margin-bottom:14px;
+  }
+  .hero-band h1 em{font-family:'DM Serif Display',serif;font-style:italic;color:var(--purple);font-size:0.9em;}
+  .hero-band p{font-size:15px;color:rgba(255,255,255,0.5);line-height:1.7;font-weight:300;max-width:520px;}
+  .hero-stats{display:flex;gap:36px;flex-shrink:0;position:relative;z-index:1;}
+  .hero-stat{text-align:center;}
+  .hero-stat-num{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:0.04em;line-height:1;}
+  .hero-stat-num.purple{color:var(--purple);}
+  .hero-stat-num.mint{color:var(--mint);}
+  .hero-stat-label{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.06em;margin-top:4px;}
+
+  /* ── LAYOUT ── */
+  .quote-layout{max-width:1100px;margin:0 auto;padding:48px 32px;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
+
+  /* ── PROGRESS ── */
+  .progress-wrap{margin-bottom:32px;}
+  .progress-steps{display:flex;align-items:center;gap:0;margin-bottom:12px;}
+  .ps{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
+  .ps-circle{
+    width:32px;height:32px;border-radius:50%;
+    border:2px solid var(--border);background:white;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:var(--muted);
+    transition:all 0.3s;flex-shrink:0;
+  }
+  .ps.active .ps-circle{border-color:var(--purple-deep);background:var(--purple-deep);color:white;}
+  .ps.done .ps-circle{border-color:var(--mint-deep);background:var(--mint-deep);color:white;font-size:14px;}
+  .ps-label{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap;transition:color 0.2s;}
+  .ps.active .ps-label{color:var(--purple-deep);font-weight:600;}
+  .ps.done .ps-label{color:var(--mint-deep);}
+  .ps-line{flex:1;height:2px;background:var(--border);margin:0 8px;border-radius:2px;transition:background 0.3s;min-width:16px;}
+  .ps-line.done{background:var(--mint-deep);}
+  .progress-track{height:3px;background:var(--border);border-radius:100px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--purple-deep),var(--mint-deep));border-radius:100px;transition:width 0.5s ease;}
+
+  /* ── CARD ── */
+  .quote-card{background:white;border-radius:20px;border:1px solid var(--border);padding:40px;box-shadow:0 4px 24px rgba(107,86,200,0.07);}
+  .step-panel{display:none;}
+  .step-panel.active{display:block;}
+  .step-heading{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:0.04em;color:var(--dark);margin-bottom:6px;}
+  .step-sub{font-size:14px;color:var(--muted);margin-bottom:32px;font-weight:300;line-height:1.65;}
+
+  /* ── FORM ELEMENTS ── */
+  .form-group{margin-bottom:22px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  .form-label{display:block;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:7px;letter-spacing:0.01em;}
+  .form-label .opt{color:var(--muted);font-weight:400;font-size:12px;}
+  .form-input{
+    width:100%;padding:11px 15px;border:1.5px solid var(--border);
+    border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;
+    color:var(--dark);background:white;outline:none;
+    transition:border-color 0.2s,box-shadow 0.2s;
+  }
+  .form-input:focus{border-color:var(--purple-mid);box-shadow:0 0 0 3px rgba(155,135,232,0.1);}
+  .form-input.error{border-color:var(--error);}
+  textarea.form-input{resize:vertical;min-height:90px;line-height:1.6;}
+  select.form-input{cursor:pointer;}
+  .field-error{font-size:11px;color:var(--error);margin-top:5px;display:none;}
+  .field-error.show{display:block;}
+  .form-hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;}
+
+  /* ── PROJECT TYPE GRID ── */
+  .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .type-card{
+    border:2px solid var(--border);border-radius:14px;
+    padding:18px 14px;cursor:pointer;
+    transition:all 0.2s;text-align:center;position:relative;
+    background:white;
+  }
+  .type-card:hover{border-color:var(--purple-mid);background:var(--purple-bg);}
+  .type-card.selected{border-color:var(--purple-deep);background:var(--purple-bg);}
+  .type-card.selected::after{content:'✓';position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:var(--purple-deep);}
+  .type-icon{font-size:26px;margin-bottom:8px;}
+  .type-name{font-size:13px;font-weight:600;color:var(--dark);}
+  .type-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+  /* ── MULTI-PHASE ── */
+  .phase-list{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+  .phase-item{
+    border:1.5px solid var(--border);border-radius:14px;
+    overflow:hidden;background:white;
+  }
+  .phase-header{
+    padding:14px 18px;display:flex;align-items:center;
+    gap:12px;background:var(--off-white);border-bottom:1px solid var(--border);
+  }
+  .phase-num{
+    width:28px;height:28px;border-radius:7px;
+    background:var(--purple-bg);color:var(--purple-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;font-size:16px;
+    flex-shrink:0;
+  }
+  .phase-name-input{
+    flex:1;border:none;background:transparent;
+    font-size:14px;font-weight:600;color:var(--dark);
+    font-family:'DM Sans',sans-serif;outline:none;
+  }
+  .phase-name-input::placeholder{color:var(--muted);font-weight:400;}
+  .phase-remove{
+    background:none;border:none;color:var(--muted);
+    cursor:pointer;font-size:18px;padding:2px;
+    transition:color 0.2s;display:flex;align-items:center;
+  }
+  .phase-remove:hover{color:var(--error);}
+  .phase-body{padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .phase-field label{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;}
+  .phase-field input,.phase-field select{
+    width:100%;padding:9px 12px;border:1.5px solid var(--border);
+    border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;
+    color:var(--dark);background:white;outline:none;
+    transition:border-color 0.2s;
+  }
+  .phase-field input:focus,.phase-field select:focus{border-color:var(--purple-mid);}
+  .add-phase-btn{
+    display:flex;align-items:center;gap:8px;
+    border:2px dashed var(--border);border-radius:14px;
+    padding:14px 18px;background:none;cursor:pointer;
+    color:var(--purple-deep);font-size:13px;font-weight:600;
+    font-family:'DM Sans',sans-serif;width:100%;
+    transition:border-color 0.2s,background 0.2s;
+  }
+  .add-phase-btn:hover{border-color:var(--purple-mid);background:var(--purple-bg);}
+
+  /* ── RENDERING TYPE SELECTOR ── */
+  .render-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .render-card{
+    border:2px solid var(--border);border-radius:16px;
+    padding:20px;cursor:pointer;
+    transition:all 0.25s;position:relative;
+    background:white;overflow:hidden;
+  }
+  .render-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.3s;
+  }
+  .render-card:hover{border-color:var(--purple-mid);}
+  .render-card.selected{border-color:var(--purple-deep);background:var(--purple-bg);}
+  .render-card.selected::before{opacity:1;background:linear-gradient(90deg,var(--purple),var(--purple-mid));}
+  .render-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+  .render-icon{
+    width:44px;height:44px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;flex-shrink:0;transition:background 0.2s;
+  }
+  .rc-default{background:var(--off-white);}
+  .render-card.selected .render-icon{background:white;}
+  .render-card-check{
+    width:20px;height:20px;border-radius:50%;border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    margin-left:auto;flex-shrink:0;transition:all 0.2s;background:white;
+    font-size:11px;
+  }
+  .render-card.selected .render-card-check{background:var(--purple-deep);border-color:var(--purple-deep);color:white;}
+  .render-name{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:4px;}
+  .render-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+  .render-card-body{display:none;padding-top:14px;border-top:1px solid var(--border);}
+  .render-card.selected .render-card-body{display:block;}
+  .views-row{display:flex;align-items:center;gap:12px;}
+  .views-label{font-size:12px;color:var(--mid);font-weight:500;flex:1;}
+  .views-counter{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:white;}
+  .vc-btn{width:34px;height:34px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--purple-deep);font-family:'DM Sans',sans-serif;transition:background 0.2s;display:flex;align-items:center;justify-content:center;}
+  .vc-btn:hover{background:var(--purple-bg);}
+  .vc-num{width:40px;text-align:center;font-size:15px;font-weight:600;color:var(--dark);border-left:1px solid var(--border);border-right:1px solid var(--border);padding:6px 0;}
+  .render-note{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;}
+
+  /* ── COMPLEXITY ── */
+  .complexity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .complexity-card{
+    border:2px solid var(--border);border-radius:14px;
+    padding:20px 16px;cursor:pointer;text-align:center;
+    transition:all 0.2s;background:white;position:relative;
+  }
+  .complexity-card:hover{border-color:var(--purple-mid);}
+  .complexity-card.selected{border-color:var(--purple-deep);background:var(--purple-bg);}
+  .complexity-card.selected::after{content:'✓';position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;color:var(--purple-deep);}
+  .complexity-tier{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.06em;color:var(--dark);margin-bottom:8px;}
+  .complexity-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+  .complexity-examples{font-size:11px;color:var(--purple-deep);font-weight:500;}
+  .complexity-range{font-size:12px;font-weight:600;color:var(--mid);margin-top:8px;}
+
+  /* ── SQFT ── */
+  .sqft-row{display:flex;align-items:center;gap:12px;}
+  .sqft-input-wrap{position:relative;flex:1;}
+  .sqft-input-wrap input{padding-right:48px;}
+  .sqft-unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--muted);font-weight:500;}
+  .sqft-unknown{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
+  .sqft-unknown input[type=checkbox]{width:16px;height:16px;accent-color:var(--purple-deep);cursor:pointer;}
+  .sqft-unknown label{font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+
+  /* ── DELIVERABLES ── */
+  .deliverable-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .del-item{
+    border:2px solid var(--border);border-radius:12px;
+    padding:14px 16px;display:flex;align-items:center;
+    gap:12px;cursor:pointer;transition:all 0.2s;background:white;
+  }
+  .del-item:hover{border-color:var(--purple-mid);}
+  .del-item.selected{border-color:var(--purple-deep);background:var(--purple-bg);}
+  .del-check{
+    width:20px;height:20px;border-radius:5px;border:2px solid var(--border);
+    background:white;display:flex;align-items:center;justify-content:center;
+    font-size:12px;flex-shrink:0;transition:all 0.2s;
+  }
+  .del-item.selected .del-check{background:var(--purple-deep);border-color:var(--purple-deep);color:white;}
+  .del-info{flex:1;}
+  .del-name{font-size:13px;font-weight:600;color:var(--dark);}
+  .del-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  /* ── DEADLINE PICKER ── */
+  .deadline-options{display:flex;flex-direction:column;gap:10px;}
+  .deadline-option{
+    border:1.5px solid var(--border);border-radius:12px;
+    padding:14px 18px;display:flex;align-items:flex-start;
+    gap:14px;cursor:pointer;transition:all 0.2s;background:white;
+  }
+  .deadline-option:hover{border-color:var(--purple-mid);}
+  .deadline-option.selected{border-color:var(--purple-deep);background:var(--purple-bg);}
+  .deadline-radio{
+    width:18px;height:18px;border-radius:50%;border:2px solid var(--border);
+    flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;
+    transition:all 0.2s;background:white;
+  }
+  .deadline-option.selected .deadline-radio{border-color:var(--purple-deep);}
+  .deadline-option.selected .deadline-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--purple-deep);}
+  .deadline-label{font-size:14px;font-weight:600;color:var(--dark);}
+  .deadline-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
+  .deadline-tag{
+    margin-left:auto;flex-shrink:0;padding:3px 10px;border-radius:100px;
+    font-size:11px;font-weight:600;
+  }
+  .tag-standard{background:var(--mint-bg);color:var(--mint-deep);}
+  .tag-expedited{background:var(--amber);color:var(--amber-c);}
+  .tag-urgent{background:#FFE8E8;color:var(--error);}
+
+  /* ── FILE UPLOAD SECTIONS ── */
+  .upload-sections{display:flex;flex-direction:column;gap:16px;}
+  .upload-section{
+    border:1.5px solid var(--border);border-radius:16px;
+    overflow:hidden;background:white;
+  }
+  .upload-section-header{
+    padding:14px 20px;display:flex;align-items:center;
+    gap:12px;cursor:pointer;transition:background 0.2s;
+    background:var(--off-white);border-bottom:1px solid var(--border);
+  }
+  .upload-section-header:hover{background:var(--purple-bg);}
+  .upload-section.open .upload-section-header{background:var(--purple-bg);}
+  .us-icon{
+    width:34px;height:34px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;
+  }
+  .us-icon.purple{background:var(--purple-bg);}
+  .us-icon.mint{background:var(--mint-bg);}
+  .us-info{flex:1;}
+  .us-name{font-size:14px;font-weight:600;color:var(--dark);}
+  .us-desc{font-size:12px;color:var(--muted);margin-top:1px;}
+  .us-badge{
+    background:var(--purple-bg);color:var(--purple-deep);
+    font-size:11px;font-weight:600;padding:3px 10px;
+    border-radius:100px;
+  }
+  .us-badge.required{background:#FFE8E8;color:var(--error);}
+  .us-toggle{color:var(--muted);font-size:18px;transition:transform 0.3s;}
+  .upload-section.open .us-toggle{transform:rotate(180deg);}
+  .upload-section-body{display:none;padding:16px 20px;}
+  .upload-section.open .upload-section-body{display:block;}
+
+  .mini-upload{
+    border:2px dashed var(--border);border-radius:12px;
+    padding:24px;text-align:center;cursor:pointer;
+    transition:all 0.2s;position:relative;background:var(--off-white);
+  }
+  .mini-upload:hover,.mini-upload.dragover{border-color:var(--purple-mid);background:var(--purple-bg);}
+  .mini-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .mini-upload-icon{font-size:22px;margin-bottom:8px;}
+  .mini-upload-text{font-size:13px;font-weight:500;color:var(--dark);margin-bottom:4px;}
+  .mini-upload-sub{font-size:11px;color:var(--muted);}
+  .format-tags{display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+  .fmt{background:white;border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0.04em;}
+  .section-files{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+  .sf-item{display:flex;align-items:center;gap:8px;background:var(--off-white);border-radius:8px;padding:8px 12px;border:1px solid var(--border);}
+  .sf-ext{background:var(--purple-bg);color:var(--purple-deep);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.04em;flex-shrink:0;}
+  .sf-name{flex:1;font-size:12px;color:var(--dark);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sf-size{font-size:11px;color:var(--muted);flex-shrink:0;}
+  .sf-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px;transition:color 0.2s;flex-shrink:0;}
+  .sf-rm:hover{color:var(--error);}
+
+  /* ── STEP NAV ── */
+  .step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+  .btn-back{display:flex;align-items:center;gap:8px;color:var(--muted);background:none;border:none;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;padding:10px 0;transition:color 0.2s;}
+  .btn-back:hover{color:var(--dark);}
+  .btn-next{background:var(--dark);color:white;border:none;padding:13px 32px;border-radius:100px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.25s,transform 0.15s,box-shadow 0.25s;box-shadow:0 4px 16px rgba(18,15,42,0.15);}
+  .btn-next:hover{background:var(--purple-deep);transform:translateY(-1px);box-shadow:0 8px 24px rgba(107,86,200,0.3);}
+
+  /* ── SUMMARY SIDEBAR ── */
+  .summary-card{background:white;border-radius:20px;border:1px solid var(--border);padding:28px;position:sticky;top:88px;box-shadow:0 4px 24px rgba(107,86,200,0.07);}
+  .sc-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.06em;color:var(--dark);margin-bottom:20px;}
+  .sc-section{margin-bottom:16px;}
+  .sc-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .sc-item{font-size:13px;color:var(--mid);padding:4px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
+  .sc-item::before{content:'·';color:var(--purple-mid);margin-top:1px;}
+  .sc-empty{font-size:13px;color:var(--muted);font-style:italic;}
+  .sc-divider{height:1px;background:var(--border);margin:14px 0;}
+  .sc-estimate{
+    background:linear-gradient(135deg,var(--purple-bg),var(--mint-bg));
+    border:1.5px solid var(--purple);border-radius:12px;
+    padding:16px;margin-top:4px;
+  }
+  .sc-est-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--purple-deep);margin-bottom:6px;}
+  .sc-est-range{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--dark);line-height:1;}
+  .sc-est-note{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.55;}
+  .sc-badge{display:flex;align-items:center;gap:8px;background:var(--mint-bg);border:1px solid var(--mint);border-radius:10px;padding:10px 14px;margin-top:12px;font-size:12px;color:var(--mint-deep);font-weight:500;}
+  .sc-badge svg{width:14px;height:14px;flex-shrink:0;}
+
+  /* ── REVIEW STEP ── */
+  .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+  .review-block{background:var(--off-white);border-radius:12px;padding:18px;border:1px solid var(--border);}
+  .rb-title{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .rb-item{font-size:13px;color:var(--mid);padding:3px 0;line-height:1.55;}
+  .rb-item strong{color:var(--dark);font-weight:600;}
+
+  /* ── SUCCESS ── */
+  .success-screen{display:none;text-align:center;padding:56px 40px;}
+  .success-screen.show{display:block;}
+  .success-anim{
+    width:88px;height:88px;margin:0 auto 24px;
+    background:linear-gradient(135deg,var(--purple-bg),var(--mint-bg));
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:40px;border:2px solid var(--purple);
+    animation:popIn 0.5s ease;
+  }
+  @keyframes popIn{0%{transform:scale(0.5);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+  .success-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:0.04em;color:var(--dark);margin-bottom:10px;}
+  .success-sub{font-size:16px;color:var(--muted);line-height:1.65;max-width:480px;margin:0 auto 28px;font-weight:300;}
+  .success-ref{background:var(--purple-bg);border:1px solid var(--purple);border-radius:12px;padding:16px 24px;display:inline-block;margin-bottom:28px;}
+  .success-ref-label{font-size:12px;color:var(--muted);margin-bottom:4px;}
+  .success-ref-num{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.1em;color:var(--purple-deep);}
+  .success-timeline{display:flex;justify-content:center;gap:0;margin-bottom:32px;}
+  .st-step{text-align:center;padding:0 20px;}
+  .st-step:not(:last-child){border-right:1px solid var(--border);}
+  .st-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--purple-deep);}
+  .st-label{font-size:11px;color:var(--muted);line-height:1.4;}
+  .success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn-portal{background:var(--dark);color:white;padding:13px 30px;border-radius:100px;text-decoration:none;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+  .btn-portal:hover{background:var(--purple-deep);}
+  .btn-another{background:white;color:var(--dark);padding:13px 30px;border-radius:100px;text-decoration:none;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;border:1.5px solid var(--border);transition:border-color 0.2s;}
+  .btn-another:hover{border-color:var(--purple-mid);}
+
+  /* ── INFO BOXES ── */
+  .info-box{display:flex;gap:10px;background:var(--off-white);border-radius:10px;padding:12px 16px;margin-bottom:16px;border:1px solid var(--border);}
+  .info-box svg{width:16px;height:16px;flex-shrink:0;color:var(--purple-mid);margin-top:1px;}
+  .info-box-text{font-size:13px;color:var(--mid);line-height:1.6;}
+  .info-box.amber{background:var(--amber);border-color:#FFD080;}
+  .info-box.amber svg{color:var(--amber-c);}
+  .info-box.amber .info-box-text{color:#7A5000;}
+  .info-box.mint{background:var(--mint-bg);border-color:var(--mint);}
+  .info-box.mint svg{color:var(--mint-deep);}
+  .info-box.mint .info-box-text{color:#1A6B5A;}
+
+  @media(max-width:860px){
+    .quote-layout{grid-template-columns:1fr;}
+    .summary-card{position:static;}
+    nav{padding:0 20px;}
+    .hero-band{padding:36px 24px;grid-template-columns:1fr;}
+    .hero-stats{display:none;}
+    .type-grid{grid-template-columns:1fr 1fr;}
+    .render-grid{grid-template-columns:1fr;}
+    .form-row,.form-row-3{grid-template-columns:1fr;}
+    .review-grid{grid-template-columns:1fr;}
+    .deliverable-grid{grid-template-columns:1fr;}
+    .complexity-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
+    FLOORTYPE
+  </a>
+  <div class="nav-right">
+    <a href="/order" class="nav-link">Order Floor Plans</a>
+    <a href="/portal" class="nav-link">Client Portal</a>
+    <div class="nav-secure">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Secure form
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO BAND ── -->
+<div class="hero-band">
+  <div>
+    <div class="hero-band-eyebrow">3D Rendering Services</div>
+    <h1>Request a<br><em>Custom Quote</em></h1>
+    <p>Tell us about your project and we'll put together a detailed proposal within 24 hours. We work with developers, architects, and multifamily management companies on projects of any scale.</p>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num purple">24H</div><div class="hero-stat-label">Quote turnaround</div></div>
+    <div class="hero-stat"><div class="hero-stat-num mint">4–8</div><div class="hero-stat-label">Week delivery</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" style="color:white;">500+</div><div class="hero-stat-label">Projects delivered</div></div>
+  </div>
+</div>
+
+<!-- ── LAYOUT ── -->
+<div class="quote-layout">
+  <div class="quote-main">
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-steps" id="progressSteps">
+        <div class="ps active" data-step="1" onclick="jumpStep(1)"><div class="ps-circle">1</div><span class="ps-label">Project Scope</span></div>
+        <div class="ps-line" id="pl1"></div>
+        <div class="ps active" data-step="2" onclick="jumpStep(2)"><div class="ps-circle">2</div><span class="ps-label">Renderings</span></div>
+        <div class="ps-line" id="pl2"></div>
+        <div class="ps" data-step="3" onclick="jumpStep(3)"><div class="ps-circle">3</div><span class="ps-label">Deliverables</span></div>
+        <div class="ps-line" id="pl3"></div>
+        <div class="ps" data-step="4" onclick="jumpStep(4)"><div class="ps-circle">4</div><span class="ps-label">References</span></div>
+        <div class="ps-line" id="pl4"></div>
+        <div class="ps" data-step="5" onclick="jumpStep(5)"><div class="ps-circle">5</div><span class="ps-label">Review & Submit</span></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:20%;"></div></div>
+    </div>
+
+    <!-- ── CARD ── -->
+    <div class="quote-card">
+      <div class="success-screen" id="successScreen"></div>
+
+      <!-- ── STEP 1: Project Scope ── -->
+      <div class="step-panel active" id="step1">
+        <h2 class="step-heading">Project Scope</h2>
+        <p class="step-sub">Tell us about your development. If you have multiple buildings or phases, you can add them all here.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Project Name</label>
+            <input class="form-input" id="projectName" type="text" placeholder="e.g. The Meridian — Phase 1" oninput="clearErr(this);updateSummary();">
+            <div class="field-error" id="err-projectName">Please enter a project name</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Project Type</label>
+            <select class="form-input" id="projectType" onchange="updateSummary()">
+              <option value="">Select type…</option>
+              <option>Multifamily Residential</option>
+              <option>Mixed-Use Development</option>
+              <option>Single Family Residential</option>
+              <option>Commercial / Office</option>
+              <option>Hospitality</option>
+              <option>Retail</option>
+              <option>Industrial</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City / State</label>
+            <input class="form-input" id="projectCity" type="text" placeholder="e.g. Austin, TX" oninput="updateSummary()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input class="form-input" id="projectCountry" type="text" placeholder="United States" value="United States" oninput="updateSummary()">
+          </div>
+        </div>
+
+        <!-- Phase/Building manager -->
+        <div class="form-group">
+          <label class="form-label">Buildings / Phases
+            <span class="opt"> — Add multiple if needed</span>
+          </label>
+          <div class="phase-list" id="phaseList"></div>
+          <button class="add-phase-btn" onclick="addPhase()">
+            <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><line x1="8" y1="5" x2="8" y2="11" stroke="currentColor" stroke-width="1.3"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.3"/></svg>
+            Add Building / Phase
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Project Description <span class="opt">(optional)</span></label>
+          <textarea class="form-input" id="projectDesc" placeholder="Brief overview — target market, architectural style, key features, design intent…" oninput="updateSummary()"></textarea>
+        </div>
+
+        <div class="step-nav">
+          <div></div>
+          <button class="btn-next" onclick="validateStep1()">Rendering Package →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Rendering Package ── -->
+      <div class="step-panel" id="step2">
+        <h2 class="step-heading">Rendering Package</h2>
+        <p class="step-sub">Select the types of renderings you need and configure each one. You can mix and match.</p>
+
+        <div class="form-group">
+          <label class="form-label">Rendering Types <span class="opt">— Select all that apply</span></label>
+          <div class="render-grid" id="renderGrid">
+
+            <div class="render-card" data-type="interior" onclick="toggleRender(this)">
+              <div class="render-card-top">
+                <div class="render-icon rc-default">🛋️</div>
+                <div style="flex:1;">
+                  <div class="render-name">Interior</div>
+                  <div class="render-desc">Living spaces, kitchens, lobbies, amenities — photorealistic room-level views</div>
+                </div>
+                <div class="render-card-check"></div>
+              </div>
+              <div class="render-card-body">
+                <div class="views-row">
+                  <span class="views-label">Number of views / rooms</span>
+                  <div class="views-counter">
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                    <div class="vc-num">1</div>
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                  </div>
+                </div>
+                <div class="render-note">Each view = one camera angle in one room. e.g. "living room from entry" = 1 view.</div>
+              </div>
+            </div>
+
+            <div class="render-card" data-type="exterior" onclick="toggleRender(this)">
+              <div class="render-card-top">
+                <div class="render-icon rc-default">🏗️</div>
+                <div style="flex:1;">
+                  <div class="render-name">Exterior</div>
+                  <div class="render-desc">Building facades, street-level views, landscaping — showing the full envelope</div>
+                </div>
+                <div class="render-card-check"></div>
+              </div>
+              <div class="render-card-body">
+                <div class="views-row">
+                  <span class="views-label">Number of views / angles</span>
+                  <div class="views-counter">
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                    <div class="vc-num">1</div>
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                  </div>
+                </div>
+                <div class="render-note">Typically: main street view, courtyard, amenity deck. Each angle = 1 view.</div>
+              </div>
+            </div>
+
+            <div class="render-card" data-type="aerial" onclick="toggleRender(this)">
+              <div class="render-card-top">
+                <div class="render-icon rc-default">🛸</div>
+                <div style="flex:1;">
+                  <div class="render-name">Aerial / Bird's Eye</div>
+                  <div class="render-desc">High-altitude views showing site context, massing, and relationship to surroundings</div>
+                </div>
+                <div class="render-card-check"></div>
+              </div>
+              <div class="render-card-body">
+                <div class="views-row">
+                  <span class="views-label">Number of aerial views</span>
+                  <div class="views-counter">
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                    <div class="vc-num">1</div>
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                  </div>
+                </div>
+                <div class="render-note">Great for site plans, investor decks, and planning presentations.</div>
+              </div>
+            </div>
+
+            <div class="render-card" data-type="360" onclick="toggleRender(this)">
+              <div class="render-card-top">
+                <div class="render-icon rc-default">🔄</div>
+                <div style="flex:1;">
+                  <div class="render-name">360° Virtual Tour</div>
+                  <div class="render-desc">Interactive panoramic views embedded on your website — clients explore the space themselves</div>
+                </div>
+                <div class="render-card-check"></div>
+              </div>
+              <div class="render-card-body">
+                <div class="views-row">
+                  <span class="views-label">Number of 360° rooms / nodes</span>
+                  <div class="views-counter">
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                    <div class="vc-num">1</div>
+                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                  </div>
+                </div>
+                <div class="render-note">Delivered as a web embed link. Multiple nodes can be linked for a walkthrough experience.</div>
+              </div>
+            </div>
+
+            <div class="render-card" data-type="flythrough" onclick="toggleRender(this)" style="grid-column:1/-1;">
+              <div class="render-card-top">
+                <div class="render-icon rc-default">🎬</div>
+                <div style="flex:1;">
+                  <div class="render-name">Animated Fly-Through</div>
+                  <div class="render-desc">Cinematic video walkthrough of your property — ideal for sales launches, investor presentations, and social media</div>
+                </div>
+                <div class="render-card-check"></div>
+              </div>
+              <div class="render-card-body">
+                <div class="form-row" onclick="event.stopPropagation()">
+                  <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Approximate Duration</label>
+                    <select class="form-input" id="flythroughDuration" style="font-size:13px;">
+                      <option>30 seconds</option>
+                      <option>60 seconds</option>
+                      <option>90 seconds</option>
+                      <option>2 minutes</option>
+                      <option>3+ minutes</option>
+                      <option>Not sure — advise me</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Output Format</label>
+                    <select class="form-input" id="flythroughFormat" style="font-size:13px;">
+                      <option>MP4 (web/social)</option>
+                      <option>4K MP4 (broadcast/print)</option>
+                      <option>Both</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="render-note" style="margin-top:10px;">Fly-throughs include 3–4 rounds of revision on camera path and pacing before final render.</div>
+              </div>
+            </div>
+
+          </div>
+          <div class="field-error" id="err-renders" style="margin-top:8px;">Please select at least one rendering type</div>
+        </div>
+
+        <!-- Complexity -->
+        <div class="form-group">
+          <label class="form-label">Complexity Level</label>
+          <div class="info-box">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="5.5" r="0.7" fill="currentColor"/></svg>
+            <div class="info-box-text">Choose the tier that best matches your project's design ambition. This helps us scope the work — we'll confirm or adjust in your quote.</div>
+          </div>
+          <div class="complexity-grid">
+            <div class="complexity-card" data-complexity="standard" onclick="selectComplexity(this)">
+              <div class="complexity-tier">Standard</div>
+              <div class="complexity-desc">Clean, accurate, professional quality. Great for pre-sales, planning applications, and marketing materials.</div>
+              <div class="complexity-examples">Value / affordable housing · Straightforward layouts · Standard finishes</div>
+              <div class="complexity-range">Est. base from $299/view</div>
+            </div>
+            <div class="complexity-card selected" data-complexity="premium" onclick="selectComplexity(this)">
+              <div class="complexity-tier">Premium</div>
+              <div class="complexity-desc">High-detail photorealistic output with rich materials, lighting, and contextual entourage.</div>
+              <div class="complexity-examples">Mid-market residential · Boutique commercial · Mixed-use</div>
+              <div class="complexity-range">Est. base from $599/view</div>
+            </div>
+            <div class="complexity-card" data-complexity="luxury" onclick="selectComplexity(this)">
+              <div class="complexity-tier">Luxury</div>
+              <div class="complexity-desc">Studio-grade output with custom material libraries, atmospheric lighting, and full environment design.</div>
+              <div class="complexity-examples">High-end residential · Flagship commercial · Award submissions</div>
+              <div class="complexity-range">Est. base from $999/view</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Square footage -->
+        <div class="form-group">
+          <label class="form-label">Approximate Total Project Size <span class="opt">(optional)</span></label>
+          <div class="sqft-row">
+            <div class="sqft-input-wrap">
+              <input class="form-input" id="sqftInput" type="number" placeholder="e.g. 85,000" min="0" oninput="updateSummary()">
+              <span class="sqft-unit">sq ft</span>
+            </div>
+            <div class="sqft-unknown">
+              <input type="checkbox" id="sqftUnknown" onchange="toggleSqft(this)">
+              <label for="sqftUnknown">I don't know / not yet determined</label>
+            </div>
+          </div>
+          <div class="form-hint">Helps us refine the estimate. Don't worry if you don't have this yet — we'll gather it during scoping.</div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(1)">← Back</button>
+          <button class="btn-next" onclick="validateStep2()">Deliverables & Timeline →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Deliverables & Timeline ── -->
+      <div class="step-panel" id="step3">
+        <h2 class="step-heading">Deliverables & Timeline</h2>
+        <p class="step-sub">What formats do you need, and when do you need them? Being specific here helps us plan production accurately.</p>
+
+        <div class="form-group">
+          <label class="form-label">Output Formats <span class="opt">— Select all required</span></label>
+          <div class="deliverable-grid">
+            <div class="del-item selected" data-fmt="still" onclick="toggleDeliverable(this)">
+              <div class="del-check">✓</div>
+              <div class="del-info"><div class="del-name">Still Renderings</div><div class="del-desc">PNG / JPG · High-resolution</div></div>
+            </div>
+            <div class="del-item selected" data-fmt="print" onclick="toggleDeliverable(this)">
+              <div class="del-check">✓</div>
+              <div class="del-info"><div class="del-name">Print-Ready Files</div><div class="del-desc">PDF / TIFF · 300dpi+</div></div>
+            </div>
+            <div class="del-item selected" data-fmt="web" onclick="toggleDeliverable(this)">
+              <div class="del-check">✓</div>
+              <div class="del-info"><div class="del-name">Web-Optimised</div><div class="del-desc">Compressed JPG / WebP</div></div>
+            </div>
+            <div class="del-item" data-fmt="360embed" onclick="toggleDeliverable(this)">
+              <div class="del-check"></div>
+              <div class="del-info"><div class="del-name">360° Web Embed</div><div class="del-desc">Hosted interactive link</div></div>
+            </div>
+            <div class="del-item" data-fmt="mp4" onclick="toggleDeliverable(this)">
+              <div class="del-check"></div>
+              <div class="del-info"><div class="del-name">Animated Video (MP4)</div><div class="del-desc">1080p or 4K</div></div>
+            </div>
+            <div class="del-item" data-fmt="source" onclick="toggleDeliverable(this)">
+              <div class="del-check"></div>
+              <div class="del-info"><div class="del-name">Source / Editable Files</div><div class="del-desc">On request · additional fee</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Desired Timeline</label>
+          <div class="info-box amber">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="5" x2="8" y2="8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="11" r="0.7" fill="currentColor"/></svg>
+            <div class="info-box-text">Our standard production window is <strong>4–8 weeks</strong> from receipt of complete reference materials. Rush timelines are available at additional cost.</div>
+          </div>
+          <div class="deadline-options">
+            <div class="deadline-option selected" data-timeline="standard" onclick="selectTimeline(this)">
+              <div class="deadline-radio"></div>
+              <div style="flex:1;">
+                <div class="deadline-label">Standard — 4 to 8 weeks</div>
+                <div class="deadline-sub">Best quality, full revision rounds included. Ideal when you have some lead time.</div>
+              </div>
+              <span class="deadline-tag tag-standard">Recommended</span>
+            </div>
+            <div class="deadline-option" data-timeline="expedited" onclick="selectTimeline(this)">
+              <div class="deadline-radio"></div>
+              <div style="flex:1;">
+                <div class="deadline-label">Expedited — 2 to 4 weeks</div>
+                <div class="deadline-sub">Tighter schedule with focused revision rounds. Additional fee applies.</div>
+              </div>
+              <span class="deadline-tag tag-expedited">+25% fee</span>
+            </div>
+            <div class="deadline-option" data-timeline="urgent" onclick="selectTimeline(this)">
+              <div class="deadline-radio"></div>
+              <div style="flex:1;">
+                <div class="deadline-label">Urgent — Under 2 weeks</div>
+                <div class="deadline-sub">Subject to availability. Contact us to discuss before submitting if this is critical.</div>
+              </div>
+              <span class="deadline-tag tag-urgent">Call us first</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Target Delivery Date <span class="opt">(optional)</span></label>
+            <input class="form-input" id="targetDate" type="date" oninput="updateSummary()">
+            <div class="form-hint">If you have a hard deadline (sales launch, presentation, etc.) enter it here.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hard Deadline Reason <span class="opt">(optional)</span></label>
+            <select class="form-input" id="deadlineReason">
+              <option value="">Select if applicable…</option>
+              <option>Sales / Marketing Launch</option>
+              <option>Investor Presentation</option>
+              <option>Planning / Permit Submission</option>
+              <option>Trade Show / Event</option>
+              <option>Board Presentation</option>
+              <option>Website Launch</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Additional Notes on Deliverables <span class="opt">(optional)</span></label>
+          <textarea class="form-input" id="deliverableNotes" placeholder="Any specific format requirements, naming conventions, file organisation, or delivery platform preferences (e.g. Dropbox, Google Drive, WeTransfer)…"></textarea>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(2)">← Back</button>
+          <button class="btn-next" onclick="goToStep(4)">Reference Materials →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 4: Reference Materials ── -->
+      <div class="step-panel" id="step4">
+        <h2 class="step-heading">Reference Materials</h2>
+        <p class="step-sub">Upload whatever you have. We build everything to spec — the more complete your set, the more accurate our output. Don't worry if some items aren't ready yet.</p>
+
+        <div class="info-box mint">
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="info-box-text">Can't upload everything now? No problem — submit what you have and we'll follow up for the rest during scoping. Files can also be shared via Dropbox, Google Drive, or WeTransfer — add the link in the notes field.</div>
+        </div>
+
+        <div class="upload-sections">
+
+          <div class="upload-section open" id="us-arch">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-arch')">
+              <div class="us-icon purple">📐</div>
+              <div class="us-info">
+                <div class="us-name">Architectural Set</div>
+                <div class="us-desc">Floor plans, elevations, sections, site plan, roof plan</div>
+              </div>
+              <span class="us-badge required">Required</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'arch')">
+                <input type="file" multiple accept=".pdf,.dwg,.dxf,.rvt,.zip,.png,.jpg" onchange="handleSectionFiles(this.files,'arch')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop files or click to browse</div>
+                <div class="mini-upload-sub">Floor plans, elevations, sections, site plan</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">DWG</span><span class="fmt">DXF</span><span class="fmt">RVT</span><span class="fmt">ZIP</span></div>
+              </div>
+              <div class="section-files" id="files-arch"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-ffe">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-ffe')">
+              <div class="us-icon purple">🛋️</div>
+              <div class="us-info">
+                <div class="us-name">FF&E Specifications</div>
+                <div class="us-desc">Furniture, fixtures, and equipment selections and specifications</div>
+              </div>
+              <span class="us-badge">Recommended</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'ffe')">
+                <input type="file" multiple accept=".pdf,.xlsx,.csv,.png,.jpg,.zip" onchange="handleSectionFiles(this.files,'ffe')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop FF&E schedule or selections</div>
+                <div class="mini-upload-sub">Spec sheets, schedules, product selections</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">XLS</span><span class="fmt">CSV</span><span class="fmt">ZIP</span></div>
+              </div>
+              <div class="section-files" id="files-ffe"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-landscape">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-landscape')">
+              <div class="us-icon mint">🌿</div>
+              <div class="us-info">
+                <div class="us-name">Landscape Set</div>
+                <div class="us-desc">Landscape plans, planting schedules, hardscape details — required for exterior renderings</div>
+              </div>
+              <span class="us-badge">If exterior rendering</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'landscape')">
+                <input type="file" multiple accept=".pdf,.dwg,.dxf,.png,.jpg,.zip" onchange="handleSectionFiles(this.files,'landscape')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop landscape drawings or plans</div>
+                <div class="mini-upload-sub">Planting plan, hardscape layout, site sections</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">DWG</span><span class="fmt">ZIP</span></div>
+              </div>
+              <div class="section-files" id="files-landscape"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-rcp">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-rcp')">
+              <div class="us-icon purple">💡</div>
+              <div class="us-info">
+                <div class="us-name">Reflected Ceiling Plan (RCP)</div>
+                <div class="us-desc">Ceiling heights, light fixture locations, coffers, bulkheads — essential for interior renderings</div>
+              </div>
+              <span class="us-badge">If interior rendering</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'rcp')">
+                <input type="file" multiple accept=".pdf,.dwg,.dxf,.png,.jpg" onchange="handleSectionFiles(this.files,'rcp')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop RCP drawings</div>
+                <div class="mini-upload-sub">Ceiling plans, light fixture schedules</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">DWG</span><span class="fmt">DXF</span></div>
+              </div>
+              <div class="section-files" id="files-rcp"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-materials">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-materials')">
+              <div class="us-icon mint">🎨</div>
+              <div class="us-info">
+                <div class="us-name">Material & Finish Selections</div>
+                <div class="us-desc">Flooring, wall finishes, tile, stone, cladding samples or spec sheets</div>
+              </div>
+              <span class="us-badge">Recommended</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'materials')">
+                <input type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.zip" onchange="handleSectionFiles(this.files,'materials')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop material boards or sample images</div>
+                <div class="mini-upload-sub">Tile images, finish palettes, spec sheets, paint codes</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">JPG</span><span class="fmt">PNG</span><span class="fmt">ZIP</span></div>
+              </div>
+              <div class="section-files" id="files-materials"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-furniture">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-furniture')">
+              <div class="us-icon purple">🛏️</div>
+              <div class="us-info">
+                <div class="us-name">Furniture Selections</div>
+                <div class="us-desc">Specific furniture pieces, cut sheets, or product references with dimensions</div>
+              </div>
+              <span class="us-badge">Recommended</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'furniture')">
+                <input type="file" multiple accept=".pdf,.png,.jpg,.xlsx,.zip" onchange="handleSectionFiles(this.files,'furniture')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop furniture schedules or cut sheets</div>
+                <div class="mini-upload-sub">Product sheets, room-by-room schedules</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">XLS</span><span class="fmt">JPG</span><span class="fmt">ZIP</span></div>
+              </div>
+              <div class="section-files" id="files-furniture"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-inspiration">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-inspiration')">
+              <div class="us-icon mint">✨</div>
+              <div class="us-info">
+                <div class="us-name">Inspiration / Mood Board</div>
+                <div class="us-desc">Reference images, mood boards, comparable projects — helps us understand the design vision</div>
+              </div>
+              <span class="us-badge">Optional</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'inspiration')">
+                <input type="file" multiple accept=".pdf,.png,.jpg,.zip" onchange="handleSectionFiles(this.files,'inspiration')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop images or mood boards</div>
+                <div class="mini-upload-sub">Reference photos, Pinterest exports, comparable project images</div>
+                <div class="format-tags"><span class="fmt">PDF</span><span class="fmt">JPG</span><span class="fmt">PNG</span><span class="fmt">ZIP</span></div>
+              </div>
+              <div class="section-files" id="files-inspiration"></div>
+            </div>
+          </div>
+
+          <div class="upload-section" id="us-other">
+            <div class="upload-section-header" onclick="toggleUploadSection('us-other')">
+              <div class="us-icon purple">📎</div>
+              <div class="us-info">
+                <div class="us-name">Other / Share a Link</div>
+                <div class="us-desc">Anything else — or share a Dropbox / Google Drive / WeTransfer link</div>
+              </div>
+              <span class="us-badge">Optional</span>
+              <span class="us-toggle">▾</span>
+            </div>
+            <div class="upload-section-body">
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Share a folder link <span class="opt">(Dropbox, Google Drive, WeTransfer, etc.)</span></label>
+                <input class="form-input" id="sharedLink" type="url" placeholder="https://drive.google.com/…">
+              </div>
+              <div class="mini-upload" ondragover="handleDrag(event,this)" ondragleave="handleDragLeave(this)" ondrop="handleDrop(event,'other')">
+                <input type="file" multiple onchange="handleSectionFiles(this.files,'other')">
+                <div class="mini-upload-icon">📤</div>
+                <div class="mini-upload-text">Drop any additional files</div>
+                <div class="mini-upload-sub">Site photos, 3D models, sketches, notes</div>
+                <div class="format-tags"><span class="fmt">ANY FORMAT</span></div>
+              </div>
+              <div class="section-files" id="files-other"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(3)">← Back</button>
+          <button class="btn-next" onclick="goToStep(5)">Review & Submit →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 5: Review & Submit ── -->
+      <div class="step-panel" id="step5">
+        <h2 class="step-heading">Review & Submit</h2>
+        <p class="step-sub">Check everything looks right, add your contact info, and submit. We'll review and send a detailed quote within 24 hours.</p>
+
+        <div class="review-grid" id="reviewGrid"></div>
+
+        <!-- Contact info -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px;">Your Details <span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" id="firstName" type="text" placeholder="Jane" oninput="clearErr(this)">
+            <div class="field-error" id="err-firstName">Required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" id="lastName" type="text" placeholder="Smith" oninput="clearErr(this)">
+            <div class="field-error" id="err-lastName">Required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" id="email" type="email" placeholder="jane@developer.com" oninput="clearErr(this)">
+            <div class="field-error" id="err-email">Please enter a valid email</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone <span class="opt">(optional)</span></label>
+            <input class="form-input" id="phone" type="tel" placeholder="+1 (555) 000-0000">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company / Development Firm</label>
+            <input class="form-input" id="company" type="text" placeholder="Kessler Development Group" oninput="clearErr(this)">
+            <div class="field-error" id="err-company">Required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Role</label>
+            <select class="form-input" id="role">
+              <option value="">Select…</option>
+              <option>Developer / Owner</option>
+              <option>Project Manager</option>
+              <option>Architect</option>
+              <option>Interior Designer</option>
+              <option>Marketing Manager</option>
+              <option>Real Estate Agent / Broker</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Anything else we should know? <span class="opt">(optional)</span></label>
+          <textarea class="form-input" id="finalNotes" placeholder="Budget constraints, previous work you'd like us to reference, preferred communication method, questions…" style="min-height:80px;"></textarea>
+        </div>
+
+        <!-- Estimate -->
+        <div style="background:linear-gradient(135deg,var(--purple-bg),var(--mint-bg));border:1.5px solid var(--purple);border-radius:16px;padding:24px;margin-bottom:24px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple-deep);margin-bottom:8px;">Ballpark Estimate</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:0.04em;color:var(--dark);line-height:1;" id="finalEstimate">—</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">This is a rough range based on your inputs. Your actual quote — with a full breakdown — will be sent within <strong style="color:var(--dark);">24 hours</strong> of submission. No commitment required.</div>
+        </div>
+
+        <button class="btn-next" style="width:100%;justify-content:center;padding:16px;font-size:15px;border-radius:14px;" onclick="submitQuote()">
+          Submit Quote Request →
+        </button>
+
+        <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6;">By submitting you agree to our <a href="#" style="color:var(--purple-deep);">privacy policy</a>. We'll never share your project details or files with third parties.</div>
+
+        <div class="step-nav" style="border:none;padding-top:8px;margin-top:0;">
+          <button class="btn-back" onclick="goToStep(4)">← Back</button>
+          <div></div>
+        </div>
+      </div>
+
+    </div><!-- /quote-card -->
+  </div><!-- /quote-main -->
+
+  <!-- ── SIDEBAR ── -->
+  <div>
+    <div class="summary-card">
+      <div class="sc-title">Quote Summary</div>
+
+      <div class="sc-section">
+        <div class="sc-label">Project</div>
+        <div id="scProject"><div class="sc-empty">Not yet entered</div></div>
+      </div>
+
+      <div class="sc-section" id="scRendersSection">
+        <div class="sc-label">Renderings Selected</div>
+        <div id="scRenders"><div class="sc-empty">None selected</div></div>
+      </div>
+
+      <div class="sc-section" id="scComplexitySection">
+        <div class="sc-label">Complexity</div>
+        <div id="scComplexity"><div class="sc-empty">Not selected</div></div>
+      </div>
+
+      <div class="sc-divider"></div>
+
+      <div class="sc-estimate">
+        <div class="sc-est-label">Estimated Range</div>
+        <div class="sc-est-range" id="scEstimate">Select renderings to see estimate</div>
+        <div class="sc-est-note">Ballpark only — your confirmed quote arrives within 24hrs of submission.</div>
+      </div>
+
+      <div class="sc-badge">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        4–8 week standard delivery
+      </div>
+      <div class="sc-badge" style="margin-top:8px;background:var(--purple-bg);border-color:var(--purple);">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span style="color:var(--purple-deep);">No payment until quote approved</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /quote-layout -->
+
+<script>
+// ── STATE ──
+const state = {
+  step: 1,
+  done: new Set(),
+  phases: [],
+  renders: {},
+  complexity: 'premium',
+  deliverables: ['still','print','web'],
+  timeline: 'standard',
+  sectionFiles: {},
+  phaseCounter: 0
+};
+
+// ── BASE RATES (easily swappable for real vendor pricing) ──
+const RATES = {
+  standard:  { interior:299, exterior:349, aerial:399, '360':599, flythrough:1499 },
+  premium:   { interior:599, exterior:699, aerial:799, '360':1199, flythrough:2999 },
+  luxury:    { interior:999, exterior:1199, aerial:1499, '360':1999, flythrough:4999 }
+};
+const TIMELINE_MULT = { standard:1, expedited:1.25, urgent:1.5 };
+
+// ── PHASES ──
+function addPhase(){
+  state.phaseCounter++;
+  const id = state.phaseCounter;
+  state.phases.push({ id, name:'', units:'', type:'', sqft:'' });
+  renderPhases();
+}
+function removePhase(id){
+  state.phases = state.phases.filter(p=>p.id!==id);
+  renderPhases(); updateSummary();
+}
+function renderPhases(){
+  const list = document.getElementById('phaseList');
+  if(!state.phases.length){
+    list.innerHTML='<div style="font-size:13px;color:var(--muted);padding:4px 0 8px;">Click below to add your first building or phase. You can add as many as needed.</div>';
+    return;
+  }
+  list.innerHTML = state.phases.map(p=>`
+    <div class="phase-item">
+      <div class="phase-header">
+        <div class="phase-num">${p.id}</div>
+        <input class="phase-name-input" type="text" value="${p.name}" placeholder="Building / Phase name (e.g. Tower A, Phase 1)" oninput="updatePhase(${p.id},'name',this.value)">
+        ${state.phases.length>1?`<button class="phase-remove" onclick="removePhase(${p.id})">×</button>`:''}
+      </div>
+      <div class="phase-body">
+        <div class="phase-field">
+          <label>Building Type</label>
+          <select onchange="updatePhase(${p.id},'type',this.value)">
+            <option value="">Select…</option>
+            <option ${p.type==='Multifamily'?'selected':''}>Multifamily</option>
+            <option ${p.type==='Mixed-Use'?'selected':''}>Mixed-Use</option>
+            <option ${p.type==='Single Family'?'selected':''}>Single Family</option>
+            <option ${p.type==='Commercial'?'selected':''}>Commercial</option>
+            <option ${p.type==='Amenity / Common Area'?'selected':''}>Amenity / Common Area</option>
+            <option ${p.type==='Other'?'selected':''}>Other</option>
+          </select>
+        </div>
+        <div class="phase-field">
+          <label>Number of Units / Floors</label>
+          <input type="text" value="${p.units}" placeholder="e.g. 120 units / 8 floors" oninput="updatePhase(${p.id},'units',this.value)">
+        </div>
+        <div class="phase-field">
+          <label>Approx. Sq Ft <span style="font-weight:400;text-transform:none;">(optional)</span></label>
+          <input type="number" value="${p.sqft}" placeholder="e.g. 95,000" min="0" oninput="updatePhase(${p.id},'sqft',this.value)">
+        </div>
+        <div class="phase-field">
+          <label>Construction Status</label>
+          <select onchange="updatePhase(${p.id},'status',this.value)">
+            <option value="">Select…</option>
+            <option>Pre-Design / Concept</option>
+            <option>Schematic Design</option>
+            <option>Design Development</option>
+            <option>Construction Documents</option>
+            <option>Under Construction</option>
+            <option>Complete</option>
+          </select>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function updatePhase(id,key,val){
+  const p = state.phases.find(x=>x.id===id);
+  if(p){ p[key]=val; updateSummary(); }
+}
+
+// ── RENDERS ──
+function toggleRender(card){
+  const type = card.dataset.type;
+  card.classList.toggle('selected');
+  if(card.classList.contains('selected')){
+    const numEl = card.querySelector('.vc-num');
+    state.renders[type] = { views: numEl ? parseInt(numEl.textContent)||1 : 1 };
+  } else {
+    delete state.renders[type];
+  }
+  updateSummary();
+}
+function changeViews(btn, delta){
+  const num = btn.parentElement.querySelector('.vc-num');
+  const v = Math.max(1, parseInt(num.textContent) + delta);
+  num.textContent = v;
+  const card = btn.closest('.render-card');
+  if(card && state.renders[card.dataset.type]){
+    state.renders[card.dataset.type].views = v;
+    updateSummary();
+  }
+}
+
+// ── COMPLEXITY ──
+function selectComplexity(el){
+  document.querySelectorAll('.complexity-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.complexity = el.dataset.complexity;
+  updateSummary();
+}
+
+// ── SQFT ──
+function toggleSqft(cb){
+  const input = document.getElementById('sqftInput');
+  input.disabled = cb.checked;
+  input.value = cb.checked ? '' : input.value;
+  if(cb.checked) input.placeholder = 'Not known';
+}
+
+// ── DELIVERABLES ──
+function toggleDeliverable(el){
+  el.classList.toggle('selected');
+  const check = el.querySelector('.del-check');
+  const fmt = el.dataset.fmt;
+  if(el.classList.contains('selected')){
+    check.textContent='✓'; state.deliverables.push(fmt);
+  } else {
+    check.textContent=''; state.deliverables = state.deliverables.filter(d=>d!==fmt);
+  }
+}
+
+// ── TIMELINE ──
+function selectTimeline(el){
+  document.querySelectorAll('.deadline-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  state.timeline = el.dataset.timeline;
+  updateSummary();
+}
+
+// ── FILE UPLOADS ──
+function handleDrag(e,zone){ e.preventDefault(); zone.classList.add('dragover'); }
+function handleDragLeave(zone){ zone.classList.remove('dragover'); }
+function handleDrop(e,section){ e.preventDefault(); e.target.closest('.mini-upload').classList.remove('dragover'); handleSectionFiles(e.dataTransfer.files,section); }
+function handleSectionFiles(files,section){
+  if(!state.sectionFiles[section]) state.sectionFiles[section]=[];
+  Array.from(files).forEach(f=>{ if(!state.sectionFiles[section].find(x=>x.name===f.name)) state.sectionFiles[section].push(f); });
+  renderSectionFiles(section);
+}
+function renderSectionFiles(section){
+  const list = document.getElementById('files-'+section);
+  if(!list) return;
+  list.innerHTML = (state.sectionFiles[section]||[]).map((f,i)=>`
+    <div class="sf-item">
+      <span class="sf-ext">${f.name.split('.').pop().toUpperCase()}</span>
+      <span class="sf-name">${f.name}</span>
+      <span class="sf-size">${fmtSize(f.size)}</span>
+      <button class="sf-rm" onclick="removeFile('${section}',${i})">×</button>
+    </div>`).join('');
+}
+function removeFile(section,i){ state.sectionFiles[section].splice(i,1); renderSectionFiles(section); }
+function fmtSize(b){ if(b<1024)return b+'B'; if(b<1048576)return (b/1024).toFixed(0)+'KB'; return (b/1048576).toFixed(1)+'MB'; }
+function toggleUploadSection(id){ document.getElementById(id).classList.toggle('open'); }
+
+// ── ESTIMATE CALC ──
+function calcEstimate(){
+  const types = Object.keys(state.renders);
+  if(!types.length) return null;
+  const rates = RATES[state.complexity] || RATES.premium;
+  const mult = TIMELINE_MULT[state.timeline] || 1;
+  let low=0, high=0;
+  types.forEach(t=>{
+    const v = state.renders[t]?.views||1;
+    const r = rates[t]||rates.interior;
+    low += r * v;
+    high += r * v * 1.4;
+  });
+  low = Math.round(low*mult/100)*100;
+  high = Math.round(high*mult/100)*100;
+  if(state.phases.length>1){ low*=state.phases.length*0.85; high*=state.phases.length*0.85; }
+  return { low, high };
+}
+
+// ── SUMMARY UPDATE ──
+function updateSummary(){
+  // Project
+  const name = document.getElementById('projectName')?.value||'';
+  const type = document.getElementById('projectType')?.value||'';
+  const city = document.getElementById('projectCity')?.value||'';
+  const scProject = document.getElementById('scProject');
+  if(scProject){
+    if(name||type||city){
+      scProject.innerHTML = [name&&`<div class="sc-item">${name}</div>`, type&&`<div class="sc-item">${type}</div>`, city&&`<div class="sc-item">${city}</div>`].filter(Boolean).join('');
+    } else {
+      scProject.innerHTML='<div class="sc-empty">Not yet entered</div>';
+    }
+  }
+  // Renders
+  const rNames = { interior:'Interior', exterior:'Exterior', aerial:'Aerial', '360':'360° Tour', flythrough:'Fly-Through' };
+  const types = Object.keys(state.renders);
+  const scRenders = document.getElementById('scRenders');
+  if(scRenders){
+    scRenders.innerHTML = types.length ? types.map(t=>`<div class="sc-item">${rNames[t]||t} × ${state.renders[t].views} view${state.renders[t].views>1?'s':''}</div>`).join('') : '<div class="sc-empty">None selected</div>';
+  }
+  // Complexity
+  const scComp = document.getElementById('scComplexity');
+  if(scComp) scComp.innerHTML = `<div class="sc-item">${state.complexity.charAt(0).toUpperCase()+state.complexity.slice(1)}</div>`;
+  // Estimate
+  const est = calcEstimate();
+  const scEst = document.getElementById('scEstimate');
+  const finEst = document.getElementById('finalEstimate');
+  if(est){
+    const estStr = `$${est.low.toLocaleString()} – $${est.high.toLocaleString()}`;
+    if(scEst) scEst.textContent = estStr;
+    if(finEst) finEst.textContent = estStr;
+  } else {
+    if(scEst) scEst.textContent = 'Select renderings to see estimate';
+    if(finEst) finEst.textContent = '—';
+  }
+}
+
+// ── REVIEW SUMMARY ──
+function buildReview(){
+  const rNames = { interior:'Interior', exterior:'Exterior', aerial:'Aerial', '360':'360° Tour', flythrough:'Fly-Through' };
+  const types = Object.keys(state.renders);
+  const est = calcEstimate();
+  const totalFiles = Object.values(state.sectionFiles).reduce((s,a)=>s+a.length,0);
+  document.getElementById('reviewGrid').innerHTML = `
+    <div class="review-block">
+      <div class="rb-title">Project</div>
+      <div class="rb-item"><strong>${document.getElementById('projectName').value||'—'}</strong></div>
+      <div class="rb-item">${document.getElementById('projectType').value||'—'}</div>
+      <div class="rb-item">${document.getElementById('projectCity').value||''} ${document.getElementById('projectCountry').value||''}</div>
+      ${state.phases.length?`<div class="rb-item">${state.phases.length} building${state.phases.length>1?'s':''} / phase${state.phases.length>1?'s':''}</div>`:''}
+    </div>
+    <div class="review-block">
+      <div class="rb-title">Renderings</div>
+      ${types.length ? types.map(t=>`<div class="rb-item"><strong>${rNames[t]}</strong> × ${state.renders[t].views} view${state.renders[t].views>1?'s':''}</div>`).join('') : '<div class="rb-item">—</div>'}
+    </div>
+    <div class="review-block">
+      <div class="rb-title">Complexity & Timeline</div>
+      <div class="rb-item"><strong>${state.complexity.charAt(0).toUpperCase()+state.complexity.slice(1)}</strong> tier</div>
+      <div class="rb-item">${state.timeline==='standard'?'Standard (4–8 wks)':state.timeline==='expedited'?'Expedited (2–4 wks)':'Urgent (<2 wks)'}</div>
+      ${document.getElementById('targetDate').value?`<div class="rb-item">Target: ${document.getElementById('targetDate').value}</div>`:''}
+    </div>
+    <div class="review-block">
+      <div class="rb-title">Files & References</div>
+      <div class="rb-item"><strong>${totalFiles}</strong> file${totalFiles!==1?'s':''} uploaded</div>
+      ${document.getElementById('sharedLink').value?`<div class="rb-item">+ Shared folder link</div>`:''}
+    </div>`;
+  updateSummary();
+}
+
+// ── STEP NAV ──
+function goToStep(n){
+  state.done.add(state.step);
+  state.step = n;
+  renderProgress();
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  if(n===5) buildReview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function jumpStep(n){ if(n<=state.step||state.done.has(n)) goToStep(n); }
+function renderProgress(){
+  const fill = ((state.step-1)/4)*100;
+  document.getElementById('progressFill').style.width = fill+'%';
+  document.querySelectorAll('.ps').forEach(ps=>{
+    const n=parseInt(ps.dataset.step);
+    ps.classList.remove('active','done');
+    if(n===state.step) ps.classList.add('active');
+    else if(n<state.step){ ps.classList.add('done'); ps.querySelector('.ps-circle').textContent='✓'; }
+    else ps.querySelector('.ps-circle').textContent=n;
+  });
+  [1,2,3,4].forEach(i=>{ const l=document.getElementById('pl'+i); if(l) l.classList.toggle('done',i<state.step); });
+}
+
+// ── VALIDATION ──
+function showErr(id,errId){ document.getElementById(id)?.classList.add('error'); document.getElementById(errId)?.classList.add('show'); }
+function clearErr(el){ el.classList.remove('error'); const e=document.getElementById('err-'+el.id); if(e) e.classList.remove('show'); }
+
+function validateStep1(){
+  let ok=true;
+  if(!document.getElementById('projectName').value.trim()){ showErr('projectName','err-projectName'); ok=false; }
+  if(ok) goToStep(2);
+}
+function validateStep2(){
+  if(!Object.keys(state.renders).length){ document.getElementById('err-renders').classList.add('show'); return; }
+  document.getElementById('err-renders').classList.remove('show');
+  goToStep(3);
+}
+
+// ── SUBMIT ──
+function submitQuote(){
+  let ok=true;
+  [['firstName','err-firstName'],['lastName','err-lastName'],['email','err-email'],['company','err-company']].forEach(([id,err])=>{
+    const el=document.getElementById(id);
+    if(!el.value.trim()||(id==='email'&&!el.value.includes('@'))){ showErr(id,err); ok=false; }
+  });
+  if(!ok) return;
+  const ref = 'QT-'+Math.floor(100000+Math.random()*900000);
+  const est = calcEstimate();
+  document.getElementById('progressFill').style.width='100%';
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('successScreen').innerHTML = `
+    <div class="success-anim">🎯</div>
+    <h2 class="success-title">Quote Submitted!</h2>
+    <p class="success-sub">Thank you — we've received your project brief and all uploaded files. Our team will review everything and send you a detailed quote within <strong>24 hours</strong>.</p>
+    <div class="success-ref">
+      <div class="success-ref-label">Your quote reference</div>
+      <div class="success-ref-num">${ref}</div>
+    </div>
+    <div class="success-timeline">
+      <div class="st-step"><div class="st-num">24H</div><div class="st-label">Detailed quote<br>sent to you</div></div>
+      <div class="st-step"><div class="st-num">48H</div><div class="st-label">Scope call<br>if needed</div></div>
+      <div class="st-step"><div class="st-num">4–8W</div><div class="st-label">Production<br>& delivery</div></div>
+    </div>
+    <div class="success-btns">
+      <a href="/portal" class="btn-portal">Track in Client Portal →</a>
+      <a href="/quote" class="btn-another">Submit Another Quote</a>
+    </div>`;
+  document.getElementById('successScreen').classList.add('show');
+  saveQuoteToStorage(ref, est);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function saveQuoteToStorage(ref, est){
+  const quotes = JSON.parse(localStorage.getItem('ft_quotes')||'[]');
+  quotes.push({
+    ref, date:new Date().toISOString(),
+    project: document.getElementById('projectName').value,
+    type: document.getElementById('projectType').value,
+    city: document.getElementById('projectCity').value,
+    phases: state.phases.length,
+    renders: state.renders,
+    complexity: state.complexity,
+    timeline: state.timeline,
+    estimateLow: est?.low, estimateHigh: est?.high,
+    name: document.getElementById('firstName').value+' '+document.getElementById('lastName').value,
+    email: document.getElementById('email').value,
+    company: document.getElementById('company').value,
+    role: document.getElementById('role').value,
+    totalFiles: Object.values(state.sectionFiles).reduce((s,a)=>s+a.length,0),
+    sharedLink: document.getElementById('sharedLink').value,
+    notes: document.getElementById('finalNotes').value,
+    status:'Received'
+  });
+  localStorage.setItem('ft_quotes',JSON.stringify(quotes));
+}
+
+// ── INIT ──
+renderPhases();
+updateSummary();
+</script>
+</body>
+</html>

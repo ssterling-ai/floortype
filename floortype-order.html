@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floortype — Order 3D Floor Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --off-white: #F7F5FF;
+    --purple: #C4B5F4;
+    --purple-mid: #9B87E8;
+    --purple-deep: #6B56C8;
+    --purple-bg: #EDE9FF;
+    --mint: #A8E8DA;
+    --mint-mid: #5DCFB8;
+    --mint-deep: #2BA892;
+    --mint-bg: #DFF6F1;
+    --dark: #120F2A;
+    --mid: #3D3660;
+    --muted: #8880AA;
+    --border: #E8E4FF;
+    --error: #E85555;
+    --success: #2BA892;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--off-white);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; letter-spacing: 0.12em;
+    color: var(--dark); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--purple), var(--mint));
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 14px; height: 14px; }
+  .nav-back {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--muted); text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--dark); }
+  .nav-secure {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .nav-secure svg { width: 14px; height: 14px; color: var(--mint-deep); }
+
+  /* ── LAYOUT ── */
+  .order-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 36px;
+  }
+  .progress-step {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .progress-step.active { color: var(--purple-deep); }
+  .progress-step.done { color: var(--mint-deep); }
+  .step-circle {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    background: white;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .progress-step.active .step-circle {
+    border-color: var(--purple-deep);
+    background: var(--purple-deep);
+    color: white;
+  }
+  .progress-step.done .step-circle {
+    border-color: var(--mint-deep);
+    background: var(--mint-deep);
+    color: white;
+    font-size: 14px;
+  }
+  .step-label { white-space: nowrap; }
+  .progress-line {
+    flex: 1; height: 2px;
+    background: var(--border);
+    margin: 0 12px;
+    border-radius: 2px;
+    min-width: 20px;
+    transition: background 0.3s;
+  }
+  .progress-line.done { background: var(--mint-deep); }
+
+  /* ── CARD ── */
+  .order-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(107,86,200,0.07);
+  }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .step-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.04em;
+    color: var(--dark); margin-bottom: 6px;
+  }
+  .step-sub {
+    font-size: 14px; color: var(--muted);
+    margin-bottom: 32px; font-weight: 300; line-height: 1.6;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .form-group { margin-bottom: 24px; }
+  .form-label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--dark); margin-bottom: 8px; letter-spacing: 0.02em;
+  }
+  .form-label span { color: var(--muted); font-weight: 400; }
+  .form-input {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark); background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-input:focus {
+    border-color: var(--purple-mid);
+    box-shadow: 0 0 0 3px rgba(155,135,232,0.12);
+  }
+  .form-input.error { border-color: var(--error); }
+  textarea.form-input { resize: vertical; min-height: 100px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-error { font-size: 12px; color: var(--error); margin-top: 6px; display: none; }
+  .field-error.show { display: block; }
+
+  /* ── FLOOR COUNTER ── */
+  .floor-counter {
+    display: flex; align-items: center; gap: 0;
+    border: 1.5px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+    width: fit-content;
+    background: white;
+  }
+  .floor-btn {
+    width: 44px; height: 44px;
+    border: none; background: none;
+    font-size: 20px; cursor: pointer;
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .floor-btn:hover { background: var(--purple-bg); }
+  .floor-num {
+    width: 60px; text-align: center;
+    font-size: 20px; font-weight: 600;
+    color: var(--dark);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding: 10px 0;
+  }
+  .floor-price-hint {
+    margin-left: 16px; font-size: 14px; color: var(--muted);
+    align-self: center;
+  }
+  .floor-price-hint strong { color: var(--purple-deep); }
+
+  /* ── STYLE SELECTOR ── */
+  .style-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  }
+  .style-option {
+    border: 2px solid var(--border);
+    border-radius: 12px; padding: 16px 14px;
+    cursor: pointer; transition: all 0.2s;
+    text-align: center; position: relative;
+  }
+  .style-option:hover { border-color: var(--purple-mid); background: var(--purple-bg); }
+  .style-option.selected {
+    border-color: var(--purple-deep);
+    background: var(--purple-bg);
+  }
+  .style-option.selected::after {
+    content: '✓';
+    position: absolute; top: 8px; right: 10px;
+    font-size: 12px; color: var(--purple-deep); font-weight: 700;
+  }
+  .style-icon { font-size: 24px; margin-bottom: 8px; }
+  .style-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+  .style-desc { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+  /* ── ADD-ONS ── */
+  .addon-list { display: flex; flex-direction: column; gap: 12px; }
+  .addon-item {
+    border: 2px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    display: flex; align-items: center; gap: 16px;
+    cursor: pointer; transition: all 0.2s;
+    user-select: none;
+  }
+  .addon-item:hover { border-color: var(--purple-mid); }
+  .addon-item.selected { border-color: var(--purple-deep); background: var(--purple-bg); }
+  .addon-check {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s;
+    background: white;
+  }
+  .addon-item.selected .addon-check {
+    background: var(--purple-deep);
+    border-color: var(--purple-deep);
+    color: white; font-size: 13px;
+  }
+  .addon-info { flex: 1; }
+  .addon-name { font-size: 14px; font-weight: 600; color: var(--dark); }
+  .addon-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+  .addon-price {
+    font-size: 15px; font-weight: 600;
+    color: var(--purple-deep);
+    white-space: nowrap;
+  }
+  .addon-item.selected .addon-price { color: var(--purple-deep); }
+
+  /* Rush badge */
+  .rush-badge {
+    background: #FFF3E0; color: #E07B00;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 100px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    margin-left: 8px;
+  }
+
+  /* ── FILE UPLOAD ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px; padding: 48px 32px;
+    text-align: center; cursor: pointer;
+    transition: all 0.25s; position: relative;
+    background: var(--off-white);
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--purple-mid);
+    background: var(--purple-bg);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon {
+    width: 56px; height: 56px;
+    background: var(--purple-bg);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .upload-icon svg { width: 28px; height: 28px; color: var(--purple-deep); }
+  .upload-title { font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 6px; }
+  .upload-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .upload-formats {
+    display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
+  }
+  .format-tag {
+    background: white; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 10px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .file-list { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .file-item {
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .file-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .file-icon.pdf { background: #FFE8E8; color: #E85555; }
+  .file-icon.cad { background: var(--purple-bg); color: var(--purple-deep); }
+  .file-icon.img { background: var(--mint-bg); color: var(--mint-deep); }
+  .file-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--dark); }
+  .file-size { font-size: 12px; color: var(--muted); }
+  .file-remove {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: none; background: none;
+    color: var(--muted); cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+  .file-remove:hover { background: #FFE8E8; color: var(--error); }
+
+  /* Upload required note */
+  .upload-required {
+    display: flex; align-items: center; gap: 8px;
+    background: #FFF8E8; border: 1px solid #FFE0A0;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: #8B6000; margin-top: 12px;
+  }
+
+  /* ── STEP NAVIGATION ── */
+  .step-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 36px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-back {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--muted); background: none; border: none;
+    font-size: 14px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; padding: 12px 0;
+    transition: color 0.2s;
+  }
+  .btn-back:hover { color: var(--dark); }
+  .btn-next {
+    background: var(--dark); color: white;
+    border: none; padding: 14px 36px;
+    border-radius: 100px; font-size: 14px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+    transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+    box-shadow: 0 4px 16px rgba(18,15,42,0.15);
+  }
+  .btn-next:hover {
+    background: var(--purple-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(107,86,200,0.3);
+  }
+  .btn-next:disabled {
+    background: var(--border); color: var(--muted);
+    cursor: not-allowed; transform: none; box-shadow: none;
+  }
+
+  /* ── ORDER SUMMARY SIDEBAR ── */
+  .summary-card {
+    background: white; border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 32px;
+    position: sticky; top: 88px;
+    box-shadow: 0 4px 24px rgba(107,86,200,0.07);
+  }
+  .summary-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.06em;
+    color: var(--dark); margin-bottom: 24px;
+  }
+  .summary-section { margin-bottom: 20px; }
+  .summary-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+  }
+  .summary-line {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; color: var(--dark); padding: 5px 0;
+  }
+  .summary-line-name { color: var(--mid); font-weight: 400; flex: 1; }
+  .summary-line-price { font-weight: 500; color: var(--dark); flex-shrink: 0; }
+  .summary-line-price.addon { color: var(--purple-deep); }
+  .summary-divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .summary-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0 0;
+  }
+  .summary-total-label { font-size: 14px; font-weight: 600; color: var(--dark); }
+  .summary-total-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.04em;
+    color: var(--purple-deep); line-height: 1;
+  }
+  .summary-note {
+    font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6;
+  }
+  .summary-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--mint-bg); border: 1px solid var(--mint);
+    border-radius: 10px; padding: 10px 14px;
+    margin-top: 16px;
+    font-size: 12px; color: var(--mint-deep); font-weight: 500;
+  }
+  .summary-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ── CHECKOUT STEP ── */
+  .checkout-section { margin-bottom: 28px; }
+  .checkout-section-title {
+    font-size: 13px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .checkout-section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .card-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stripe-mock {
+    background: var(--off-white); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 13px 16px;
+    font-size: 14px; color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .stripe-mock svg { width: 16px; height: 16px; color: var(--muted); }
+  .stripe-mock.full { width: 100%; }
+
+  .stripe-note {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted); margin-top: 12px;
+  }
+  .stripe-note svg { width: 14px; height: 14px; color: var(--mint-deep); }
+
+  .btn-pay {
+    width: 100%; background: linear-gradient(135deg, var(--purple-deep), var(--mint-deep));
+    color: white; border: none;
+    padding: 18px; border-radius: 14px;
+    font-size: 16px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; margin-top: 8px;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 6px 24px rgba(107,86,200,0.3);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-pay:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* Order summary on checkout */
+  .checkout-summary {
+    background: var(--off-white); border-radius: 12px;
+    padding: 20px; margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  .cs-row {
+    display: flex; justify-content: space-between;
+    font-size: 14px; padding: 5px 0; color: var(--mid);
+  }
+  .cs-row.total {
+    font-weight: 600; color: var(--dark);
+    border-top: 1px solid var(--border);
+    margin-top: 8px; padding-top: 12px; font-size: 15px;
+  }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    display: none;
+    text-align: center; padding: 60px 40px;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--purple-bg), var(--mint-bg));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px; font-size: 36px;
+    border: 2px solid var(--mint);
+  }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; letter-spacing: 0.04em;
+    color: var(--dark); margin-bottom: 12px;
+  }
+  .success-sub { font-size: 16px; color: var(--muted); line-height: 1.65; max-width: 460px; margin: 0 auto 32px; }
+  .success-ref {
+    background: var(--purple-bg); border: 1px solid var(--purple);
+    border-radius: 12px; padding: 16px 24px;
+    font-size: 14px; color: var(--purple-deep);
+    display: inline-block; margin-bottom: 32px; font-weight: 500;
+  }
+  .success-ref strong { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.08em; }
+  .success-next {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn-portal {
+    background: var(--dark); color: white;
+    padding: 14px 32px; border-radius: 100px;
+    text-decoration: none; font-size: 14px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-portal:hover { background: var(--purple-deep); }
+  .btn-another {
+    background: white; color: var(--dark);
+    padding: 14px 32px; border-radius: 100px;
+    text-decoration: none; font-size: 14px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .btn-another:hover { border-color: var(--purple-mid); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    .order-layout { grid-template-columns: 1fr; }
+    .summary-card { position: static; }
+    nav { padding: 0 20px; }
+    .order-layout { padding: 24px 16px; }
+    .order-card { padding: 24px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .style-grid { grid-template-columns: 1fr 1fr; }
+    .progress-bar { gap: 0; }
+    .step-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg>
+    </div>
+    FLOORTYPE
+  </a>
+  <a href="/" class="nav-back">← Back to site</a>
+  <div class="nav-secure">
+    <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Secure checkout
+  </div>
+</nav>
+
+<div class="order-layout">
+
+  <!-- ── MAIN ── -->
+  <div class="order-main">
+
+    <!-- Progress -->
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-step active" data-step="1" onclick="jumpToStep(1)">
+        <div class="step-circle">1</div>
+        <span class="step-label">Configure</span>
+      </div>
+      <div class="progress-line" id="line1"></div>
+      <div class="progress-step" data-step="2" onclick="jumpToStep(2)">
+        <div class="step-circle">2</div>
+        <span class="step-label">Details</span>
+      </div>
+      <div class="progress-line" id="line2"></div>
+      <div class="progress-step" data-step="3" onclick="jumpToStep(3)">
+        <div class="step-circle">3</div>
+        <span class="step-label">Upload Files</span>
+      </div>
+      <div class="progress-line" id="line3"></div>
+      <div class="progress-step" data-step="4" onclick="jumpToStep(4)">
+        <div class="step-circle">4</div>
+        <span class="step-label">Checkout</span>
+      </div>
+    </div>
+
+    <!-- ── MAIN CARD ── -->
+    <div class="order-card">
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">✓</div>
+        <h2 class="success-title">Order Placed!</h2>
+        <p class="success-sub">Thanks for your order. We've received your files and will begin production shortly. You'll get an email confirmation within a few minutes.</p>
+        <div class="success-ref">
+          Order reference: <strong id="orderRef">FT-000000</strong>
+        </div>
+        <div class="success-next">
+          <a href="/portal" class="btn-portal">Track in Client Portal →</a>
+          <a href="/order" class="btn-another">Place Another Order</a>
+        </div>
+      </div>
+
+      <!-- STEP 1: Configure -->
+      <div class="step-panel active" id="step1">
+        <h2 class="step-heading">Configure Your Order</h2>
+        <p class="step-sub">Set up your floor plan package. Your total updates live as you make selections.</p>
+
+        <!-- Floors -->
+        <div class="form-group">
+          <label class="form-label">Number of Floors / Levels</label>
+          <div style="display:flex; align-items:center; gap:0;">
+            <div class="floor-counter">
+              <button class="floor-btn" onclick="changeFloors(-1)">−</button>
+              <div class="floor-num" id="floorCount">1</div>
+              <button class="floor-btn" onclick="changeFloors(1)">+</button>
+            </div>
+            <div class="floor-price-hint">× $149 = <strong id="floorTotal">$149</strong></div>
+          </div>
+          <div style="font-size:12px; color:var(--muted); margin-top:8px;">Ground floor, upper floors, basement levels, roof plans — each counts as one level.</div>
+        </div>
+
+        <!-- Style -->
+        <div class="form-group">
+          <label class="form-label">Visual Style</label>
+          <div class="style-grid">
+            <div class="style-option selected" data-style="modern" onclick="selectStyle(this)">
+              <div class="style-icon">🏙️</div>
+              <div class="style-name">Modern</div>
+              <div class="style-desc">Clean lines, minimal palette</div>
+            </div>
+            <div class="style-option" data-style="traditional" onclick="selectStyle(this)">
+              <div class="style-icon">🏡</div>
+              <div class="style-name">Traditional</div>
+              <div class="style-desc">Warm tones, classic look</div>
+            </div>
+            <div class="style-option" data-style="luxury" onclick="selectStyle(this)">
+              <div class="style-icon">✦</div>
+              <div class="style-name">Luxury</div>
+              <div class="style-desc">Dark, rich, editorial feel</div>
+            </div>
+            <div class="style-option" data-style="scandinavian" onclick="selectStyle(this)">
+              <div class="style-icon">🌿</div>
+              <div class="style-name">Scandinavian</div>
+              <div class="style-desc">Light, airy, minimal clutter</div>
+            </div>
+            <div class="style-option" data-style="industrial" onclick="selectStyle(this)">
+              <div class="style-icon">🏗️</div>
+              <div class="style-name">Industrial</div>
+              <div class="style-desc">Concrete, raw materials</div>
+            </div>
+            <div class="style-option" data-style="custom" onclick="selectStyle(this)">
+              <div class="style-icon">🎨</div>
+              <div class="style-name">Custom</div>
+              <div class="style-desc">I'll describe in notes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add-ons -->
+        <div class="form-group">
+          <label class="form-label">Add-ons <span>(optional)</span></label>
+          <div class="addon-list">
+            <div class="addon-item" data-price="79" onclick="toggleAddon(this)">
+              <div class="addon-check"></div>
+              <div class="addon-info">
+                <div class="addon-name">Furnished Version</div>
+                <div class="addon-desc">Include furniture, fixtures, and fittings in each room for a realistic, lived-in look</div>
+              </div>
+              <div class="addon-price">+$79</div>
+            </div>
+            <div class="addon-item" data-price="99" onclick="toggleAddon(this)">
+              <div class="addon-check"></div>
+              <div class="addon-info">
+                <div class="addon-name">Rush Delivery <span class="rush-badge">24 HRS</span></div>
+                <div class="addon-desc">Standard is 48 hours — rush moves you to the front of the queue for next-day delivery</div>
+              </div>
+              <div class="addon-price">+$99</div>
+            </div>
+            <div class="addon-item" data-price="49" onclick="toggleAddon(this)">
+              <div class="addon-check"></div>
+              <div class="addon-info">
+                <div class="addon-name">Extra View Angle</div>
+                <div class="addon-desc">Add an additional isometric or bird's-eye view of the same floor plan</div>
+              </div>
+              <div class="addon-price">+$49<span style="font-size:11px; font-weight:400; color:var(--muted);"> per view</span></div>
+            </div>
+            <div class="addon-item" data-price="39" onclick="toggleAddon(this)">
+              <div class="addon-check"></div>
+              <div class="addon-info">
+                <div class="addon-name">Black & White Version</div>
+                <div class="addon-desc">A clean monochrome version alongside your coloured output — great for print</div>
+              </div>
+              <div class="addon-price">+$39</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <div></div>
+          <button class="btn-next" onclick="goToStep(2)">Continue to Details →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Project Details -->
+      <div class="step-panel" id="step2">
+        <h2 class="step-heading">Project Details</h2>
+        <p class="step-sub">Tell us about the property so we can tailor the output to your exact needs.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            <input class="form-input" id="address1" type="text" placeholder="123 Main Street" oninput="clearError(this)">
+            <div class="field-error" id="err-address1">Please enter the street address</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">City / State / Postcode</label>
+            <input class="form-input" id="address2" type="text" placeholder="New York, NY 10001" oninput="clearError(this)">
+            <div class="field-error" id="err-address2">Please enter city / state / postcode</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Property Type</label>
+          <select class="form-input" id="propType">
+            <option value="">Select property type…</option>
+            <option>Single family home</option>
+            <option>Apartment / Condo</option>
+            <option>Townhouse</option>
+            <option>Multi-family building</option>
+            <option>Commercial space</option>
+            <option>Office</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Flooring Sample / Material Reference <span>(optional)</span></label>
+          <p style="font-size:13px; color:var(--muted); margin-bottom:12px; line-height:1.6;">Upload a photo or sample of the flooring material you'd like shown in the plan (hardwood, tile, carpet, etc.) — or describe it in the notes below.</p>
+          <div class="upload-zone" id="flooringZone" style="padding:28px;">
+            <input type="file" id="flooringInput" accept="image/*,.pdf" onchange="handleFlooringUpload(this)">
+            <div class="upload-icon" style="width:40px;height:40px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+            </div>
+            <div class="upload-title" style="font-size:14px; margin-bottom:4px;">Drop flooring photo or material reference</div>
+            <div class="upload-sub" style="font-size:12px;">JPG, PNG, PDF — max 20MB</div>
+          </div>
+          <div class="file-list" id="flooringFileList"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Special Notes or Instructions <span>(optional)</span></label>
+          <textarea class="form-input" id="notes" placeholder="Any specific requirements, colour preferences, things to highlight, or questions for our team…" style="min-height:110px;"></textarea>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(1)">← Back</button>
+          <button class="btn-next" onclick="validateStep2()">Continue to Upload →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Upload Files -->
+      <div class="step-panel" id="step3">
+        <h2 class="step-heading">Upload Your Floor Plans</h2>
+        <p class="step-sub">Upload your architectural drawings, CAD files, or photos of existing plans. The more detail you provide, the better the output.</p>
+
+        <div class="upload-zone" id="mainUploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <input type="file" id="mainFileInput" multiple accept=".pdf,.dwg,.dxf,.png,.jpg,.jpeg,.tiff,.svg,.rvt" onchange="handleFiles(this.files)">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="upload-title">Drag & drop your files here</div>
+          <div class="upload-sub">or click to browse — upload as many files as needed<br>Floor plans, CAD files, reference images, existing photos</div>
+          <div class="upload-formats">
+            <span class="format-tag">PDF</span>
+            <span class="format-tag">DWG</span>
+            <span class="format-tag">DXF</span>
+            <span class="format-tag">RVT</span>
+            <span class="format-tag">PNG</span>
+            <span class="format-tag">JPG</span>
+            <span class="format-tag">SVG</span>
+            <span class="format-tag">TIFF</span>
+          </div>
+        </div>
+
+        <div class="file-list" id="mainFileList"></div>
+
+        <div class="upload-required" id="uploadRequired" style="display:none;">
+          <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="7" stroke="#E07B00" stroke-width="1.2"/><line x1="8" y1="5" x2="8" y2="8.5" stroke="#E07B00" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.8" fill="#E07B00"/></svg>
+          Please upload at least one floor plan file before continuing.
+        </div>
+
+        <div style="margin-top:20px; padding:16px 20px; background:var(--off-white); border-radius:12px; border:1px solid var(--border);">
+          <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:8px;">Don't have digital files?</div>
+          <div style="font-size:13px; color:var(--muted); line-height:1.65;">No problem — photos of hand-drawn plans, printed drawings, or even rough sketches work. We'll handle the rest. Just make sure the image is clear and well-lit.</div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(2)">← Back</button>
+          <button class="btn-next" onclick="validateStep3()">Continue to Checkout →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Checkout -->
+      <div class="step-panel" id="step4">
+        <h2 class="step-heading">Checkout</h2>
+        <p class="step-sub">Review your order and complete payment. You'll receive a confirmation email immediately.</p>
+
+        <!-- Order summary inline -->
+        <div class="checkout-section">
+          <div class="checkout-section-title">Order Summary</div>
+          <div class="checkout-summary" id="checkoutSummary"></div>
+        </div>
+
+        <!-- Contact -->
+        <div class="checkout-section">
+          <div class="checkout-section-title">Contact Information</div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">First Name</label>
+              <input class="form-input" id="firstName" type="text" placeholder="Jane" oninput="clearError(this)">
+              <div class="field-error" id="err-firstName">Required</div>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" id="lastName" type="text" placeholder="Smith" oninput="clearError(this)">
+              <div class="field-error" id="err-lastName">Required</div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:16px;">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" id="email" type="email" placeholder="jane@example.com" oninput="clearError(this)">
+            <div class="field-error" id="err-email">Please enter a valid email address</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company / Agency <span>(optional)</span></label>
+            <input class="form-input" id="company" type="text" placeholder="Meridian Real Estate">
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="checkout-section">
+          <div class="checkout-section-title">Payment</div>
+          <p style="font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.6;">
+            Payment is processed securely by Stripe. We accept all major cards. A 50% deposit is charged now — the balance is due upon delivery approval.
+          </p>
+
+          <!-- Mock Stripe UI — replace with real Stripe Elements in production -->
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <div class="stripe-mock full">
+              <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.1"/><line x1="1" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.1"/></svg>
+              •••• •••• •••• ••••
+            </div>
+          </div>
+          <div class="card-field-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Expiry</label>
+              <div class="stripe-mock">MM / YY</div>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">CVC</label>
+              <div class="stripe-mock">•••</div>
+            </div>
+          </div>
+          <div class="stripe-note" style="margin-top:16px;">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            256-bit SSL encryption · Powered by Stripe · PCI compliant
+          </div>
+        </div>
+
+        <button class="btn-pay" onclick="placeOrder()">
+          <svg viewBox="0 0 16 16" fill="none" width="18" height="18"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="white" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span id="payBtnText">Pay 50% Deposit — $<span id="depositAmount">0</span></span>
+        </button>
+
+        <div class="step-nav" style="border:none; padding-top:12px; margin-top:0;">
+          <button class="btn-back" onclick="goToStep(3)">← Back</button>
+          <div></div>
+        </div>
+      </div>
+
+    </div><!-- /order-card -->
+  </div><!-- /order-main -->
+
+  <!-- ── SIDEBAR ── -->
+  <div>
+    <div class="summary-card">
+      <div class="summary-title">Order Summary</div>
+
+      <div class="summary-section">
+        <div class="summary-label">Base Package</div>
+        <div class="summary-line">
+          <span class="summary-line-name">3D Floor Plan × <span id="summFloors">1</span> floor</span>
+          <span class="summary-line-price" id="summBase">$149</span>
+        </div>
+      </div>
+
+      <div class="summary-section" id="summAddonsSection" style="display:none;">
+        <div class="summary-label">Add-ons</div>
+        <div id="summAddonLines"></div>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="summary-total">
+        <div class="summary-total-label">Total</div>
+        <div class="summary-total-price" id="summTotal">$149</div>
+      </div>
+
+      <div class="summary-note" id="summDepositNote">50% deposit ($<span id="summDeposit">74.50</span>) charged now. Balance due on delivery.</div>
+
+      <div class="summary-badge">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Revisions included · 48hr turnaround
+      </div>
+
+      <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+        <div class="summary-label">Delivery Format</div>
+        <div style="font-size:13px; color:var(--mid); line-height:1.7;">
+          High-res PNG (300dpi)<br>
+          Print-ready PDF<br>
+          Web-optimised JPG<br>
+          <span style="color:var(--muted);">+ editable source on request</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /order-layout -->
+
+<script>
+  // ── STATE ──
+  const state = {
+    floors: 1,
+    basePrice: 149,
+    style: 'modern',
+    addons: {},
+    files: [],
+    flooringFiles: [],
+    currentStep: 1,
+    completedSteps: new Set()
+  };
+
+  const ADDON_PRICES = { furnished: 79, rush: 99, extra_view: 49, bw: 39 };
+
+  // ── FLOORS ──
+  function changeFloors(delta) {
+    state.floors = Math.max(1, Math.min(10, state.floors + delta));
+    document.getElementById('floorCount').textContent = state.floors;
+    updatePricing();
+  }
+
+  // ── STYLE ──
+  function selectStyle(el) {
+    document.querySelectorAll('.style-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    state.style = el.dataset.style;
+  }
+
+  // ── ADD-ONS ──
+  function toggleAddon(el) {
+    const price = parseInt(el.dataset.price);
+    const name = el.querySelector('.addon-name').textContent.trim().split('\n')[0];
+    const key = name;
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      el.querySelector('.addon-check').textContent = '';
+      delete state.addons[key];
+    } else {
+      el.classList.add('selected');
+      el.querySelector('.addon-check').textContent = '✓';
+      state.addons[key] = price;
+    }
+    updatePricing();
+  }
+
+  // ── PRICING ──
+  function getTotal() {
+    const base = state.floors * state.basePrice;
+    const addons = Object.values(state.addons).reduce((a, b) => a + b, 0);
+    return base + addons;
+  }
+
+  function updatePricing() {
+    const base = state.floors * state.basePrice;
+    const total = getTotal();
+    const deposit = (total * 0.5).toFixed(2);
+
+    document.getElementById('floorTotal').textContent = `$${base}`;
+    document.getElementById('summFloors').textContent = state.floors;
+    document.getElementById('summBase').textContent = `$${base}`;
+    document.getElementById('summTotal').textContent = `$${total}`;
+    document.getElementById('summDeposit').textContent = deposit;
+    document.getElementById('depositAmount').textContent = deposit;
+
+    // Addon lines
+    const lines = document.getElementById('summAddonLines');
+    const section = document.getElementById('summAddonsSection');
+    lines.innerHTML = '';
+    if (Object.keys(state.addons).length > 0) {
+      section.style.display = 'block';
+      Object.entries(state.addons).forEach(([name, price]) => {
+        lines.innerHTML += `<div class="summary-line">
+          <span class="summary-line-name">${name}</span>
+          <span class="summary-line-price addon">+$${price}</span>
+        </div>`;
+      });
+    } else {
+      section.style.display = 'none';
+    }
+  }
+
+  // ── FILE UPLOAD: MAIN ──
+  function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('mainUploadZone').classList.add('dragover');
+  }
+  function handleDragLeave(e) {
+    document.getElementById('mainUploadZone').classList.remove('dragover');
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('mainUploadZone').classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  }
+  function handleFiles(files) {
+    Array.from(files).forEach(file => {
+      if (!state.files.find(f => f.name === file.name)) {
+        state.files.push(file);
+      }
+    });
+    renderFileList();
+    document.getElementById('uploadRequired').style.display = 'none';
+  }
+  function renderFileList() {
+    const list = document.getElementById('mainFileList');
+    list.innerHTML = state.files.map((f, i) => `
+      <div class="file-item">
+        <div class="file-icon ${getFileType(f.name)}">${getFileExt(f.name)}</div>
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${formatSize(f.size)}</div>
+        <button class="file-remove" onclick="removeFile(${i})">×</button>
+      </div>`).join('');
+  }
+  function removeFile(i) {
+    state.files.splice(i, 1);
+    renderFileList();
+  }
+
+  // ── FILE UPLOAD: FLOORING ──
+  function handleFlooringUpload(input) {
+    Array.from(input.files).forEach(file => {
+      state.flooringFiles.push(file);
+    });
+    renderFlooringList();
+  }
+  function renderFlooringList() {
+    const list = document.getElementById('flooringFileList');
+    list.innerHTML = state.flooringFiles.map((f, i) => `
+      <div class="file-item">
+        <div class="file-icon ${getFileType(f.name)}">${getFileExt(f.name)}</div>
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${formatSize(f.size)}</div>
+        <button class="file-remove" onclick="removeFlooringFile(${i})">×</button>
+      </div>`).join('');
+  }
+  function removeFlooringFile(i) {
+    state.flooringFiles.splice(i, 1);
+    renderFlooringList();
+  }
+
+  // ── FILE HELPERS ──
+  function getFileType(name) {
+    const ext = name.split('.').pop().toLowerCase();
+    if (ext === 'pdf') return 'pdf';
+    if (['dwg','dxf','rvt','svg'].includes(ext)) return 'cad';
+    return 'img';
+  }
+  function getFileExt(name) { return name.split('.').pop().toUpperCase(); }
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  // ── STEP NAVIGATION ──
+  function goToStep(n) {
+    state.completedSteps.add(state.currentStep);
+    state.currentStep = n;
+    renderSteps();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (n === 4) buildCheckoutSummary();
+  }
+
+  function jumpToStep(n) {
+    if (n < state.currentStep || state.completedSteps.has(n)) goToStep(n);
+  }
+
+  function renderSteps() {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('step' + state.currentStep).classList.add('active');
+
+    document.querySelectorAll('.progress-step').forEach(s => {
+      const n = parseInt(s.dataset.step);
+      s.classList.remove('active', 'done');
+      if (n === state.currentStep) s.classList.add('active');
+      else if (n < state.currentStep) {
+        s.classList.add('done');
+        s.querySelector('.step-circle').textContent = '✓';
+      } else {
+        s.querySelector('.step-circle').textContent = n;
+      }
+    });
+
+    [1, 2, 3].forEach(i => {
+      const line = document.getElementById('line' + i);
+      if (i < state.currentStep) line.classList.add('done');
+      else line.classList.remove('done');
+    });
+  }
+
+  // ── VALIDATION ──
+  function showError(id, errId) {
+    document.getElementById(id).classList.add('error');
+    document.getElementById(errId).classList.add('show');
+  }
+  function clearError(el) {
+    el.classList.remove('error');
+    const errId = 'err-' + el.id;
+    const errEl = document.getElementById(errId);
+    if (errEl) errEl.classList.remove('show');
+  }
+
+  function validateStep2() {
+    let valid = true;
+    if (!document.getElementById('address1').value.trim()) {
+      showError('address1', 'err-address1'); valid = false;
+    }
+    if (!document.getElementById('address2').value.trim()) {
+      showError('address2', 'err-address2'); valid = false;
+    }
+    if (valid) goToStep(3);
+  }
+
+  function validateStep3() {
+    if (state.files.length === 0) {
+      document.getElementById('uploadRequired').style.display = 'flex';
+      return;
+    }
+    goToStep(4);
+  }
+
+  // ── CHECKOUT ──
+  function buildCheckoutSummary() {
+    const total = getTotal();
+    const deposit = (total * 0.5).toFixed(2);
+    const base = state.floors * state.basePrice;
+    let html = `<div class="cs-row"><span>3D Floor Plan × ${state.floors} floor${state.floors > 1 ? 's' : ''}</span><span>$${base}</span></div>`;
+    Object.entries(state.addons).forEach(([n, p]) => {
+      html += `<div class="cs-row"><span>${n}</span><span>+$${p}</span></div>`;
+    });
+    html += `<div class="cs-row total"><span>50% deposit due now</span><span>$${deposit}</span></div>`;
+    document.getElementById('checkoutSummary').innerHTML = html;
+    document.getElementById('depositAmount').textContent = deposit;
+  }
+
+  function validateCheckout() {
+    let valid = true;
+    const required = [
+      ['firstName', 'err-firstName'],
+      ['lastName', 'err-lastName'],
+      ['email', 'err-email'],
+    ];
+    required.forEach(([id, err]) => {
+      const el = document.getElementById(id);
+      if (!el.value.trim() || (id === 'email' && !el.value.includes('@'))) {
+        showError(id, err); valid = false;
+      }
+    });
+    return valid;
+  }
+
+  function placeOrder() {
+    if (!validateCheckout()) return;
+    // In production: integrate Stripe.js here, then submit
+    const ref = 'FT-' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('orderRef').textContent = ref;
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('successScreen').classList.add('show');
+    document.querySelector('.progress-bar').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // TODO: POST order to backend / send to admin dashboard
+    saveOrderToLocalStorage(ref);
+  }
+
+  function saveOrderToLocalStorage(ref) {
+    const orders = JSON.parse(localStorage.getItem('ft_orders') || '[]');
+    orders.push({
+      ref,
+      date: new Date().toISOString(),
+      floors: state.floors,
+      style: state.style,
+      addons: state.addons,
+      total: getTotal(),
+      deposit: (getTotal() * 0.5).toFixed(2),
+      address: document.getElementById('address1').value + ', ' + document.getElementById('address2').value,
+      notes: document.getElementById('notes').value,
+      name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+      email: document.getElementById('email').value,
+      status: 'Received',
+      files: state.files.map(f => f.name)
+    });
+    localStorage.setItem('ft_orders', JSON.stringify(orders));
+  }
+
+  // ── INIT ──
+  updatePricing();
+</script>
+</body>
+</html>
