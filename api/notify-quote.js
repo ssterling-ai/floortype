@@ -96,7 +96,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Floortype Quotes <quotes@floortype.com>',
+        from: 'Floortype Quotes <s.sterling@floortype.com>',
         to: [process.env.ADMIN_EMAIL || 'hello@floortype.com'],
         subject: `New Quote Request ${ref} — ${projectName} (${name})`,
         html
