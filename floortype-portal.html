@@ -652,7 +652,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── DATA ──
 const DEMO_ORDERS = [
   {
@@ -769,6 +769,7 @@ async function doLogin(){
   btn.textContent = 'Signing in…';
   btn.disabled = true;
 
+  let userToken = null;
   try {
     // Sign in with Supabase Auth
     const authRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -793,7 +794,7 @@ async function doLogin(){
 
     // Store session token for later use (file downloads etc)
     currentSession = authData;
-    const userToken = authData.access_token;
+    userToken = authData.access_token;
 
     // Fetch orders for this user
     const ordersRes = await fetch(
@@ -824,7 +825,7 @@ async function doLogin(){
         // Use in= operator for cleaner multi-ref query
         const refList = orders.map(o => o.ref).join(',');
         const filesRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/order_files?order_ref=in.(${refList})&category=eq.deliverable&select=*&order=created_at.asc`,
+          `${SUPABASE_URL}/rest/v1/order_files?order_ref=in.(${refList})&category=eq.deliverable&select=*`,
           { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
         );
         const filesText = await filesRes.text();
