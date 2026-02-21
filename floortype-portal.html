@@ -464,29 +464,29 @@
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <div class="login-logo">
-      <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
+      <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
       FLOORTYPE
     </div>
     <h2 class="login-title">Client Portal</h2>
     <p class="login-sub">Sign in to track your orders, review drafts, and manage your projects.</p>
     <div class="login-field">
       <label class="login-label">Email Address</label>
-      <input class="login-input" id="loginEmail" type="email" placeholder="you@example.com" value="sarah.m@meridianre.com">
+      <input class="login-input" id="loginEmail" type="email" placeholder="you@example.com" value="">
     </div>
     <div class="login-field">
       <label class="login-label">Password</label>
-      <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" value="password">
+      <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" value="">
     </div>
     <button class="login-btn" onclick="doLogin()">Sign In →</button>
-    <div class="login-hint">Don't have an account? <span onclick="doLogin()">Access is created when you place your first order.</span></div>
-    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;">Demo: any email + any password</div>
+    <div id="loginError" style="font-size:12px;color:var(--error);text-align:center;margin-top:10px;display:none;"></div>
+    <div class="login-hint">Access is created automatically when you place your first order.</div>
   </div>
 </div>
 
 <!-- ── SIDEBAR ── -->
 <div class="sidebar" id="appSidebar" style="display:none;">
   <a href="/" class="sidebar-logo">
-    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
+    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
     FLOORTYPE
   </a>
   <div class="sidebar-portal-tag">Client Portal</div>
@@ -731,65 +731,134 @@ const SB_HEADERS = {
 };
 
 // ── AUTH ──
+let currentSession = null; // stores Supabase auth session
+
 async function doLogin(){
   const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
   if(!email || !email.includes('@')) {
     document.getElementById('loginEmail').style.borderColor = 'var(--error)';
     return;
   }
+  if(!password) {
+    document.getElementById('loginPassword').style.borderColor = 'var(--error)';
+    return;
+  }
 
   const btn = document.querySelector('.login-btn');
-  btn.textContent = 'Looking up your orders…';
+  btn.textContent = 'Signing in…';
   btn.disabled = true;
 
   try {
-    // Fetch orders for this email from Supabase
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/orders?client_email=eq.${encodeURIComponent(email)}&select=*,project_stage&order=created_at.desc`,
-      { headers: SB_HEADERS }
-    );
-    const sbOrders = await res.json();
+    // Sign in with Supabase Auth
+    const authRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-    // Map Supabase fields to portal format
-    if(Array.isArray(sbOrders) && sbOrders.length) {
-      orders = sbOrders.map(o => ({
-        ref: o.ref,
-        date: o.created_at,
-        address: o.address,
-        floors: o.floors,
-        style: o.style,
-        addons: o.addons || {},
-        total: o.total,
-        deposit: o.deposit,
-        status: o.status,
-        notes: o.notes || '',
-        stage: o.project_stage || '',
-        rounds: [],
-        finalFiles: []
-      }));
-    } else {
-      // No orders found — show message but still let them in
-      orders = [];
+    const authData = await authRes.json();
+
+    if(!authRes.ok) {
+      const msg = authData.error_description || authData.msg || 'Invalid email or password.';
+      document.getElementById('loginError').textContent = msg;
+      document.getElementById('loginError').style.display = 'block';
+      btn.textContent = 'Sign In →';
+      btn.disabled = false;
+      return;
     }
-  } catch(e) {
-    console.warn('Supabase login failed, using demo data:', e);
-    orders = DEMO_ORDERS;
-  }
 
-  const name = email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  currentUser = { email, name, initials: name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() };
+    // Store session token for later use (file downloads etc)
+    currentSession = authData;
+    const userToken = authData.access_token;
+
+    // Fetch orders for this user
+    const ordersRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/orders?client_email=eq.${encodeURIComponent(email)}&select=*,project_stage&order=created_at.desc`,
+      { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
+    );
+    const sbOrders = await ordersRes.json();
+
+    orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
+      ref: o.ref,
+      date: o.created_at,
+      address: o.address,
+      floors: o.floors,
+      style: o.style,
+      addons: o.addons || {},
+      total: o.total,
+      deposit: o.deposit,
+      status: o.status,
+      notes: o.notes || '',
+      stage: o.project_stage || '',
+      rounds: [],
+      finalFiles: []
+    })) : [];
+
+    // Fetch deliverable files for each order
+    if(orders.length) {
+      const refs = orders.map(o => `order_ref=eq.${o.ref}`).join(',');
+      try {
+        const filesRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/order_files?or=(${refs})&category=eq.deliverable&select=*`,
+          { headers: SB_HEADERS }
+        );
+        const files = await filesRes.json();
+        if(Array.isArray(files)) {
+          files.forEach(f => {
+            const order = orders.find(o => o.ref === f.order_ref);
+            if(order) {
+              if(!order.finalFiles) order.finalFiles = [];
+              order.finalFiles.push({ name: f.file_name, path: f.file_path, type: f.file_type });
+            }
+          });
+        }
+      } catch(e) { console.warn('Files fetch failed:', e); }
+    }
+
+    // Get user name from metadata
+    const userName = authData.user?.user_metadata?.full_name || 
+                     email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    const initials = userName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    currentUser = { email, name: userName, initials, token: userToken };
+
+  } catch(e) {
+    console.error('Login failed:', e);
+    document.getElementById('loginError').textContent = 'Something went wrong. Please try again.';
+    document.getElementById('loginError').style.display = 'block';
+    btn.textContent = 'Sign In →';
+    btn.disabled = false;
+    return;
+  }
 
   btn.textContent = 'Sign In →';
   btn.disabled = false;
-
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('appSidebar').style.display = 'flex';
   document.getElementById('appMain').style.display = 'flex';
   initApp();
 }
 
-function doLogout(){
+async function doLogout(){
+  // Sign out from Supabase Auth
+  if(currentSession?.access_token) {
+    try {
+      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${currentSession.access_token}` }
+      });
+    } catch(e) {}
+  }
   currentUser = null;
+  currentSession = null;
+  orders = [];
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').style.display = 'none';
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('appSidebar').style.display = 'none';
   document.getElementById('appMain').style.display = 'none';
@@ -965,9 +1034,9 @@ function openOrderDetail(ref){
     document.getElementById('finalFilesWidget').style.display='block';
     document.getElementById('finalFilesContainer').innerHTML = o.finalFiles.map(f=>`
       <div class="delivery-row">
-        <div class="delivery-icon">${f.split('.').pop().toUpperCase()}</div>
-        <div class="delivery-name">${f}</div>
-        <button class="delivery-dl" onclick="showToast('Downloading ${f}…','success')">↓</button>
+        <div class="delivery-icon">${(f.name||f).split('.').pop().toUpperCase()}</div>
+        <div class="delivery-name">${f.name||f}</div>
+        <button class="delivery-dl" onclick="downloadFile('${f.path||f.name||f}','${f.name||f}')">↓</button>
       </div>`).join('');
   } else {
     document.getElementById('finalFilesWidget').style.display='none';
@@ -1096,9 +1165,9 @@ function renderFilesView(){
       </div>
       ${o.finalFiles.map(f=>`
         <div class="delivery-row">
-          <div class="delivery-icon">${f.split('.').pop().toUpperCase()}</div>
-          <div class="delivery-name">${f}</div>
-          <button class="delivery-dl" onclick="showToast('Downloading ${f}…','success')">↓ Download</button>
+          <div class="delivery-icon">${(f.name||f).split('.').pop().toUpperCase()}</div>
+          <div class="delivery-name">${f.name||f}</div>
+          <button class="delivery-dl" onclick="downloadFile('${f.path||f.name||f}','${f.name||f}')">↓ Download</button>
         </div>`).join('')}
     </div>`).join('');
 }
@@ -1138,12 +1207,70 @@ async function saveNoteToSupabase(orderRef, roundNum, text){
   // For now notes live in localStorage until revision system is fully wired
   console.log('Note saved locally for order:', orderRef);
 }
+async function downloadFile(filePath, fileName) {
+  showToast('Preparing download…', '');
+  try {
+    const res = await fetch('/api/get-download-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        filePath, 
+        userToken: currentUser?.token || ''
+      })
+    });
+    const data = await res.json();
+    if(!res.ok || !data.url) throw new Error(data.error || 'Could not get download link');
+    
+    // Trigger download
+    const a = document.createElement('a');
+    a.href = data.url;
+    a.download = fileName;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('Download started ✓', 'success');
+  } catch(e) {
+    console.error('Download failed:', e);
+    showToast('Download failed. Please try again.', 'error');
+  }
+}
+
 function showToast(msg, type){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast' + (type ? ' ' + type : '');
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+async function downloadFile(filePath, fileName) {
+  showToast('Preparing download…', '');
+  try {
+    const res = await fetch('/api/get-download-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        filePath, 
+        userToken: currentUser?.token || ''
+      })
+    });
+    const data = await res.json();
+    if(!res.ok || !data.url) throw new Error(data.error || 'Could not get download link');
+    
+    // Trigger download
+    const a = document.createElement('a');
+    a.href = data.url;
+    a.download = fileName;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('Download started ✓', 'success');
+  } catch(e) {
+    console.error('Download failed:', e);
+    showToast('Download failed. Please try again.', 'error');
+  }
 }
 
 function showToast(msg, type){

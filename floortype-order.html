@@ -588,9 +588,7 @@
 
 <nav>
   <a href="/" class="logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg>
-    </div>
+    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
     FLOORTYPE
   </a>
   <a href="/" class="nav-back">← Back to site</a>
@@ -1456,6 +1454,19 @@
         })
       });
     } catch(e) { console.warn('Notification email failed:', e); }
+
+    // Create client account in Supabase Auth (sends "set your password" email)
+    try {
+      await fetch('/api/create-client-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: orderData.client_email,
+          name: orderData.client_name,
+          orderRef: orderData.ref
+        })
+      });
+    } catch(e) { console.warn('Account creation failed:', e); }
 
     // Also keep localStorage as fallback for admin dashboard
     const orders = JSON.parse(localStorage.getItem('ft_orders') || '[]');

@@ -201,9 +201,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
     box-shadow:0 24px 80px rgba(0,0,0,0.4);
   ">
     <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:28px;">
-      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6B56C8,#2AB5A0);display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><rect x="2" y="2" width="16" height="16" rx="2" stroke="white" stroke-width="1.5"/><line x1="2" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.5"/><line x1="10" y1="2" x2="10" y2="10" stroke="white" stroke-width="1.5"/></svg>
-      </div>
+      <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.08em;color:#120F2A;">Floortype</span>
     </div>
     <h1 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.06em;color:#120F2A;margin-bottom:6px;">Admin Access</h1>
@@ -252,7 +250,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 </script>
 <div class="sidebar">
   <a href="/" class="s-logo">
-    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
+    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
     FLOORTYPE
   </a>
   <div class="s-sub">Admin Dashboard</div>
@@ -369,6 +367,29 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       <div class="m-sec"><div class="m-sec-title">Order Details</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Floors</div><div class="d-val" id="om-floors">—</div></div><div class="d-item"><div class="d-lbl">Style</div><div class="d-val" id="om-style">—</div></div><div class="d-item"><div class="d-lbl">Total</div><div class="d-val p" id="om-total">—</div></div><div class="d-item"><div class="d-lbl">Deposit Paid</div><div class="d-val m" id="om-deposit">—</div></div><div class="d-item full"><div class="d-lbl">Add-ons</div><div class="d-val" id="om-addons">—</div></div></div></div>
       <div class="m-sec"><div class="m-sec-title">Client Notes</div><div class="m-notes" id="om-notes">—</div></div>
       <div class="m-sec"><div class="m-sec-title">Uploaded Files</div><div class="f-list" id="om-files"></div></div>
+      <div class="m-sec">
+        <div class="m-sec-title">Deliverable Files <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:6px;">Upload final files for client download</span></div>
+        <div id="om-deliverables" style="margin-bottom:12px;"></div>
+        <div style="border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:border-color 0.2s;" 
+             id="upload-drop-zone"
+             onclick="document.getElementById('deliverable-file-input').click()"
+             ondragover="event.preventDefault();this.style.borderColor='var(--purple-deep)'"
+             ondragleave="this.style.borderColor=''"
+             ondrop="handleFileDrop(event)">
+          <input type="file" id="deliverable-file-input" multiple accept=".png,.jpg,.jpeg,.pdf" style="display:none" onchange="handleFileSelect(event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.2" width="28" height="28" style="margin-bottom:8px;">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <div style="font-size:13px;font-weight:600;color:var(--mid);">Drop files here or click to upload</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">PNG, JPG, PDF · Max 50MB each</div>
+        </div>
+        <div id="upload-progress" style="margin-top:12px;display:none;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;" id="upload-status">Uploading…</div>
+          <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div id="upload-bar" style="height:100%;background:linear-gradient(90deg,var(--purple-deep),var(--mint-deep));width:0%;transition:width 0.3s;border-radius:2px;"></div>
+          </div>
+        </div>
+      </div>
       <div class="m-sec"><div class="m-sec-title">Update Status</div><select class="status-select" id="om-status"><option>Received</option><option>Pending Invoice Approval</option><option>In Progress</option><option>In Review</option><option>Complete</option><option>On Hold</option></select></div>
       <div class="m-sec">
         <div class="m-sec-title">Project Stage <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:6px;">Shown to client in their portal</span></div>
@@ -604,6 +625,7 @@ function openOrderModal(ref){
   set('om-notes',o.notes||'No notes provided.');
   document.getElementById('om-status').value=o.status;
   document.getElementById('om-stage').value=o.stage||o.project_stage||'';
+  loadDeliverables(curOrderRef);
   document.getElementById('om-files').innerHTML=(o.files||[]).map(f=>`<div class="f-row"><span class="f-ext">${f.split('.').pop().toUpperCase()}</span><span class="f-name">${f}</span><button class="f-dl" onclick="showToast('Downloading…','')">↓</button></div>`).join('')||'<div style="font-size:13px;color:var(--muted)">No files.</div>';
   showOverlay('order-modal');
 }
@@ -676,6 +698,103 @@ function qBadge(s){return{Received:'b-new',Quoted:'b-qtd',Approved:'b-appr','On 
 function emptyHTML(h,p){return`<div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="22"><rect x="3" y="3" width="18" height="18" rx="3"/></svg></div><h3>${h}</h3><p>${p}</p></div>`;}
 function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ── FILE UPLOAD ──
+function handleFileSelect(e){ uploadFiles(Array.from(e.target.files)); }
+function handleFileDrop(e){
+  e.preventDefault();
+  document.getElementById('upload-drop-zone').style.borderColor = '';
+  uploadFiles(Array.from(e.dataTransfer.files));
+}
+
+async function uploadFiles(files) {
+  if(!files.length || !curOrderRef) return;
+  const validTypes = ['image/png','image/jpeg','application/pdf'];
+  const valid = files.filter(f => validTypes.includes(f.type));
+  if(!valid.length) { showToast('Only PNG, JPG, PDF files accepted',''); return; }
+
+  const progress = document.getElementById('upload-progress');
+  const bar = document.getElementById('upload-bar');
+  const status = document.getElementById('upload-status');
+  progress.style.display = 'block';
+
+  let completed = 0;
+  for(const file of valid) {
+    status.textContent = `Uploading ${file.name}…`;
+    try {
+      // Convert file to base64
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const res = await fetch('/api/upload-deliverable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderRef: curOrderRef,
+          fileName: file.name,
+          fileBase64: base64,
+          mimeType: file.type
+        })
+      });
+
+      if(!res.ok) throw new Error('Upload failed');
+      completed++;
+      bar.style.width = `${(completed/valid.length)*100}%`;
+    } catch(e) {
+      console.error('Upload error:', e);
+      showToast(`Failed to upload ${file.name}`,'');
+    }
+  }
+
+  status.textContent = `${completed} file${completed!==1?'s':''} uploaded ✓`;
+  bar.style.background = 'var(--mint-deep)';
+  setTimeout(() => {
+    progress.style.display = 'none';
+    bar.style.width = '0%';
+    bar.style.background = '';
+  }, 2000);
+
+  loadDeliverables(curOrderRef);
+  showToast(`${completed} file${completed!==1?'s':''} uploaded ✓`, 'success');
+  document.getElementById('deliverable-file-input').value = '';
+}
+
+async function loadDeliverables(orderRef) {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/order_files?order_ref=eq.${orderRef}&category=eq.deliverable&select=*`,
+      { headers: SB_HEADERS }
+    );
+    const files = await res.json();
+    const container = document.getElementById('om-deliverables');
+    if(!Array.isArray(files) || !files.length) {
+      container.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:4px 0;">No deliverables uploaded yet.</div>';
+      return;
+    }
+    container.innerHTML = files.map(f => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--off-white);border-radius:8px;margin-bottom:6px;">
+        <div style="font-size:10px;font-weight:700;color:var(--purple-deep);background:var(--purple-bg);padding:3px 7px;border-radius:5px;">${f.file_name.split('.').pop().toUpperCase()}</div>
+        <div style="flex:1;font-size:13px;color:var(--dark);font-weight:500;">${f.file_name}</div>
+        <div style="font-size:11px;color:var(--muted);">${(f.file_size/1024/1024).toFixed(1)}MB</div>
+        <button onclick="deleteDeliverable('${f.id}','${f.file_path}','${orderRef}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;" title="Delete">×</button>
+      </div>`).join('');
+  } catch(e) { console.warn('Load deliverables failed:', e); }
+}
+
+async function deleteDeliverable(fileId, filePath, orderRef) {
+  if(!confirm('Delete this file? The client will no longer be able to download it.')) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/order_files?id=eq.${fileId}`, {
+      method: 'DELETE', headers: SB_HEADERS
+    });
+    loadDeliverables(orderRef);
+    showToast('File deleted', '');
+  } catch(e) { showToast('Delete failed', ''); }
+}
 
 loadData();
 setInterval(loadData,30000);
