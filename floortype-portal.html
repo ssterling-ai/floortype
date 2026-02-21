@@ -745,7 +745,7 @@ async function doLogin(){
   try {
     // Fetch orders for this email from Supabase
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/orders?client_email=eq.${encodeURIComponent(email)}&select=*&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/orders?client_email=eq.${encodeURIComponent(email)}&select=*,project_stage&order=created_at.desc`,
       { headers: SB_HEADERS }
     );
     const sbOrders = await res.json();
@@ -763,6 +763,7 @@ async function doLogin(){
         deposit: o.deposit,
         status: o.status,
         notes: o.notes || '',
+        stage: o.project_stage || '',
         rounds: [],
         finalFiles: []
       }));
@@ -887,23 +888,64 @@ function openOrderDetail(ref){
   document.getElementById('detailAddress').textContent = o.address;
 
   // Timeline
-  const steps=[
-    {label:'Order\nReceived',icon:'📋'},
-    {label:'In\nProduction',icon:'🎨'},
-    {label:'In\nReview',icon:'👁️'},
-    {label:'Complete',icon:'✓'}
+  // ── 9-STAGE PROGRESS BAR ──
+  const STAGES = [
+    { key: 'awaiting-assets',    label: 'Awaiting Assets',     icon: '📁' },
+    { key: 'pre-production',     label: 'Pre-Production',      icon: '📐' },
+    { key: 'in-production',      label: 'In Production',       icon: '🎨' },
+    { key: 'draft-1-ready',      label: 'Draft 1 Ready',       icon: '👁️' },
+    { key: 'draft-1-revisions',  label: 'Draft 1 Revisions',   icon: '✏️' },
+    { key: 'draft-2-ready',      label: 'Draft 2 Ready',       icon: '👁️' },
+    { key: 'draft-2-revisions',  label: 'Draft 2 Revisions',   icon: '✏️' },
+    { key: 'final-draft-ready',  label: 'Final Draft Ready',   icon: '⭐' },
+    { key: 'delivered',          label: 'Delivered',           icon: '✅' },
   ];
-  const statusMap={'Received':0,'In Progress':1,'In Review':2,'Complete':3};
-  const cur = statusMap[o.status]??0;
-  const dates=['Feb 10','Feb 11','Feb 14','—'];
-  document.getElementById('detailTimeline').innerHTML = steps.map((s,i)=>{
-    const cls = i<cur?'done':i===cur?'active':'';
-    return `<div class="tl-step ${cls}">
-      <div class="tl-dot">${i<cur?'✓':s.icon}</div>
-      <div class="tl-label">${s.label.replace('\n','<br>')}</div>
-      <div class="tl-date">${cur>=i?dates[i]:''}</div>
-    </div>${i<3?`<div style="flex:1;height:2px;background:${i<cur?'var(--mint-deep)':'var(--border)'};margin-top:18px;transition:background 0.3s;border-radius:2px;"></div>`:''}`;
-  }).join('');
+
+  // Get stage from order — stored in addons._stage
+  const currentStage = o.stage || o.project_stage || (o.status === 'Complete' ? 'delivered' : 'awaiting-assets');
+  const currentIdx = STAGES.findIndex(s => s.key === currentStage);
+
+  const tlHtml = `
+    <div style="padding:20px 0 8px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Project Progress</div>
+      <div style="position:relative;">
+        <!-- Progress track -->
+        <div style="position:absolute;top:18px;left:18px;right:18px;height:3px;background:var(--border);border-radius:2px;z-index:0;"></div>
+        <div style="position:absolute;top:18px;left:18px;height:3px;background:linear-gradient(90deg,var(--purple-deep),var(--mint-deep));border-radius:2px;z-index:1;transition:width 0.6s ease;width:${currentIdx < 0 ? 0 : Math.min(100, (currentIdx / (STAGES.length-1)) * 100)}%;"></div>
+        <!-- Steps -->
+        <div style="display:flex;justify-content:space-between;position:relative;z-index:2;">
+          ${STAGES.map((s, i) => {
+            const done = i < currentIdx;
+            const active = i === currentIdx;
+            const skipped = !done && !active && currentIdx > 0 && i < currentIdx;
+            return `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;">
+              <div style="
+                width:36px;height:36px;border-radius:50%;
+                display:flex;align-items:center;justify-content:center;
+                font-size:${done ? '14px' : '16px'};
+                background:${done ? 'linear-gradient(135deg,var(--purple-deep),var(--mint-deep))' : active ? 'white' : 'white'};
+                border:2.5px solid ${done ? 'transparent' : active ? 'var(--purple-deep)' : 'var(--border)'};
+                box-shadow:${active ? '0 0 0 4px var(--purple-bg)' : 'none'};
+                transition:all 0.3s;
+              ">${done ? '<svg viewBox="0 0 12 12" fill="none" width="14" height="14"><polyline points="1.5,6 5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : `<span style="opacity:${active ? 1 : 0.3};font-size:14px;">${s.icon}</span>`}</div>
+              <div style="
+                font-size:10px;font-weight:${active ? 700 : 500};
+                color:${done ? 'var(--mint-deep)' : active ? 'var(--purple-deep)' : 'var(--muted)'};
+                text-align:center;line-height:1.3;max-width:64px;
+                letter-spacing:${active ? '0.02em' : '0'};
+              ">${s.label}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:10px 14px;background:var(--purple-bg);border-radius:10px;display:inline-flex;align-items:center;gap:8px;">
+        <span style="font-size:18px;">${currentIdx >= 0 ? STAGES[currentIdx].icon : '📋'}</span>
+        <span style="font-size:13px;font-weight:600;color:var(--purple-deep);">Current stage: ${currentIdx >= 0 ? STAGES[currentIdx].label : 'Getting started'}</span>
+      </div>
+    </div>`;
+
+  document.getElementById('detailTimeline').innerHTML = tlHtml;
 
   // Order info sidebar
   const addons = Object.keys(o.addons||{});

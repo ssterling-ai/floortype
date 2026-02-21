@@ -370,6 +370,21 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       <div class="m-sec"><div class="m-sec-title">Client Notes</div><div class="m-notes" id="om-notes">—</div></div>
       <div class="m-sec"><div class="m-sec-title">Uploaded Files</div><div class="f-list" id="om-files"></div></div>
       <div class="m-sec"><div class="m-sec-title">Update Status</div><select class="status-select" id="om-status"><option>Received</option><option>Pending Invoice Approval</option><option>In Progress</option><option>In Review</option><option>Complete</option><option>On Hold</option></select></div>
+      <div class="m-sec">
+        <div class="m-sec-title">Project Stage <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:6px;">Shown to client in their portal</span></div>
+        <select class="status-select" id="om-stage">
+          <option value="">— Not set —</option>
+          <option value="awaiting-assets">Awaiting Assets</option>
+          <option value="pre-production">Pre-Production</option>
+          <option value="in-production">In Production</option>
+          <option value="draft-1-ready">Draft 1 Ready</option>
+          <option value="draft-1-revisions">Draft 1 Revisions</option>
+          <option value="draft-2-ready">Draft 2 Ready</option>
+          <option value="draft-2-revisions">Draft 2 Revisions</option>
+          <option value="final-draft-ready">Final Draft Ready</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </div>
     </div>
     <div class="m-footer"><button class="btn-cancel" onclick="closeOverlayDirect('order-modal')">Cancel</button><button class="btn-save" onclick="saveOrderStatus()">Save Changes</button></div>
   </div>
@@ -457,6 +472,7 @@ async function loadData(){
       deposit: o.deposit,
       notes: o.notes || '',
       status: o.status,
+      stage: o.project_stage || '',
       files: []
     })) : DEMO_ORDERS;
 
@@ -587,6 +603,7 @@ function openOrderModal(ref){
   set('om-addons',Object.keys(o.addons||{}).length?Object.entries(o.addons).map(([n,p])=>`${n} (+$${p})`).join(', '):'None');
   set('om-notes',o.notes||'No notes provided.');
   document.getElementById('om-status').value=o.status;
+  document.getElementById('om-stage').value=o.stage||o.project_stage||'';
   document.getElementById('om-files').innerHTML=(o.files||[]).map(f=>`<div class="f-row"><span class="f-ext">${f.split('.').pop().toUpperCase()}</span><span class="f-name">${f}</span><button class="f-dl" onclick="showToast('Downloading…','')">↓</button></div>`).join('')||'<div style="font-size:13px;color:var(--muted)">No files.</div>';
   showOverlay('order-modal');
 }
@@ -609,7 +626,25 @@ function openQuoteModal(ref){
   showOverlay('quote-modal');
 }
 
-function saveOrderStatus(){const o=orders.find(x=>x.ref===curOrderRef);if(o){o.status=document.getElementById('om-status').value;saveData();renderAll();}closeOverlayDirect('order-modal');showToast('Order updated ✓','success');}
+async function saveOrderStatus(){
+  const o=orders.find(x=>x.ref===curOrderRef);
+  if(o){
+    o.status=document.getElementById('om-status').value;
+    o.stage=document.getElementById('om-stage').value;
+    // Save stage to Supabase addons field temporarily (until schema updated)
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${curOrderRef}`,{
+        method:'PATCH',
+        headers:{...SB_HEADERS,'Prefer':'return=minimal'},
+        body:JSON.stringify({status:o.status, project_stage: o.stage})
+      });
+    } catch(e){ console.warn('Stage save failed:',e); }
+    saveData();
+    renderAll();
+  }
+  closeOverlayDirect('order-modal');
+  showToast('Order updated ✓','success');
+}
 function saveQuoteStatus(){const q=quotes.find(x=>x.ref===curQuoteRef);if(q){q.status=document.getElementById('qm-status').value;saveData();renderAll();}closeOverlayDirect('quote-modal');showToast('Quote updated ✓','success');}
 function sendConfirmedQuote(){
   const low=document.getElementById('qm-low').value,high=document.getElementById('qm-high').value;
