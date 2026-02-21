@@ -8,9 +8,9 @@ export default async function handler(req, res) {
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
   try {
-    // Check if user already exists by trying to list users
-    // Use admin API to invite user — sends "Set your password" email
-    const inviteRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
+    // Use invite endpoint which sends a proper "set your password" email
+    // with a redirect back to the portal
+    const inviteRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/invite`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,30 +19,34 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         email,
-        email_confirm: false, // sends confirmation/invite email
-        user_metadata: { full_name: name, order_ref: orderRef },
-        options: {
-          data: { full_name: name }
-        }
+        data: { 
+          full_name: name,
+          order_ref: orderRef
+        },
+        redirect_to: 'https://floortype.com/portal'
       })
     });
 
     const inviteData = await inviteRes.json();
 
-    // If user already exists (duplicate), that's fine — don't error
+    // If user already exists that's fine — they already have an account
     if (!inviteRes.ok) {
-      if (inviteData.msg?.includes('already been registered') || 
-          inviteData.code === 'email_exists' ||
-          inviteData.message?.includes('already registered')) {
+      const msg = inviteData.msg || inviteData.message || '';
+      if (
+        msg.toLowerCase().includes('already') ||
+        msg.toLowerCase().includes('registered') ||
+        inviteData.code === 'email_exists'
+      ) {
         return res.status(200).json({ ok: true, existing: true });
       }
+      console.error('Invite error:', JSON.stringify(inviteData));
       throw new Error(JSON.stringify(inviteData));
     }
 
     return res.status(200).json({ ok: true, existing: false });
 
   } catch(e) {
-    console.error('Account creation error:', e);
+    console.error('Account creation error:', e.message);
     return res.status(500).json({ error: e.message });
   }
 }
