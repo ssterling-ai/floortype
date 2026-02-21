@@ -81,7 +81,7 @@ export default async function handler(req, res) {
 
       <!-- Footer -->
       <div style="background:#F7F5FF;padding:20px 32px;text-align:center;">
-        <a href="https://floortype.vercel.app/admin" style="display:inline-block;background:linear-gradient(135deg,#4B2EC5,#2AB5A0);color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;">Open in Admin Dashboard →</a>
+        <a href="https://floortype.com/admin" style="display:inline-block;background:linear-gradient(135deg,#4B2EC5,#2AB5A0);color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;">Open in Admin Dashboard →</a>
       </div>
 
     </div>
