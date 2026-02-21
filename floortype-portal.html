@@ -942,8 +942,8 @@ function orderCardHTML(o){
     </div>
     <div class="order-card-info">
       <div class="order-card-ref">${o.ref}</div>
-      <div class="order-card-name">${o.address}</div>
-      <div class="order-card-meta">${o.floors} floor${o.floors>1?'s':''} · ${o.style} · $${o.total}</div>
+      <div class="order-card-name">${o.project_name || o.address}</div>
+      <div class="order-card-meta">${o.address} · ${o.floors} floor${o.floors>1?'s':''} · $${o.total}</div>
     </div>
     <div class="order-card-right">
       <span class="status-badge ${statusClass(o.status)}">${o.status}</span>
@@ -965,6 +965,7 @@ function renderOrdersList(){
   const search = document.getElementById('ordersSearch').value.toLowerCase();
   let filtered = orders.filter(o=>{
     const mf = orderFilter==='all'||(orderFilter==='active'&&o.status!=='Complete')||o.status===orderFilter;
+      const ms = !s || o.ref.toLowerCase().includes(s) || (o.project_name&&o.project_name.toLowerCase().includes(s)) || o.address.toLowerCase().includes(s);
     const ms = !search||o.ref.toLowerCase().includes(search)||o.address.toLowerCase().includes(search);
     return mf&&ms;
   });
@@ -1053,6 +1054,7 @@ function openOrderDetail(ref){
   // Order info sidebar
   const addons = Object.keys(o.addons||{});
   document.getElementById('detailInfo').innerHTML = `
+    ${o.project_name?`<div class="info-row"><span class="info-label">Project</span><span class="info-val purple" style="font-weight:700;">${o.project_name}</span></div>`:''}
     <div class="info-row"><span class="info-label">Reference</span><span class="info-val purple">${o.ref}</span></div>
     <div class="info-row"><span class="info-label">Status</span><span class="info-val"><span class="status-badge ${statusClass(o.status)}">${o.status}</span></span></div>
     <div class="info-row"><span class="info-label">Floors</span><span class="info-val">${o.floors} floor${o.floors>1?'s':''}</span></div>

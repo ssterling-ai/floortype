@@ -361,7 +361,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 <!-- ORDER MODAL -->
 <div class="overlay" id="order-modal" onclick="closeOverlay('order-modal',event)">
   <div class="modal">
-    <div class="m-header"><div><div class="m-ref" id="om-ref">—</div><div class="m-tag">Floor Plan Order</div></div><button class="m-close" onclick="closeOverlayDirect('order-modal')">×</button></div>
+    <div class="m-header"><div><div class="m-ref" id="om-ref">—</div><div id="om-project-name" style="font-size:15px;font-weight:600;color:white;margin-top:2px;opacity:0.9;"></div><div class="m-tag">Floor Plan Order</div></div><button class="m-close" onclick="closeOverlayDirect('order-modal')">×</button></div>
     <div class="m-body">
       <div class="m-sec"><div class="m-sec-title">Client</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Name</div><div class="d-val" id="om-name">—</div></div><div class="d-item"><div class="d-lbl">Email</div><div class="d-val" id="om-email">—</div></div><div class="d-item full"><div class="d-lbl">Property Address</div><div class="d-val" id="om-address">—</div></div></div></div>
       <div class="m-sec"><div class="m-sec-title">Order Details</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Floors</div><div class="d-val" id="om-floors">—</div></div><div class="d-item"><div class="d-lbl">Style</div><div class="d-val" id="om-style">—</div></div><div class="d-item"><div class="d-lbl">Total</div><div class="d-val p" id="om-total">—</div></div><div class="d-item"><div class="d-lbl">Deposit Paid</div><div class="d-val m" id="om-deposit">—</div></div><div class="d-item full"><div class="d-lbl">Add-ons</div><div class="d-val" id="om-addons">—</div></div></div></div>
@@ -481,6 +481,7 @@ async function loadData(){
     // Map Supabase column names to what the dashboard expects
     orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
       ref: o.ref,
+      project_name: o.project_name || '',
       date: o.created_at,
       name: o.client_name,
       email: o.client_email,
@@ -572,17 +573,17 @@ function renderStats(){
 
 function renderOverview(){
   const rO=[...orders].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
-  document.getElementById('ov-orders').innerHTML=rO.length?rO.map(o=>`<div class="ov-item" onclick="openOrderModal('${o.ref}')"><div class="ov-ico ovi-p"><svg viewBox="0 0 16 16" fill="none" stroke="var(--purple-deep)" stroke-width="1.3" width="16"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="6" x2="11" y2="6"/></svg></div><div class="ov-info"><div class="ov-name">${o.name}</div><div class="ov-sub">${o.ref} · ${o.address.split(',')[0]}</div></div><div class="ov-right"><div class="ov-amt">$${o.total}</div><div class="ov-date">${fmtDate(o.date)}</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--muted);padding:10px 0">No orders yet</div>';
+  document.getElementById('ov-orders').innerHTML=rO.length?rO.map(o=>`<div class="ov-item" onclick="openOrderModal('${o.ref}')"><div class="ov-ico ovi-p"><svg viewBox="0 0 16 16" fill="none" stroke="var(--purple-deep)" stroke-width="1.3" width="16"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="6" x2="11" y2="6"/></svg></div><div class="ov-info"><div class="ov-name">${o.project_name||o.name}</div><div class="ov-sub">${o.ref} · ${o.name}</div></div><div class="ov-right"><div class="ov-amt">$${o.total}</div><div class="ov-date">${fmtDate(o.date)}</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--muted);padding:10px 0">No orders yet</div>';
   const rQ=[...quotes].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
   document.getElementById('ov-quotes').innerHTML=rQ.length?rQ.map(q=>`<div class="ov-item" onclick="openQuoteModal('${q.ref}')"><div class="ov-ico ovi-m"><svg viewBox="0 0 16 16" fill="none" stroke="var(--mint-deep)" stroke-width="1.3" width="16"><path d="M13 10a1 1 0 01-1 1H4l-2 2V4a1 1 0 011-1h9a1 1 0 011 1v6z"/></svg></div><div class="ov-info"><div class="ov-name">${q.project}</div><div class="ov-sub">${q.ref} · ${q.company}</div></div><div class="ov-right"><div class="ov-amt">$${(q.estimateLow||0).toLocaleString()}+</div><div class="ov-date">${fmtDate(q.date)}</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--muted);padding:10px 0">No quotes yet</div>';
 }
 
 function renderOrdersTable(){
   const s=document.getElementById('orders-search').value.toLowerCase();
-  const f=orders.filter(o=>(ordersF==='all'||o.status===ordersF)&&(!s||o.ref.toLowerCase().includes(s)||o.name.toLowerCase().includes(s)||o.address.toLowerCase().includes(s)));
+  const f=orders.filter(o=>(ordersF==='all'||o.status===ordersF)&&(!s||o.ref.toLowerCase().includes(s)||o.name.toLowerCase().includes(s)||o.address.toLowerCase().includes(s)||(o.project_name&&o.project_name.toLowerCase().includes(s))));
   const tb=document.getElementById('orders-tbody');
   if(!f.length){tb.innerHTML=`<tr><td colspan="7">${emptyHTML('No Orders Found','Adjust your search or filter.')}</td></tr>`;return;}
-  tb.innerHTML=f.map(o=>`<tr onclick="openOrderModal('${o.ref}')"><td><div class="td-ref">${o.ref}</div></td><td><div class="td-name">${o.name}</div><div class="td-sub">${o.email}</div></td><td><div class="td-muted">${o.floors} floor${o.floors>1?'s':''} · ${o.style}</div><div class="td-sub">${Object.keys(o.addons||{}).length?Object.keys(o.addons).join(', '):'No add-ons'}</div></td><td><span class="badge ${oBadge(o.status)}">${o.status}</span></td><td><div class="td-amt">$${o.total}<div class="sub">$${o.deposit} dep.</div></div></td><td><div class="td-muted">${fmtDate(o.date)}</div></td><td><button class="row-btn" onclick="event.stopPropagation();openOrderModal('${o.ref}')">Open →</button></td></tr>`).join('');
+  tb.innerHTML=f.map(o=>`<tr onclick="openOrderModal('${o.ref}')"><td><div class="td-ref">${o.ref}</div>${o.project_name?`<div style="font-size:11px;font-weight:600;color:var(--purple-deep);margin-top:2px;">${o.project_name}</div>`:''}</td><td><div class="td-name">${o.name}</div><div class="td-sub">${o.email}</div></td><td><div class="td-muted">${o.floors} floor${o.floors>1?'s':''} · ${o.style}</div><div class="td-sub">${Object.keys(o.addons||{}).length?Object.keys(o.addons).join(', '):'No add-ons'}</div></td><td><span class="badge ${oBadge(o.status)}">${o.status}</span></td><td><div class="td-amt">$${o.total}<div class="sub">$${o.deposit} dep.</div></div></td><td><div class="td-muted">${fmtDate(o.date)}</div></td><td><button class="row-btn" onclick="event.stopPropagation();openOrderModal('${o.ref}')">Open →</button></td></tr>`).join('');
 }
 
 function renderQuotesTable(){
@@ -619,6 +620,7 @@ function updateCounts(){
 function openOrderModal(ref){
   const o=orders.find(x=>x.ref===ref);if(!o)return;curOrderRef=ref;
   set('om-ref',o.ref);set('om-name',o.name);set('om-email',o.email);set('om-address',o.address);
+  document.getElementById('om-project-name').textContent = o.project_name || '';
   set('om-floors',o.floors+' floor'+(o.floors>1?'s':''));set('om-style',o.style);
   set('om-total','$'+o.total);set('om-deposit','$'+o.deposit);
   set('om-addons',Object.keys(o.addons||{}).length?Object.entries(o.addons).map(([n,p])=>`${n} (+$${p})`).join(', '):'None');
