@@ -805,7 +805,7 @@ async function doLogin(){
       try {
         const filesRes = await fetch(
           `${SUPABASE_URL}/rest/v1/order_files?or=(${refs})&category=eq.deliverable&select=*`,
-          { headers: SB_HEADERS }
+          { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
         );
         const files = await filesRes.json();
         if(Array.isArray(files)) {
