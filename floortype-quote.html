@@ -1542,6 +1542,33 @@ async function saveQuoteToSupabase(ref, est) {
     console.error('Quote save failed:', e);
   }
 
+  // Send admin notification email
+  try {
+    await fetch('/api/notify-quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref: quoteData.ref,
+        name: quoteData.client_name,
+        email: quoteData.client_email,
+        company: quoteData.client_company,
+        role: quoteData.client_role,
+        projectName: quoteData.project_name,
+        projectType: quoteData.project_type,
+        city: quoteData.city,
+        phases: quoteData.phases,
+        renders: quoteData.renders,
+        complexity: quoteData.complexity,
+        timeline: quoteData.timeline,
+        estimateLow: quoteData.estimate_low,
+        estimateHigh: quoteData.estimate_high,
+        totalFiles: quoteData.total_files,
+        sharedLink: quoteData.shared_link,
+        notes: quoteData.notes
+      })
+    });
+  } catch(e) { console.warn('Quote notification email failed:', e); }
+
   // Also keep localStorage as fallback for admin dashboard
   const quotes = JSON.parse(localStorage.getItem('ft_quotes') || '[]');
   quotes.push({ ...quoteData, date: new Date().toISOString(), estimateLow: est?.low, estimateHigh: est?.high });

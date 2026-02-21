@@ -1434,6 +1434,29 @@
       console.error('Order save failed:', e);
     }
 
+    // Send admin notification email
+    try {
+      await fetch('/api/notify-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ref: orderData.ref,
+          name: orderData.client_name,
+          email: orderData.client_email,
+          company: orderData.client_company,
+          address: orderData.address,
+          floors: orderData.floors,
+          style: orderData.style,
+          addons: orderData.addons,
+          total: orderData.total,
+          deposit: orderData.deposit,
+          notes: orderData.notes,
+          paymentMethod: paymentMethod || 'card',
+          net30: net30Data || null
+        })
+      });
+    } catch(e) { console.warn('Notification email failed:', e); }
+
     // Also keep localStorage as fallback for admin dashboard
     const orders = JSON.parse(localStorage.getItem('ft_orders') || '[]');
     orders.push({ ...orderData, date: new Date().toISOString(), files: state.files.map(f => f.name) });
