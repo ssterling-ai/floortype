@@ -1179,13 +1179,16 @@
   }
 
   // ── STEP NAVIGATION ──
-  function goToStep(n) {
-    if (n === 4) initStripe(); // mount Stripe Elements when reaching payment step
+  async function goToStep(n) {
     state.completedSteps.add(state.currentStep);
     state.currentStep = n;
     renderSteps();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (n === 4) buildCheckoutSummary();
+    if (n === 4) {
+      buildCheckoutSummary();
+      // Wait for DOM to render step 4, then init Stripe
+      setTimeout(() => initStripe(), 100);
+    }
   }
 
   function jumpToStep(n) {
@@ -1369,9 +1372,14 @@
       const cfg = await res.json();
       pk = cfg.stripePublishableKey;
     } catch(e) {
-      console.warn('Could not load Stripe key from config');
+      console.warn('Could not load Stripe key from /api/config — using window fallback');
     }
-    if (!pk) { console.error('No Stripe publishable key found'); return; }
+    // window.STRIPE_PK can be set via a <script> tag if the API route fails
+    if (!pk) pk = window.STRIPE_PK || '';
+    if (!pk) { 
+      document.getElementById('stripe-card-errors').textContent = 'Payment system unavailable. Please refresh and try again.';
+      return; 
+    }
     stripe = Stripe(pk);
     const elements = stripe.elements({
       fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap' }]
@@ -1387,6 +1395,9 @@
         invalid: { color: '#E85555' }
       }
     });
+    // Ensure element is in DOM before mounting
+    const mountEl = document.getElementById('stripe-card-element');
+    if (!mountEl) { console.error('Stripe mount element not found'); return; }
     cardElement.mount('#stripe-card-element');
     cardElement.on('change', e => {
       document.getElementById('stripe-card-errors').textContent = e.error ? e.error.message : '';
