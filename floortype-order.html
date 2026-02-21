@@ -1179,7 +1179,7 @@
   }
 
   // ── STEP NAVIGATION ──
-  async function goToStep(n) {
+  function goToStep(n) {
     state.completedSteps.add(state.currentStep);
     state.currentStep = n;
     renderSteps();
@@ -1364,23 +1364,9 @@
   // ── STRIPE INIT ──
   let stripe, cardElement;
 
-  async function initStripe() {
+  function initStripe() {
     if (stripe) return; // already mounted
-    let pk = '';
-    try {
-      const res = await fetch('/api/config');
-      const cfg = await res.json();
-      pk = cfg.stripePublishableKey;
-    } catch(e) {
-      console.warn('Could not load Stripe key from /api/config — using window fallback');
-    }
-    // window.STRIPE_PK can be set via a <script> tag if the API route fails
-    if (!pk) pk = window.STRIPE_PK || '';
-    if (!pk) { 
-      document.getElementById('stripe-card-errors').textContent = 'Payment system unavailable. Please refresh and try again.';
-      return; 
-    }
-    stripe = Stripe(pk);
+    stripe = Stripe('pk_test_51T2m732NFEU8Y5C1Cltya0d8F3fNwW4pNOdAiWLm0BOaVA7c5VFhdgBHL4F61RZM9mKxpH3CE2f5lxFNyTjdiXbO00kR8SZAgV');
     const elements = stripe.elements({
       fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap' }]
     });
