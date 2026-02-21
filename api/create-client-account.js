@@ -68,7 +68,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         email,
-        redirect_to: 'https://floortype.com/portal'
+        redirect_to: 'https://floortype.com/reset-password'
       })
     });
 
