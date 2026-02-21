@@ -188,6 +188,68 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 </style>
 </head>
 <body>
+
+<!-- ── PASSWORD GATE ── -->
+<div id="pwGate" style="
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#1A0F4F 0%,#120F2A 60%,#0D2B28 100%);
+  display:flex;align-items:center;justify-content:center;
+">
+  <div style="
+    background:white;border-radius:20px;padding:48px 40px;
+    width:100%;max-width:380px;text-align:center;
+    box-shadow:0 24px 80px rgba(0,0,0,0.4);
+  ">
+    <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:28px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6B56C8,#2AB5A0);display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><rect x="2" y="2" width="16" height="16" rx="2" stroke="white" stroke-width="1.5"/><line x1="2" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.5"/><line x1="10" y1="2" x2="10" y2="10" stroke="white" stroke-width="1.5"/></svg>
+      </div>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.08em;color:#120F2A;">Floortype</span>
+    </div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.06em;color:#120F2A;margin-bottom:6px;">Admin Access</h1>
+    <p style="font-size:13px;color:#888;margin-bottom:32px;">Enter your password to continue</p>
+    <div style="text-align:left;margin-bottom:16px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:#444;margin-bottom:6px;letter-spacing:0.04em;">Password</label>
+      <input id="pwInput" type="password" placeholder="••••••••"
+        style="width:100%;padding:12px 14px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:#120F2A;outline:none;"
+        onkeydown="if(event.key==='Enter')checkPw()"
+      >
+    </div>
+    <div id="pwError" style="font-size:12px;color:#E85555;margin-bottom:10px;min-height:18px;"></div>
+    <button onclick="checkPw()" style="
+      width:100%;padding:14px;
+      background:linear-gradient(135deg,#4B2EC5,#2AB5A0);
+      color:white;border:none;border-radius:12px;
+      font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;
+      cursor:pointer;
+    ">Sign In →</button>
+  </div>
+</div>
+
+<script>
+  // Check if already authenticated this session
+  (function(){
+    if(sessionStorage.getItem('ft_admin_auth') === 'true'){
+      document.getElementById('pwGate').style.display = 'none';
+    }
+  })();
+
+  function checkPw(){
+    const input = document.getElementById('pwInput').value;
+    // Hash check — password is stored as a simple hash
+    // To change password: update the ADMIN_PW_HASH value below
+    // Generate a new hash by running: btoa(yourpassword) in browser console
+    const ADMIN_PW_HASH = 'NDAwcGVyY2VuVEA=';
+    if(btoa(input) === ADMIN_PW_HASH){
+      sessionStorage.setItem('ft_admin_auth','true');
+      document.getElementById('pwGate').style.display = 'none';
+    } else {
+      document.getElementById('pwError').textContent = 'Incorrect password. Try again.';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwInput').focus();
+    }
+  }
+</script>
 <div class="sidebar">
   <a href="/" class="s-logo">
     <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="white" stroke-width="1.2"/><line x1="2" y1="8" x2="14" y2="8" stroke="white" stroke-width="1.2"/><line x1="8" y1="2" x2="8" y2="14" stroke="white" stroke-width="1.2"/></svg></div>
