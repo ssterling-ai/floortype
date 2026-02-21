@@ -6,6 +6,7 @@
 <title>Floortype — Order 3D Floor Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
 <style>
   :root {
     --white: #FFFFFF;
@@ -464,6 +465,46 @@
     display: flex; align-items: center; justify-content: center; gap: 10px;
   }
   .btn-pay:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-pay:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Payment method toggle */
+  .pay-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .pay-option {
+    border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; cursor: pointer; transition: all 0.2s;
+    background: white; text-align: left; font-family: 'DM Sans', sans-serif;
+  }
+  .pay-option:hover { border-color: var(--purple-mid); }
+  .pay-option.selected { border-color: var(--purple-deep); background: var(--purple-bg); }
+  .pay-option-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--off-white); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .pay-option.selected .pay-option-icon { background: white; }
+  .pay-option-label { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
+  .pay-option-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  /* Net 30 form */
+  .net30-form { display: none; }
+  .net30-form.show { display: block; }
+  .net30-info {
+    background: linear-gradient(135deg, var(--purple-bg), #EAF8F5);
+    border: 1.5px solid var(--purple);
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .net30-info-title { font-size: 12px; font-weight: 700; color: var(--purple-deep); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom:6px; }
+  .net30-info-text { font-size: 12px; color: var(--mid); line-height: 1.65; }
+  .net30-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .net30-grid .form-group { margin-bottom: 0; }
+  .btn-invoice {
+    width: 100%; background: var(--dark);
+    color: white; border: none;
+    padding: 18px; border-radius: 14px;
+    font-size: 16px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; margin-top: 8px;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-invoice:hover { background: var(--purple-deep); }
+  .btn-invoice:disabled { opacity: 0.6; cursor: not-allowed; }
 
   /* Order summary on checkout */
   .checkout-summary {
@@ -847,38 +888,84 @@
 
         <!-- Payment -->
         <div class="checkout-section">
-          <div class="checkout-section-title">Payment</div>
-          <p style="font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.6;">
-            Payment is processed securely by Stripe. We accept all major cards. A 50% deposit is charged now — the balance is due upon delivery approval.
-          </p>
+          <div class="checkout-section-title">Payment Method</div>
 
-          <!-- Mock Stripe UI — replace with real Stripe Elements in production -->
-          <div class="form-group">
-            <label class="form-label">Card Number</label>
-            <div class="stripe-mock full">
-              <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.1"/><line x1="1" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.1"/></svg>
-              •••• •••• •••• ••••
+          <!-- Toggle -->
+          <div class="pay-toggle">
+            <button class="pay-option selected" id="opt-card" onclick="selectPayMethod('card')">
+              <div class="pay-option-icon">
+                <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><rect x="1" y="4" width="14" height="9" rx="2" stroke="var(--purple-deep)" stroke-width="1.2"/><line x1="1" y1="7" x2="15" y2="7" stroke="var(--purple-deep)" stroke-width="1.2"/></svg>
+              </div>
+              <div class="pay-option-label">Credit Card</div>
+              <div class="pay-option-sub">Pay 50% deposit now via Stripe</div>
+            </button>
+            <button class="pay-option" id="opt-net30" onclick="selectPayMethod('net30')">
+              <div class="pay-option-icon">
+                <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="var(--mid)" stroke-width="1.2"/><line x1="4" y1="6" x2="12" y2="6" stroke="var(--mid)" stroke-width="1.2"/><line x1="4" y1="9" x2="9" y2="9" stroke="var(--mid)" stroke-width="1.2"/></svg>
+              </div>
+              <div class="pay-option-label">Net 30 Invoice</div>
+              <div class="pay-option-sub">Apply for invoice billing</div>
+            </button>
+          </div>
+
+          <!-- Card payment -->
+          <div id="card-payment-form">
+            <p style="font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.6;">
+              A 50% deposit is charged now via Stripe. The balance is due upon delivery approval.
+            </p>
+            <div id="stripe-card-element" style="padding:13px 14px;border:1.5px solid var(--border);border-radius:10px;background:white;margin-bottom:14px;transition:border-color 0.2s;"></div>
+            <div id="stripe-card-errors" style="color:#E85555;font-size:12px;margin-bottom:10px;min-height:18px;"></div>
+            <div class="stripe-note" style="margin-top:4px;">
+              <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              256-bit SSL encryption · Powered by Stripe · PCI compliant
             </div>
           </div>
-          <div class="card-field-row">
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Expiry</label>
-              <div class="stripe-mock">MM / YY</div>
+
+          <!-- Net 30 form -->
+          <div id="net30-payment-form" class="net30-form">
+            <div class="net30-info">
+              <div class="net30-info-title">About Net 30 Invoicing</div>
+              <div class="net30-info-text">Net 30 is available for established firms and returning clients. A 50% deposit invoice will be issued before work begins — payable by check or ACH within 30 days. We'll review your application and confirm within 1 business day.</div>
             </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">CVC</label>
-              <div class="stripe-mock">•••</div>
+            <div class="net30-grid">
+              <div class="form-group">
+                <label class="form-label">Legal Entity Name <span class="required">*</span></label>
+                <input class="form-input" id="net30Entity" type="text" placeholder="e.g. Meridian Real Estate LLC">
+                <div class="field-error" id="err-net30Entity"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Billing Contact Name <span class="required">*</span></label>
+                <input class="form-input" id="net30Contact" type="text" placeholder="Accounts payable contact">
+                <div class="field-error" id="err-net30Contact"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Billing Email <span class="required">*</span></label>
+                <input class="form-input" id="net30Email" type="email" placeholder="billing@company.com">
+                <div class="field-error" id="err-net30Email"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Billing Phone</label>
+                <input class="form-input" id="net30Phone" type="tel" placeholder="+1 (555) 000-0000">
+              </div>
+              <div class="form-group" style="grid-column:1/-1;">
+                <label class="form-label">Billing Address</label>
+                <input class="form-input" id="net30Address" type="text" placeholder="123 Main St, New York, NY 10001">
+              </div>
             </div>
-          </div>
-          <div class="stripe-note" style="margin-top:16px;">
-            <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-            256-bit SSL encryption · Powered by Stripe · PCI compliant
+            <p style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;">By submitting, you agree that work will not begin until invoice approval is confirmed and the 50% deposit invoice is issued.</p>
           </div>
         </div>
 
-        <button class="btn-pay" onclick="placeOrder()">
+        <!-- Card pay button -->
+        <button class="btn-pay" id="btn-card-pay" onclick="placeOrder()">
           <svg viewBox="0 0 16 16" fill="none" width="18" height="18"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="white" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
           <span id="payBtnText">Pay 50% Deposit — $<span id="depositAmount">0</span></span>
+        </button>
+
+        <!-- Net 30 submit button -->
+        <button class="btn-invoice" id="btn-net30-pay" style="display:none;" onclick="placeOrderNet30()">
+          <svg viewBox="0 0 16 16" fill="none" width="18" height="18"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="white" stroke-width="1.2"/><line x1="4" y1="6" x2="12" y2="6" stroke="white" stroke-width="1.2"/><line x1="4" y1="9" x2="9" y2="9" stroke="white" stroke-width="1.2"/></svg>
+          Apply for Net 30 — Submit Order
         </button>
 
         <div class="step-nav" style="border:none; padding-top:12px; margin-top:0;">
@@ -1093,6 +1180,7 @@
 
   // ── STEP NAVIGATION ──
   function goToStep(n) {
+    if (n === 4) initStripe(); // mount Stripe Elements when reaching payment step
     state.completedSteps.add(state.currentStep);
     state.currentStep = n;
     renderSteps();
@@ -1188,11 +1276,128 @@
     return valid;
   }
 
+  // ── PAYMENT METHOD TOGGLE ──
+  let payMethod = 'card';
+
+  function selectPayMethod(method) {
+    payMethod = method;
+    document.getElementById('opt-card').classList.toggle('selected', method === 'card');
+    document.getElementById('opt-net30').classList.toggle('selected', method === 'net30');
+    document.getElementById('card-payment-form').style.display = method === 'card' ? 'block' : 'none';
+    document.getElementById('net30-payment-form').classList.toggle('show', method === 'net30');
+    document.getElementById('btn-card-pay').style.display = method === 'card' ? 'flex' : 'none';
+    document.getElementById('btn-net30-pay').style.display = method === 'net30' ? 'flex' : 'none';
+    if (method === 'card') initStripe();
+  }
+
+  function validateNet30() {
+    let valid = true;
+    const fields = [
+      ['net30Entity', 'err-net30Entity', 'Legal entity name is required'],
+      ['net30Contact', 'err-net30Contact', 'Billing contact name is required'],
+      ['net30Email', 'err-net30Email', 'Billing email is required'],
+    ];
+    fields.forEach(([id, err, msg]) => {
+      const el = document.getElementById(id);
+      const errEl = document.getElementById(err);
+      if (!el.value.trim() || (id === 'net30Email' && !el.value.includes('@'))) {
+        errEl.textContent = msg;
+        el.style.borderColor = 'var(--error)';
+        valid = false;
+      } else {
+        errEl.textContent = '';
+        el.style.borderColor = '';
+      }
+    });
+    return valid;
+  }
+
+  async function placeOrderNet30() {
+    if (!validateCheckout()) return;
+    if (!validateNet30()) return;
+
+    const btn = document.getElementById('btn-net30-pay');
+    btn.disabled = true;
+    btn.innerHTML = '<span>Submitting application…</span>';
+
+    const ref = 'FT-' + Math.floor(100000 + Math.random() * 900000);
+
+    const net30Data = {
+      entity:  document.getElementById('net30Entity').value,
+      contact: document.getElementById('net30Contact').value,
+      email:   document.getElementById('net30Email').value,
+      phone:   document.getElementById('net30Phone').value,
+      address: document.getElementById('net30Address').value,
+    };
+
+    await saveOrderToSupabase(ref, null, 'net30', net30Data);
+
+    // Custom success message for net30
+    document.getElementById('orderRef').textContent = ref;
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    const success = document.getElementById('successScreen');
+    success.innerHTML = `
+      <div style="text-align:center; padding: 40px 20px;">
+        <div style="font-size:48px; margin-bottom:16px;">📋</div>
+        <h2 style="font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:0.06em; color:var(--dark); margin-bottom:8px;">Application Submitted</h2>
+        <p style="font-size:14px; color:var(--muted); line-height:1.7; max-width:420px; margin:0 auto 24px;">
+          Your Net 30 invoice application is under review. We'll confirm within <strong>1 business day</strong> and issue your 50% deposit invoice before work begins.
+        </p>
+        <div style="background:var(--purple-bg); border:1.5px solid var(--purple); border-radius:14px; padding:20px; max-width:300px; margin:0 auto 28px;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px;">Your Order Reference</div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:0.08em; color:var(--purple-deep);">${ref}</div>
+        </div>
+        <div style="font-size:12px; color:var(--muted); line-height:1.8;">
+          Invoice sent to: <strong>${net30Data.email}</strong><br>
+          Billing contact: <strong>${net30Data.contact}</strong><br>
+          Entity: <strong>${net30Data.entity}</strong>
+        </div>
+      </div>`;
+    success.classList.add('show');
+    document.querySelector('.progress-bar').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── STRIPE INIT ──
+  let stripe, cardElement;
+
+  async function initStripe() {
+    if (stripe) return; // already mounted
+    let pk = '';
+    try {
+      const res = await fetch('/api/config');
+      const cfg = await res.json();
+      pk = cfg.stripePublishableKey;
+    } catch(e) {
+      console.warn('Could not load Stripe key from config');
+    }
+    if (!pk) { console.error('No Stripe publishable key found'); return; }
+    stripe = Stripe(pk);
+    const elements = stripe.elements({
+      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap' }]
+    });
+    cardElement = elements.create('card', {
+      style: {
+        base: {
+          fontFamily: '"DM Sans", sans-serif',
+          fontSize: '14px',
+          color: '#120F2A',
+          '::placeholder': { color: '#8880AA' }
+        },
+        invalid: { color: '#E85555' }
+      }
+    });
+    cardElement.mount('#stripe-card-element');
+    cardElement.on('change', e => {
+      document.getElementById('stripe-card-errors').textContent = e.error ? e.error.message : '';
+    });
+  }
+
   // ── SUPABASE ──
   const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcGJpZ2J2bHNybHJxbmNmYWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAzMjEsImV4cCI6MjA4NzEzNjMyMX0.rlFyDdgeXHWmqbN_Pu3YHcbWoNqS_gdnuEEv4XyK9yM';
 
-  async function saveOrderToSupabase(ref) {
+  async function saveOrderToSupabase(ref, stripePaymentMethodId, paymentMethod, net30Data) {
     const orderData = {
       ref,
       client_name:    document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
@@ -1204,8 +1409,13 @@
       addons:         state.addons,
       total:          getTotal(),
       deposit:        parseFloat((getTotal() * 0.5).toFixed(2)),
-      notes:          document.getElementById('notes').value,
-      status:         'Received'
+      // notes set below based on payment method
+      status:         paymentMethod === 'net30' ? 'Pending Invoice Approval' : 'Received',
+      stripe_payment_intent_id: stripePaymentMethodId || null,
+      payment_status: paymentMethod === 'net30' ? 'net30_pending' : 'deposit_paid',
+      notes:          paymentMethod === 'net30'
+        ? `[NET30 APPLICATION]\nEntity: ${net30Data?.entity}\nBilling Contact: ${net30Data?.contact}\nBilling Email: ${net30Data?.email}\nBilling Phone: ${net30Data?.phone || 'N/A'}\nBilling Address: ${net30Data?.address || 'N/A'}\n\nClient Notes: ${document.getElementById('notes').value}`
+        : document.getElementById('notes').value
     };
 
     try {
@@ -1233,15 +1443,51 @@
     localStorage.setItem('ft_orders', JSON.stringify(orders));
   }
 
-  function placeOrder() {
+  async function placeOrder() {
     if (!validateCheckout()) return;
-    const ref = 'FT-' + Math.floor(100000 + Math.random() * 900000);
-    document.getElementById('orderRef').textContent = ref;
-    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('successScreen').classList.add('show');
-    document.querySelector('.progress-bar').style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    saveOrderToSupabase(ref);
+
+    const btn = document.querySelector('.btn-pay');
+    const btnText = document.getElementById('payBtnText');
+    btn.disabled = true;
+    btnText.textContent = 'Processing payment…';
+
+    try {
+      const deposit = parseFloat((getTotal() * 0.5).toFixed(2));
+      const name = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
+      const email = document.getElementById('email').value;
+
+      // Create a PaymentMethod with Stripe Elements
+      const { paymentMethod, error } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+        billing_details: { name, email }
+      });
+
+      if (error) {
+        document.getElementById('stripe-card-errors').textContent = error.message;
+        btn.disabled = false;
+        btnText.innerHTML = 'Pay 50% Deposit — $<span id="depositAmount">' + deposit + '</span>';
+        return;
+      }
+
+      // Payment method created successfully — save order
+      const ref = 'FT-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('orderRef').textContent = ref;
+
+      await saveOrderToSupabase(ref, paymentMethod.id, 'card', null);
+
+      // Show success
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('successScreen').classList.add('show');
+      document.querySelector('.progress-bar').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch(e) {
+      console.error('Payment error:', e);
+      document.getElementById('stripe-card-errors').textContent = 'Payment failed. Please try again.';
+      btn.disabled = false;
+      btnText.innerHTML = 'Pay 50% Deposit — $<span id="depositAmount">' + parseFloat((getTotal()*0.5).toFixed(2)) + '</span>';
+    }
   }
 
   // ── INIT ──
