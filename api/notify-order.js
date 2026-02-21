@@ -115,7 +115,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Floortype Orders <orders@floortype.com>',
+        from: 'Floortype <onboarding@resend.dev>',
         to: [process.env.ADMIN_EMAIL || 'hello@floortype.com'],
         subject: `New Order ${ref} — ${name}${paymentMethod === 'net30' ? ' [Net 30 Application]' : ''}`,
         html
