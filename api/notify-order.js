@@ -83,7 +83,7 @@ export default async function handler(req, res) {
           </tr>
           <tr>
             <td style="padding:0;color:#666;font-size:13px;">Deposit ${paymentMethod === 'net30' ? '(Invoice — Net 30)' : '(Paid via Stripe)'}</td>
-            <td style="padding:0;font-size:13px;text-align:right;color:${paymentMethod === 'net30' ? '#B07D00' : '#2AB5A0'};font-weight:600;">$${deposit}</td>
+            <td style="padding:0;font-size:13px;text-align:right;color:${paymentMethod === 'net30' ? '#B07D00' : '#2AB5A0'};font-weight:600;">$${parseFloat(deposit).toFixed(2)}</td>
           </tr>
 
           ${net30Section}
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
 
       <!-- Footer -->
       <div style="background:#F7F5FF;padding:20px 32px;text-align:center;">
-        <a href="https://floortype.vercel.app/admin" style="display:inline-block;background:linear-gradient(135deg,#4B2EC5,#2AB5A0);color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;">Open in Admin Dashboard →</a>
+        <a href="https://floortype.com/admin" style="display:inline-block;background:linear-gradient(135deg,#4B2EC5,#2AB5A0);color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;">Open in Admin Dashboard →</a>
       </div>
 
     </div>
