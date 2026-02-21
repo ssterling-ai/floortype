@@ -820,14 +820,19 @@ async function doLogin(){
 
     // Fetch deliverable files for each order
     if(orders.length) {
-      const refs = orders.map(o => `order_ref=eq.${o.ref}`).join(',');
       try {
+        // Use in= operator for cleaner multi-ref query
+        const refList = orders.map(o => o.ref).join(',');
         const filesRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/order_files?or=(${refs})&category=eq.deliverable&select=*`,
+          `${SUPABASE_URL}/rest/v1/order_files?order_ref=in.(${refList})&category=eq.deliverable&select=*&order=created_at.asc`,
           { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
         );
-        const files = await filesRes.json();
+        const filesText = await filesRes.text();
+        console.log('Files fetch status:', filesRes.status);
+        console.log('Files response:', filesText.slice(0, 500));
+        const files = JSON.parse(filesText);
         if(Array.isArray(files)) {
+          console.log('Files found:', files.length);
           files.forEach(f => {
             const order = orders.find(o => o.ref === f.order_ref);
             if(order) {
