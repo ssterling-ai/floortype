@@ -720,6 +720,25 @@ let currentUser = null;
 let currentOrderRef = null;
 let orderFilter = 'all';
 
+// Restore session on page load
+(function restoreSession() {
+  try {
+    const saved = sessionStorage.getItem('ft_session');
+    if (!saved) return;
+    const session = JSON.parse(saved);
+    if (!session?.user || !session?.token) return;
+    currentUser = { ...session.user, token: session.token };
+    orders = session.orders || [];
+    // Hide login, show app
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appSidebar').style.display = 'flex';
+      document.getElementById('appMain').style.display = 'flex';
+      initApp();
+    });
+  } catch(e) { sessionStorage.removeItem('ft_session'); }
+})();
+
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcGJpZ2J2bHNybHJxbmNmYWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAzMjEsImV4cCI6MjA4NzEzNjMyMX0.rlFyDdgeXHWmqbN_Pu3YHcbWoNqS_gdnuEEv4XyK9yM';
@@ -837,6 +856,14 @@ async function doLogin(){
 
   btn.textContent = 'Sign In →';
   btn.disabled = false;
+
+  // Persist session so page refresh doesn't log out
+  sessionStorage.setItem('ft_session', JSON.stringify({
+    user: currentUser,
+    token: userToken,
+    orders: orders
+  }));
+
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('appSidebar').style.display = 'flex';
   document.getElementById('appMain').style.display = 'flex';
@@ -856,6 +883,7 @@ async function doLogout(){
   currentUser = null;
   currentSession = null;
   orders = [];
+  sessionStorage.removeItem('ft_session');
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPassword').value = '';
   document.getElementById('loginError').style.display = 'none';
