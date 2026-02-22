@@ -5,6 +5,11 @@
     { "source": "/quote",          "destination": "/floortype-quote.html" },
     { "source": "/portal",         "destination": "/floortype-portal.html" },
     { "source": "/admin",          "destination": "/floortype-admin.html" },
-    { "source": "/reset-password", "destination": "/reset-password.html" }
+    { "source": "/reset-password", "destination": "/reset-password.html" },
+    { "source": "/faq",            "destination": "/faq.html" },
+    { "source": "/portfolio",      "destination": "/portfolio.html" },
+    { "source": "/process",        "destination": "/process.html" },
+    { "source": "/about",          "destination": "/about.html" },
+    { "source": "/contact",        "destination": "/contact.html" }
   ]
 }

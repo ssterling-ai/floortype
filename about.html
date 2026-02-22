@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floortype — About Us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+    --white:       #FFFFFF;
+    --off-white:   #F7F5FF;
+    --purple:      #C4B5F4;
+    --purple-mid:  #9B87E8;
+    --purple-deep: #6B56C8;
+    --purple-bg:   #EDE9FF;
+    --mint:        #A8E8DA;
+    --mint-mid:    #5DCFB8;
+    --mint-deep:   #2BA892;
+    --mint-bg:     #DFF6F1;
+    --dark:        #120F2A;
+    --mid:         #3D3660;
+    --muted:       #8880AA;
+    --border:      #E8E4FF;
+    --line:        rgba(155,135,232,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--purple-deep);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(107,86,200,0.4);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, border-color 0.3s ease;
+  }
+
+  
+/* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 52px;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.12em;
+    color: var(--dark);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--purple), var(--mint));
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 16px; height: 16px; }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--dark); }
+
+  .nav-cta {
+    background: var(--dark);
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 24px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+    transition: background 0.25s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--purple-deep); transform: translateY(-1px); }
+
+  
+
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  html {{ scroll-behavior: smooth; }}
+  body {{ background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }}
+  .page-hero {{ background: var(--dark); padding: 80px 64px; position: relative; overflow: hidden; }}
+  .page-hero::before {{ content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
+    top: -200px; right: -100px; pointer-events: none; }}
+  .page-hero-eyebrow {{ font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }}
+  .page-hero-eyebrow::before {{ content: ''; width: 20px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint)); border-radius: 2px; }}
+  .page-hero h1 {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px);
+    letter-spacing: 0.02em; color: white; margin-bottom: 16px; line-height: 0.95; }}
+  .page-hero h1 em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple); }}
+  .page-hero p {{ font-size: 16px; color: rgba(255,255,255,0.5); max-width: 560px; line-height: 1.7; font-weight: 300; }}
+  .page-body {{ max-width: 900px; margin: 0 auto; padding: 64px 32px; }}
+  .page-body-wide {{ max-width: 1100px; margin: 0 auto; padding: 64px 32px; }}
+  .reveal {{ opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }}
+  .reveal.visible {{ opacity: 1; transform: none; }}
+  .section-label {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px; }}
+  .section-title {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: 0.04em; color: var(--dark); margin-bottom: 16px; }}
+  .section-title em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple-deep); }}
+
+  .about-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 64px; align-items: start; }}
+  @media(max-width:700px) {{ .about-grid {{ grid-template-columns: 1fr; }} }}
+  .about-lead {{ font-size: 22px; font-weight: 300; color: var(--dark); line-height: 1.6; margin-bottom: 24px; }}
+  .about-body {{ font-size: 15px; color: var(--mid); line-height: 1.8; }}
+  .about-body p {{ margin-bottom: 18px; }}
+  .about-stat-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
+  .about-stat {{ background: white; border: 1.5px solid var(--border); border-radius: 16px;
+    padding: 28px 24px; }}
+  .about-stat-num {{ font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.04em;
+    line-height: 1; color: var(--purple-deep); margin-bottom: 6px; }}
+  .about-stat-num.mint {{ color: var(--mint-deep); }}
+  .about-stat-label {{ font-size: 13px; color: var(--muted); font-weight: 500; }}
+  .about-values {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }}
+  @media(max-width:700px) {{ .about-values {{ grid-template-columns: 1fr; }} }}
+  .value-card {{ background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 28px; }}
+  .value-icon {{ font-size: 28px; margin-bottom: 14px; }}
+  .value-title {{ font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }}
+  .value-desc {{ font-size: 13px; color: var(--muted); line-height: 1.65; }}
+  .cta-band {{ background: var(--dark); border-radius: 20px; padding: 56px 48px;
+    margin-top: 64px; text-align: center; position: relative; overflow: hidden; }}
+  .cta-band::before {{ content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
+    top: -150px; right: -100px; pointer-events: none; }}
+  .cta-band h2 {{ font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.04em;
+    color: white; margin-bottom: 12px; }}
+  .cta-band p {{ font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }}
+  .cta-btns {{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }}
+  .btn-primary {{ background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
+    color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none;
+    font-weight: 600; font-size: 15px; transition: all 0.2s; }}
+  .btn-primary:hover {{ transform: translateY(-2px); }}
+  .btn-ghost {{ border: 1.5px solid rgba(255,255,255,0.2); color: white; padding: 14px 28px;
+    border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 15px; }}
+
+  footer {
+    background: var(--dark);
+    padding: 80px 64px 40px;
+    color: white;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .footer-brand .logo { color: white; margin-bottom: 16px; display: flex; }
+  .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.7; max-width: 260px; }
+  .footer-newsletter {
+    display: flex; gap: 0;
+    margin-top: 24px;
+  }
+  .footer-email {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-right: none;
+    border-radius: 100px 0 0 100px;
+    padding: 10px 18px;
+    color: white;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .footer-email::placeholder { color: rgba(255,255,255,0.3); }
+  .footer-email-btn {
+    background: var(--purple-deep);
+    border: none;
+    border-radius: 0 100px 100px 0;
+    padding: 10px 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .footer-email-btn:hover { background: var(--purple-mid); }
+
+  .footer-col h4 {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 20px;
+  }
+  .footer-col a {
+    display: block;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: white; }
+
+  .footer-bottom {
+    padding-top: 36px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.3); }
+  .footer-socials { display: flex; gap: 12px; }
+  .social-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .social-btn:hover { background: var(--purple-deep); color: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="logo">
+    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+    FLOORTYPE
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Portfolio</a></li>
+    <li><a href="#">Process</a></li>
+    <li><a href="#">Pricing</a></li>
+  </ul>
+  <a href="/quote" class="nav-cta">Start a Project →</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">Who We Are</div>
+  <h1>Built for the<br><em>People Who Build</em></h1>
+  <p>We exist to close the gap between what's drawn and what's imagined — giving architects, developers, and real estate professionals the visual tools to communicate their vision clearly.</p>
+</div>
+
+<div class="page-body">
+
+  <div class="about-grid reveal">
+    <div>
+      <p class="about-lead">Floortype is an architectural visualization studio focused on one thing: making your project unmistakably clear before it's built.</p>
+      <div class="about-body">
+        <p>We work with developers, architects, interior designers, and real estate professionals across every project type — from single-family homes to large-scale multifamily and mixed-use developments.</p>
+        <p>Our output is always photorealistic, always on time, and always 100% license-free. You own everything we make for you, with no strings attached.</p>
+        <p>The studio operates remotely and works with clients globally. We've built our process around a simple idea: clear communication at every step produces better work, faster. That's why we use structured draft review, a dedicated client portal, and fixed timelines — so nothing falls through the cracks.</p>
+      </div>
+    </div>
+    <div class="about-stat-grid">
+      <div class="about-stat">
+        <div class="about-stat-num">500<span style="font-size:32px;">+</span></div>
+        <div class="about-stat-label">Projects delivered</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num mint">24<span style="font-size:32px;">h</span></div>
+        <div class="about-stat-label">Quote turnaround</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">4–8</div>
+        <div class="about-stat-label">Week delivery window</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num mint">100<span style="font-size:32px;">%</span></div>
+        <div class="about-stat-label">License-free output</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-values reveal">
+    <div class="value-card">
+      <div class="value-icon">🎯</div>
+      <div class="value-title">Precision Over Volume</div>
+      <div class="value-desc">We take on projects we can deliver well. Every brief gets a real review, every quote is specific, and every draft is checked before it leaves our studio.</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🔄</div>
+      <div class="value-title">Process-First</div>
+      <div class="value-desc">Great output comes from a clear process. We've structured every step — from quote to delivery — so you always know where your project stands and what happens next.</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">📦</div>
+      <div class="value-title">Fully Yours</div>
+      <div class="value-desc">Every file we deliver is 100% license-free. No usage restrictions, no royalties, no fine print. Use our work however your project demands.</div>
+    </div>
+  </div>
+
+  <div class="cta-band reveal">
+    <h2>Let's Work Together</h2>
+    <p>Tell us about your project and we'll take it from there.</p>
+    <div class="cta-btns">
+      <a href="/quote" class="btn-primary">Start a Project →</a>
+      <a href="/contact" class="btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+        FLOORTYPE
+      </a>
+      <p class="footer-tagline">Architectural visualization that helps you sell, present, and build with confidence. Based globally, working remotely.</p>
+      <div class="footer-newsletter">
+        <input class="footer-email" type="email" placeholder="Your email address">
+        <button class="footer-email-btn">Subscribe</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="/portfolio#floor-plans">3D Floor Plans</a>
+      <a href="/portfolio#renderings">3D Renderings</a>
+      <a href="/portfolio#animations">Animations</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/portfolio">Portfolio</a>
+      <a href="/about">About Us</a>
+      <a href="/process">Process</a>
+      <a href="/faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="/portal">Client Portal</a>
+      <a href="/quote">Start a Project</a>
+      <a href="/contact">Contact Us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Floortype. All rights reserved.</p>
+    <div class="footer-socials">
+      <a href="#" class="social-btn">in</a>
+      <a href="#" class="social-btn">ig</a>
+      <a href="#" class="social-btn">be</a>
+    </div>
+    <p class="footer-copy">Privacy · Terms</p>
+  </div>
+</footer>
+<script>
+// Mobile nav toggle
+const burger = document.getElementById('burger');
+const mobileMenu = document.getElementById('mobileMenu');
+if(burger) burger.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  burger.classList.toggle('open');
+});
+// Reveal animations
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>

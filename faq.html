@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floortype — FAQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+    --white:       #FFFFFF;
+    --off-white:   #F7F5FF;
+    --purple:      #C4B5F4;
+    --purple-mid:  #9B87E8;
+    --purple-deep: #6B56C8;
+    --purple-bg:   #EDE9FF;
+    --mint:        #A8E8DA;
+    --mint-mid:    #5DCFB8;
+    --mint-deep:   #2BA892;
+    --mint-bg:     #DFF6F1;
+    --dark:        #120F2A;
+    --mid:         #3D3660;
+    --muted:       #8880AA;
+    --border:      #E8E4FF;
+    --line:        rgba(155,135,232,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--purple-deep);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(107,86,200,0.4);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, border-color 0.3s ease;
+  }
+
+  
+/* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 52px;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.12em;
+    color: var(--dark);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--purple), var(--mint));
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 16px; height: 16px; }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--dark); }
+
+  .nav-cta {
+    background: var(--dark);
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 24px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+    transition: background 0.25s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--purple-deep); transform: translateY(-1px); }
+
+  
+
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  html {{ scroll-behavior: smooth; }}
+  body {{ background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }}
+  .page-hero {{ background: var(--dark); padding: 80px 64px; position: relative; overflow: hidden; }}
+  .page-hero::before {{ content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
+    top: -200px; right: -100px; pointer-events: none; }}
+  .page-hero-eyebrow {{ font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }}
+  .page-hero-eyebrow::before {{ content: ''; width: 20px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint)); border-radius: 2px; }}
+  .page-hero h1 {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px);
+    letter-spacing: 0.02em; color: white; margin-bottom: 16px; line-height: 0.95; }}
+  .page-hero h1 em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple); }}
+  .page-hero p {{ font-size: 16px; color: rgba(255,255,255,0.5); max-width: 560px; line-height: 1.7; font-weight: 300; }}
+  .page-body {{ max-width: 900px; margin: 0 auto; padding: 64px 32px; }}
+  .page-body-wide {{ max-width: 1100px; margin: 0 auto; padding: 64px 32px; }}
+  .reveal {{ opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }}
+  .reveal.visible {{ opacity: 1; transform: none; }}
+  .section-label {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px; }}
+  .section-title {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: 0.04em; color: var(--dark); margin-bottom: 16px; }}
+  .section-title em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple-deep); }}
+
+  .faq-group {{ margin-bottom: 48px; }}
+  .faq-group-title {{ font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.06em;
+    color: var(--dark); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }}
+  .faq-item {{ border: 1.5px solid var(--border); border-radius: 14px; background: white;
+    margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s; }}
+  .faq-item:hover {{ border-color: var(--purple-mid); }}
+  .faq-q {{ padding: 18px 22px; font-size: 15px; font-weight: 600; color: var(--dark);
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; }}
+  .faq-arrow {{ flex-shrink: 0; font-size: 18px; color: var(--purple-deep); transition: transform 0.3s; font-weight: 300; }}
+  .faq-item.open .faq-arrow {{ transform: rotate(45deg); }}
+  .faq-a {{ display: none; padding: 0 22px 18px; font-size: 14px; color: var(--mid);
+    line-height: 1.75; border-top: 1px solid var(--border); padding-top: 16px; }}
+  .faq-item.open .faq-a {{ display: block; }}
+
+  footer {
+    background: var(--dark);
+    padding: 80px 64px 40px;
+    color: white;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .footer-brand .logo { color: white; margin-bottom: 16px; display: flex; }
+  .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.7; max-width: 260px; }
+  .footer-newsletter {
+    display: flex; gap: 0;
+    margin-top: 24px;
+  }
+  .footer-email {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-right: none;
+    border-radius: 100px 0 0 100px;
+    padding: 10px 18px;
+    color: white;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .footer-email::placeholder { color: rgba(255,255,255,0.3); }
+  .footer-email-btn {
+    background: var(--purple-deep);
+    border: none;
+    border-radius: 0 100px 100px 0;
+    padding: 10px 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .footer-email-btn:hover { background: var(--purple-mid); }
+
+  .footer-col h4 {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 20px;
+  }
+  .footer-col a {
+    display: block;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: white; }
+
+  .footer-bottom {
+    padding-top: 36px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.3); }
+  .footer-socials { display: flex; gap: 12px; }
+  .social-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .social-btn:hover { background: var(--purple-deep); color: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="logo">
+    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+    FLOORTYPE
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Portfolio</a></li>
+    <li><a href="#">Process</a></li>
+    <li><a href="#">Pricing</a></li>
+  </ul>
+  <a href="/quote" class="nav-cta">Start a Project →</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">Common Questions</div>
+  <h1>Frequently Asked<br><em>Questions</em></h1>
+  <p>Everything you need to know about working with Floortype — from first quote to final delivery.</p>
+</div>
+
+<div class="page-body">
+
+  <div class="faq-group reveal">
+    <div class="faq-group-title">Getting Started</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I get a quote for 3D renderings? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Fill out our quote request form at floortype.com/quote. Tell us about your project, the types of renderings you need, and upload any reference materials you have. We'll review everything and send you a detailed quote within 24 hours.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I order a 3D floor plan? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Floor plans are fixed pricing at $150 per floor. Place your order at floortype.com/order, upload your architectural drawings, and we'll get started within 48 hours of receiving your materials.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What information do I need to provide? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">For floor plans, we need your architectural drawings (PDF, DWG, or image format). For renderings, the more reference material the better — floor plans, elevations, FF&amp;E specs, material boards, and inspiration imagery all help us deliver more accurate results. Don't worry if your set isn't complete; we can work with what you have and gather the rest during scoping.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do I need to have a complete set of drawings? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">No. We work with projects at all stages of design, from early concept through construction documents. Submit what you have and we'll let you know what else we might need during the scoping process.</div>
+    </div>
+  </div>
+
+  <div class="faq-group reveal">
+    <div class="faq-group-title">Pricing & Payment</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How is pricing determined for custom renderings? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Rendering pricing depends on the type of views (interior, exterior, aerial, 360° virtual tour), the number of images, and the complexity of the project. Our estimator on the quote form gives you a ballpark range, and we'll send a firm price within 24 hours of your submission.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">When do I pay? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">For floor plans, a 50% deposit is required to begin production, with the balance due upon delivery. For custom rendering projects, payment terms are outlined in your quote. No payment is ever required before you've approved a quote.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do you offer Net 30 invoicing? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Yes. Net 30 invoicing is available for qualified clients and studios. Contact us to discuss account terms.</div>
+    </div>
+  </div>
+
+  <div class="faq-group reveal">
+    <div class="faq-group-title">Production & Revisions</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How long does production take? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Floor plans are delivered within 48 hours of receiving complete reference materials. Custom rendering projects follow a standard 4–8 week production window, depending on scope and complexity. Expedited timelines are available at an additional fee.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How many revisions are included? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">All projects include 2 full rounds of revisions plus a final round. Each draft is delivered through your client portal via ReviewStudio, where you can leave annotated comments directly on the images. Additional revision rounds can be added for a fee.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I leave feedback on drafts? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Drafts are shared through ReviewStudio — a professional annotation platform that lets you pin comments directly on the rendering. When you're done reviewing, you confirm completion in your client portal, which notifies our team to begin revisions.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I request changes to the camera angle or composition? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Yes — camera placement, framing, and composition are all part of the revision process. For fly-through animations, there's a dedicated camera path review round before final rendering begins.</div>
+    </div>
+  </div>
+
+  <div class="faq-group reveal">
+    <div class="faq-group-title">Deliverables & Files</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What file formats will I receive? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Still renderings are delivered as high-resolution PNG or JPG files suitable for both print and web use. 360° virtual tours are delivered as hosted web embed links. Fly-through animations are delivered as MP4 video files. Specific formats and resolutions are confirmed during scoping based on your intended use.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Are the images license-free? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Yes. All deliverables are 100% license-free. Once delivered, you own full rights to use the images for any purpose — marketing, sales, social media, print, web, or otherwise — with no royalties or attribution required.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I access my delivered files? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">All final files are available to download at any time through your Floortype client portal at floortype.com/portal. Files remain accessible after project completion.</div>
+    </div>
+  </div>
+
+  <div class="faq-group reveal">
+    <div class="faq-group-title">Working With Us</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do you work with clients outside the United States? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Yes. We work with architects, developers, and real estate professionals globally. All communication and file sharing is handled remotely through our client portal.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I submit multiple projects at once? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Absolutely. Your client portal is designed to manage multiple active projects simultaneously. If you have a large volume of work, contact us to discuss dedicated account management and volume pricing.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What types of projects do you work on? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">We work across multifamily residential, mixed-use, single-family, commercial, hospitality, and retail projects. If it has an architectural drawing, we can render it.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleFaq(el) {{
+  el.classList.toggle('open');
+}}
+</script>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+        FLOORTYPE
+      </a>
+      <p class="footer-tagline">Architectural visualization that helps you sell, present, and build with confidence. Based globally, working remotely.</p>
+      <div class="footer-newsletter">
+        <input class="footer-email" type="email" placeholder="Your email address">
+        <button class="footer-email-btn">Subscribe</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="/portfolio#floor-plans">3D Floor Plans</a>
+      <a href="/portfolio#renderings">3D Renderings</a>
+      <a href="/portfolio#animations">Animations</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/portfolio">Portfolio</a>
+      <a href="/about">About Us</a>
+      <a href="/process">Process</a>
+      <a href="/faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="/portal">Client Portal</a>
+      <a href="/quote">Start a Project</a>
+      <a href="/contact">Contact Us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Floortype. All rights reserved.</p>
+    <div class="footer-socials">
+      <a href="#" class="social-btn">in</a>
+      <a href="#" class="social-btn">ig</a>
+      <a href="#" class="social-btn">be</a>
+    </div>
+    <p class="footer-copy">Privacy · Terms</p>
+  </div>
+</footer>
+<script>
+// Mobile nav toggle
+const burger = document.getElementById('burger');
+const mobileMenu = document.getElementById('mobileMenu');
+if(burger) burger.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  burger.classList.toggle('open');
+});
+// Reveal animations
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>

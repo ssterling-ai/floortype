@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floortype — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+    --white:       #FFFFFF;
+    --off-white:   #F7F5FF;
+    --purple:      #C4B5F4;
+    --purple-mid:  #9B87E8;
+    --purple-deep: #6B56C8;
+    --purple-bg:   #EDE9FF;
+    --mint:        #A8E8DA;
+    --mint-mid:    #5DCFB8;
+    --mint-deep:   #2BA892;
+    --mint-bg:     #DFF6F1;
+    --dark:        #120F2A;
+    --mid:         #3D3660;
+    --muted:       #8880AA;
+    --border:      #E8E4FF;
+    --line:        rgba(155,135,232,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--purple-deep);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(107,86,200,0.4);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, border-color 0.3s ease;
+  }
+
+  
+/* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 52px;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.12em;
+    color: var(--dark);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--purple), var(--mint));
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 16px; height: 16px; }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--dark); }
+
+  .nav-cta {
+    background: var(--dark);
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 24px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+    transition: background 0.25s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--purple-deep); transform: translateY(-1px); }
+
+  
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }
+  .page-hero { background: var(--dark); padding: 80px 64px; position: relative; overflow: hidden; }
+  .page-hero::before { content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
+    top: -200px; right: -100px; pointer-events: none; }
+  .page-hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .page-hero-eyebrow::before { content: ''; width: 20px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint)); border-radius: 2px; }
+  .page-hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px);
+    letter-spacing: 0.02em; color: white; margin-bottom: 16px; line-height: 0.95; }
+  .page-hero h1 em { font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple); }
+  .page-hero p { font-size: 16px; color: rgba(255,255,255,0.5); max-width: 560px; line-height: 1.7; font-weight: 300; }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  .port-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; padding: 32px 64px 0; }
+  .port-filter { padding: 8px 18px; border-radius: 100px; border: 1.5px solid var(--border);
+    background: white; font-size: 13px; font-weight: 500; color: var(--muted);
+    cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .port-filter:hover { border-color: var(--purple-mid); color: var(--purple-deep); }
+  .port-filter.active { background: var(--purple-deep); border-color: var(--purple-deep); color: white; }
+  .port-section { padding: 48px 64px; }
+  .port-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.06em;
+    color: var(--dark); margin-bottom: 6px; }
+  .port-section-desc { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+  .port-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media(max-width:900px) { .port-grid { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:600px) { .port-grid { grid-template-columns: 1fr; } }
+  .port-card { border-radius: 16px; overflow: hidden; background: white;
+    border: 1.5px solid var(--border); transition: all 0.25s; }
+  .port-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(107,86,200,0.15); border-color: var(--purple-mid); }
+  .port-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: var(--border);
+    display: flex; align-items: center; justify-content: center; }
+  .port-img-placeholder { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--purple-bg), var(--mint-bg));
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+  .port-img-placeholder span { font-size: 32px; }
+  .port-img-placeholder p { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .port-card-body { padding: 16px 18px; }
+  .port-card-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--purple-deep); margin-bottom: 4px; }
+  .port-card-title { font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 4px; }
+  .port-card-sub { font-size: 12px; color: var(--muted); }
+  .port-empty { display: none; text-align: center; padding: 60px; color: var(--muted); font-size: 14px; }
+  .cta-band { background: var(--dark); margin: 0 64px 64px; border-radius: 20px; padding: 56px 48px;
+    text-align: center; position: relative; overflow: hidden; }
+  .cta-band::before { content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
+    top: -150px; right: -100px; pointer-events: none; }
+  .cta-band h2 { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.04em;
+    color: white; margin-bottom: 12px; }
+  .cta-band p { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
+    color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none;
+    font-weight: 600; font-size: 15px; transition: all 0.2s; }
+  .btn-ghost { border: 1.5px solid rgba(255,255,255,0.2); color: white; padding: 14px 28px;
+    border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 15px; }
+
+  footer {
+    background: var(--dark);
+    padding: 80px 64px 40px;
+    color: white;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .footer-brand .logo { color: white; margin-bottom: 16px; display: flex; }
+  .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.7; max-width: 260px; }
+  .footer-newsletter {
+    display: flex; gap: 0;
+    margin-top: 24px;
+  }
+  .footer-email {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-right: none;
+    border-radius: 100px 0 0 100px;
+    padding: 10px 18px;
+    color: white;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .footer-email::placeholder { color: rgba(255,255,255,0.3); }
+  .footer-email-btn {
+    background: var(--purple-deep);
+    border: none;
+    border-radius: 0 100px 100px 0;
+    padding: 10px 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .footer-email-btn:hover { background: var(--purple-mid); }
+
+  .footer-col h4 {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 20px;
+  }
+  .footer-col a {
+    display: block;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: white; }
+
+  .footer-bottom {
+    padding-top: 36px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.3); }
+  .footer-socials { display: flex; gap: 12px; }
+  .social-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .social-btn:hover { background: var(--purple-deep); color: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="logo">
+    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+    FLOORTYPE
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Portfolio</a></li>
+    <li><a href="#">Process</a></li>
+    <li><a href="#">Pricing</a></li>
+  </ul>
+  <a href="/quote" class="nav-cta">Start a Project →</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">Our Work</div>
+  <h1>Portfolio</h1>
+  <p>A selection of recent projects across floor plans, 3D renderings, and animations. New work added regularly.</p>
+</div>
+
+<div class="port-filter-bar">
+  <button class="port-filter active" onclick="filterPort('all', this)">All Work</button>
+  <button class="port-filter" onclick="filterPort('floor-plans', this)" id="filter-floor-plans">3D Floor Plans</button>
+  <button class="port-filter" onclick="filterPort('renderings', this)" id="filter-renderings">3D Renderings</button>
+  <button class="port-filter" onclick="filterPort('animations', this)" id="filter-animations">Animations</button>
+</div>
+
+<!-- FLOOR PLANS -->
+<div class="port-section" id="section-floor-plans">
+  <div class="port-section-title" id="floor-plans">3D Floor Plans</div>
+  <div class="port-section-desc">Architectural floor plans transformed into clear, photorealistic 3D layouts.</div>
+  <div class="port-grid">
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🏠</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Floor Plan</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio images coming soon</div>
+      </div>
+    </div>
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🏠</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Floor Plan</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio images coming soon</div>
+      </div>
+    </div>
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🏠</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Floor Plan</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio images coming soon</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RENDERINGS -->
+<div class="port-section" id="section-renderings">
+  <div class="port-section-title" id="renderings">3D Renderings</div>
+  <div class="port-section-desc">Photorealistic interior, exterior, and aerial visualizations.</div>
+  <div class="port-grid">
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🎨</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Interior Rendering</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio images coming soon</div>
+      </div>
+    </div>
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🎨</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Exterior Rendering</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio images coming soon</div>
+      </div>
+    </div>
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🎨</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Aerial Rendering</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio images coming soon</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANIMATIONS -->
+<div class="port-section" id="section-animations">
+  <div class="port-section-title" id="animations">Animations</div>
+  <div class="port-section-desc">Cinematic fly-through videos for sales launches and investor presentations.</div>
+  <div class="port-grid">
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🎬</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Fly-Through Animation</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio videos coming soon</div>
+      </div>
+    </div>
+    <div class="port-card">
+      <div class="port-img-placeholder"><span>🎬</span><p>Coming Soon</p></div>
+      <div class="port-card-body">
+        <div class="port-card-tag">Fly-Through Animation</div>
+        <div class="port-card-title">Sample Project</div>
+        <div class="port-card-sub">Portfolio videos coming soon</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-band reveal">
+  <h2>Ready to Add Your Project?</h2>
+  <p>Get a quote in 24 hours or order floor plans today.</p>
+  <div class="cta-btns">
+    <a href="/quote" class="btn-primary">Request a Quote →</a>
+    <a href="/order" class="btn-ghost">Order Floor Plans</a>
+  </div>
+</div>
+
+<script>
+function filterPort(cat, btn) {
+  document.querySelectorAll('.port-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sections = ['floor-plans','renderings','animations'];
+  sections.forEach(id => {
+    const el = document.getElementById('section-' + id);
+    if(cat === 'all' || cat === id) { el.style.display = 'block'; }
+    else { el.style.display = 'none'; }
+  });
+  // Scroll to section anchor if specific category
+  if(cat !== 'all') {
+    const el = document.getElementById(cat);
+    if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// Handle anchor links from footer (#floor-plans etc)
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.replace('#','');
+  if(hash && ['floor-plans','renderings','animations'].includes(hash)) {
+    const btn = document.getElementById('filter-' + hash);
+    if(btn) filterPort(hash, btn);
+    setTimeout(() => {
+      const el = document.getElementById(hash);
+      if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
+});
+</script>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+        FLOORTYPE
+      </a>
+      <p class="footer-tagline">Architectural visualization that helps you sell, present, and build with confidence. Based globally, working remotely.</p>
+      <div class="footer-newsletter">
+        <input class="footer-email" type="email" placeholder="Your email address">
+        <button class="footer-email-btn">Subscribe</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="/portfolio#floor-plans">3D Floor Plans</a>
+      <a href="/portfolio#renderings">3D Renderings</a>
+      <a href="/portfolio#animations">Animations</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/portfolio">Portfolio</a>
+      <a href="/about">About Us</a>
+      <a href="/process">Process</a>
+      <a href="/faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="/portal">Client Portal</a>
+      <a href="/quote">Start a Project</a>
+      <a href="/contact">Contact Us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Floortype. All rights reserved.</p>
+    <div class="footer-socials">
+      <a href="#" class="social-btn">in</a>
+      <a href="#" class="social-btn">ig</a>
+      <a href="#" class="social-btn">be</a>
+    </div>
+    <p class="footer-copy">Privacy · Terms</p>
+  </div>
+</footer>
+<script>
+const burger = document.getElementById('burger');
+const mobileMenu = document.getElementById('mobileMenu');
+if(burger) burger.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  burger.classList.toggle('open');
+});
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
