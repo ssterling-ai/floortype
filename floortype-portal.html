@@ -615,6 +615,7 @@
           <!-- Revision rounds -->
           <div class="detail-card">
             <div class="rounds-title">Revision Rounds</div>
+            <div id="reviewSection" style="display:none;"></div>
             <div id="roundsContainer"></div>
           </div>
         </div>
@@ -810,6 +811,7 @@ async function doLogin(){
     orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
       ref: o.ref,
       project_name: o.project_name || '',
+      review_link: o.review_link || '',
       date: o.created_at,
       address: o.address,
       floors: o.floors,
@@ -1075,6 +1077,56 @@ function openOrderDetail(ref){
     <div class="info-row"><span class="info-label">Ordered</span><span class="info-val">${fmtDate(o.date)}</span></div>
     ${o.notes?`<div class="info-row" style="flex-direction:column;gap:6px;"><span class="info-label">Your Notes</span><span style="font-size:13px;color:var(--mid);line-height:1.6;">${o.notes}</span></div>`:''}`;
 
+  // Review buttons - show when review link exists and stage is a draft stage
+  const draftStages = ['draft-1-ready','draft-2-ready','final-draft-ready'];
+  const reviewContainer = document.getElementById('reviewSection');
+  if(o.review_link && draftStages.includes(o.stage)) {
+    const stageLabel = {
+      'draft-1-ready': 'Draft 1',
+      'draft-2-ready': 'Draft 2',
+      'final-draft-ready': 'Final Draft'
+    }[o.stage] || 'Draft';
+
+    const alreadyConfirmed = o.review_confirmed === o.stage;
+
+    reviewContainer.style.display = 'block';
+    reviewContainer.innerHTML = `
+      <div style="background:linear-gradient(135deg,#EDE9FF,#DFF6F1);border:1px solid rgba(107,86,200,0.15);border-radius:16px;padding:24px;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-deep);margin-bottom:8px;">${stageLabel} — Ready for Review</div>
+        <p style="font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:20px;">Your ${stageLabel} is ready. Open the review link below, leave your comments in ReviewStudio, then click <strong>Confirm Review Complete</strong> when you're done.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="${o.review_link}" target="_blank" rel="noopener" style="
+            display:flex;align-items:center;justify-content:center;gap:8px;
+            padding:14px 24px;border-radius:12px;
+            background:linear-gradient(135deg,var(--purple-deep),var(--mint-deep));
+            color:white;text-decoration:none;font-weight:600;font-size:14px;
+            box-shadow:0 4px 16px rgba(107,86,200,0.3);
+          ">
+            <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M7 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V9" stroke="white" stroke-width="1.3" stroke-linecap="round"/><path d="M10 2h4v4M14 2l-7 7" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Review ${stageLabel} in ReviewStudio
+          </a>
+          ${alreadyConfirmed ? `
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border-radius:12px;background:#F0FDF4;border:1.5px solid #86EFAC;color:#16A34A;font-weight:600;font-size:14px;">
+              ✓ Review Confirmed — We're on it
+            </div>
+          ` : `
+            <button onclick="confirmReview('${o.ref}','${o.project_name||o.ref}','${o.stage}')" style="
+              display:flex;align-items:center;justify-content:center;gap:8px;
+              padding:14px 24px;border-radius:12px;border:2px solid var(--purple-deep);
+              background:white;color:var(--purple-deep);font-weight:600;font-size:14px;
+              cursor:pointer;font-family:'DM Sans',sans-serif;
+              transition:all 0.2s;
+            " onmouseover="this.style.background='var(--purple-bg)'" onmouseout="this.style.background='white'">
+              <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><polyline points="2,8 6,12 14,4" stroke="var(--purple-deep)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Confirm Review Complete
+            </button>
+          `}
+        </div>
+      </div>`;
+  } else {
+    if(reviewContainer) reviewContainer.style.display = 'none';
+  }
+
   // Final files
   if(o.finalFiles&&o.finalFiles.length){
     document.getElementById('finalFilesWidget').style.display='block';
@@ -1262,6 +1314,54 @@ function openNewOrder() {
   window.open(`/order?${params.toString()}`, '_blank');
 }
 
+async function confirmReview(orderRef, projectName, currentStage) {
+  const confirmed = confirm(
+    'Once confirmed, no further comments should be submitted to ReviewStudio.\n\nAre you ready to confirm that all review comments are complete?'
+  );
+  if (!confirmed) return;
+
+  const btn = event.target.closest('button');
+  if(btn) { btn.disabled = true; btn.textContent = 'Confirming…'; }
+
+  try {
+    const res = await fetch('/api/confirm-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderRef,
+        projectName,
+        clientEmail: currentUser.email,
+        clientName: currentUser.name,
+        currentStage
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    // Update local order state
+    const order = orders.find(o => o.ref === orderRef);
+    if (order) {
+      order.stage = data.nextStage;
+      order.review_confirmed = currentStage;
+      // Update saved session
+      localStorage.setItem('ft_session', JSON.stringify({
+        user: currentUser,
+        token: currentUser.token,
+        refresh_token: '',
+        orders
+      }));
+    }
+
+    showToast(`Review confirmed ✓ We’ll be in touch soon.`, "success");
+    // Re-render the detail view
+    openOrderDetail(orderRef);
+  } catch(e) {
+    console.error('Confirm review failed:', e);
+    showToast('Something went wrong. Please try again.', '');
+    if(btn) { btn.disabled = false; btn.textContent = 'Confirm Review Complete'; }
+  }
+}
+
 async function downloadFile(filePath, fileName) {
   showToast('Preparing download…', '');
   try {
@@ -1306,6 +1406,54 @@ function openNewOrder() {
     name: currentUser.name || ''
   });
   window.open(`/order?${params.toString()}`, '_blank');
+}
+
+async function confirmReview(orderRef, projectName, currentStage) {
+  const confirmed = confirm(
+    'Once confirmed, no further comments should be submitted to ReviewStudio.\n\nAre you ready to confirm that all review comments are complete?'
+  );
+  if (!confirmed) return;
+
+  const btn = event.target.closest('button');
+  if(btn) { btn.disabled = true; btn.textContent = 'Confirming…'; }
+
+  try {
+    const res = await fetch('/api/confirm-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderRef,
+        projectName,
+        clientEmail: currentUser.email,
+        clientName: currentUser.name,
+        currentStage
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    // Update local order state
+    const order = orders.find(o => o.ref === orderRef);
+    if (order) {
+      order.stage = data.nextStage;
+      order.review_confirmed = currentStage;
+      // Update saved session
+      localStorage.setItem('ft_session', JSON.stringify({
+        user: currentUser,
+        token: currentUser.token,
+        refresh_token: '',
+        orders
+      }));
+    }
+
+    showToast(`Review confirmed ✓ We’ll be in touch soon.`, "success");
+    // Re-render the detail view
+    openOrderDetail(orderRef);
+  } catch(e) {
+    console.error('Confirm review failed:', e);
+    showToast('Something went wrong. Please try again.', '');
+    if(btn) { btn.disabled = false; btn.textContent = 'Confirm Review Complete'; }
+  }
 }
 
 async function downloadFile(filePath, fileName) {

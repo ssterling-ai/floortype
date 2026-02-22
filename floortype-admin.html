@@ -406,6 +406,11 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
           <option value="delivered">Delivered</option>
         </select>
       </div>
+      <div class="m-sec">
+        <div class="m-sec-title">Review Link <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:6px;">ReviewStudio URL — client sees a "Review Draft" button</span></div>
+        <input class="status-select" type="url" id="om-review-link" placeholder="https://app.reviewstudio.com/..." style="font-size:13px;">
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">Paste the ReviewStudio review link. Leave blank to hide the button from the client.</div>
+      </div>
     </div>
     <div class="m-footer"><button class="btn-cancel" onclick="closeOverlayDirect('order-modal')">Cancel</button><button class="btn-save" onclick="saveOrderStatus()">Save Changes</button></div>
   </div>
@@ -482,6 +487,7 @@ async function loadData(){
     orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
       ref: o.ref,
       project_name: o.project_name || '',
+      review_link: o.review_link || '',
       date: o.created_at,
       name: o.client_name,
       email: o.client_email,
@@ -627,6 +633,7 @@ function openOrderModal(ref){
   set('om-notes',o.notes||'No notes provided.');
   document.getElementById('om-status').value=o.status;
   document.getElementById('om-stage').value=o.stage||o.project_stage||'';
+  document.getElementById('om-review-link').value=o.review_link||'';
   loadDeliverables(curOrderRef);
   document.getElementById('om-files').innerHTML=(o.files||[]).map(f=>`<div class="f-row"><span class="f-ext">${f.split('.').pop().toUpperCase()}</span><span class="f-name">${f}</span><button class="f-dl" onclick="showToast('Downloading…','')">↓</button></div>`).join('')||'<div style="font-size:13px;color:var(--muted)">No files.</div>';
   showOverlay('order-modal');
@@ -655,12 +662,13 @@ async function saveOrderStatus(){
   if(o){
     o.status=document.getElementById('om-status').value;
     o.stage=document.getElementById('om-stage').value;
+    o.review_link=document.getElementById('om-review-link').value.trim();
     // Save stage to Supabase addons field temporarily (until schema updated)
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${curOrderRef}`,{
         method:'PATCH',
         headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-        body:JSON.stringify({status:o.status, project_stage: o.stage})
+        body:JSON.stringify({status:o.status, project_stage: o.stage, review_link: o.review_link||null})
       });
     } catch(e){ console.warn('Stage save failed:',e); }
     saveData();
