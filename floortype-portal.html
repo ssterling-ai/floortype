@@ -505,7 +505,7 @@
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z"/><polyline points="9 2 9 6 13 6"/></svg>
     Delivered Files
   </button>
-  <button class="nav-item" id="nav-new" onclick="window.open('/order','_blank')">
+  <button class="nav-item" id="nav-new" onclick="openNewOrder()">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
     New Order
   </button>
@@ -534,7 +534,7 @@
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 1a5 5 0 015 5v3l1 2H2l1-2V6a5 5 0 015-5z"/><path d="M6.5 13a1.5 1.5 0 003 0"/></svg>
         <span class="notif-badge" id="notifBadge"></span>
       </button>
-      <a href="/order" target="_blank" class="topbar-cta">+ New Order</a>
+      <a href="#" onclick="openNewOrder()" class="topbar-cta">+ New Order</a>
     </div>
   </div>
 
@@ -548,7 +548,7 @@
           <p>You have <strong id="activeCount">0</strong> active order(s) in progress. <span id="reviewPrompt" style="display:none;color:var(--purple-deep);font-weight:500;">One project is ready for your review.</span></p>
         </div>
         <div class="welcome-actions">
-          <a href="/order" target="_blank" class="btn-primary">+ New Floor Plan</a>
+          <a href="#" onclick="openNewOrder()" class="btn-primary">+ New Floor Plan</a>
           <button class="btn-secondary" onclick="showView('orders')">View All Orders</button>
         </div>
       </div>
@@ -720,8 +720,8 @@ let currentUser = null;
 let currentOrderRef = null;
 let orderFilter = 'all';
 
-// Restore session on page load
-(function restoreSession() {
+// Restore session on page load - called after DOM ready
+function restoreSession() {
   try {
     const saved = sessionStorage.getItem('ft_session');
     if (!saved) return;
@@ -729,15 +729,12 @@ let orderFilter = 'all';
     if (!session?.user || !session?.token) return;
     currentUser = { ...session.user, token: session.token };
     orders = session.orders || [];
-    // Hide login, show app
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('appSidebar').style.display = 'flex';
-      document.getElementById('appMain').style.display = 'flex';
-      initApp();
-    });
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appSidebar').style.display = 'flex';
+    document.getElementById('appMain').style.display = 'flex';
+    initApp();
   } catch(e) { sessionStorage.removeItem('ft_session'); }
-})();
+}
 
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
@@ -899,6 +896,8 @@ async function doLogout(){
 }
 
 // ── INIT ──
+document.addEventListener('DOMContentLoaded', restoreSession);
+
 function initApp(){
   document.getElementById('userAvatar').textContent = currentUser.initials;
   document.getElementById('userName').textContent = currentUser.name;
@@ -1243,6 +1242,15 @@ async function saveNoteToSupabase(orderRef, roundNum, text){
   // For now notes live in localStorage until revision system is fully wired
   console.log('Note saved locally for order:', orderRef);
 }
+function openNewOrder() {
+  if(!currentUser) { window.open('/order','_blank'); return; }
+  const params = new URLSearchParams({
+    email: currentUser.email || '',
+    name: currentUser.name || ''
+  });
+  window.open(`/order?${params.toString()}`, '_blank');
+}
+
 async function downloadFile(filePath, fileName) {
   showToast('Preparing download…', '');
   try {
@@ -1278,6 +1286,15 @@ function showToast(msg, type){
   t.className = 'toast' + (type ? ' ' + type : '');
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function openNewOrder() {
+  if(!currentUser) { window.open('/order','_blank'); return; }
+  const params = new URLSearchParams({
+    email: currentUser.email || '',
+    name: currentUser.name || ''
+  });
+  window.open(`/order?${params.toString()}`, '_blank');
 }
 
 async function downloadFile(filePath, fileName) {

@@ -1539,6 +1539,22 @@
 
   // ── INIT ──
   updatePricing();
+
+  // Pre-fill from URL params (when coming from client portal)
+  const urlParams = new URLSearchParams(window.location.search);
+  const prefillEmail = urlParams.get('email');
+  const prefillName = urlParams.get('name');
+  if(prefillEmail) {
+    const emailField = document.getElementById('email');
+    if(emailField) emailField.value = prefillEmail;
+  }
+  if(prefillName) {
+    const parts = prefillName.trim().split(' ');
+    const firstField = document.getElementById('firstName');
+    const lastField = document.getElementById('lastName');
+    if(firstField) firstField.value = parts[0] || '';
+    if(lastField) lastField.value = parts.slice(1).join(' ') || '';
+  }
 </script>
 </body>
 </html>

@@ -580,7 +580,7 @@ function renderOverview(){
 
 function renderOrdersTable(){
   const s=document.getElementById('orders-search').value.toLowerCase();
-  const f=orders.filter(o=>(ordersF==='all'||o.status===ordersF)&&(!s||o.ref.toLowerCase().includes(s)||o.name.toLowerCase().includes(s)||o.address.toLowerCase().includes(s)||(o.project_name&&o.project_name.toLowerCase().includes(s))));
+  const f=orders.filter(o=>(ordersF==='all'||o.status===ordersF)&&(!s||o.ref.toLowerCase().includes(s)||o.name.toLowerCase().includes(s)||o.address.toLowerCase().includes(s)||(o.project_name&&o.project_name.toLowerCase().includes(s)))).sort((a,b)=>(a.project_name||a.name).localeCompare(b.project_name||b.name));
   const tb=document.getElementById('orders-tbody');
   if(!f.length){tb.innerHTML=`<tr><td colspan="7">${emptyHTML('No Orders Found','Adjust your search or filter.')}</td></tr>`;return;}
   tb.innerHTML=f.map(o=>`<tr onclick="openOrderModal('${o.ref}')"><td><div class="td-ref">${o.ref}</div>${o.project_name?`<div style="font-size:11px;font-weight:600;color:var(--purple-deep);margin-top:2px;">${o.project_name}</div>`:''}</td><td><div class="td-name">${o.name}</div><div class="td-sub">${o.email}</div></td><td><div class="td-muted">${o.floors} floor${o.floors>1?'s':''} · ${o.style}</div><div class="td-sub">${Object.keys(o.addons||{}).length?Object.keys(o.addons).join(', '):'No add-ons'}</div></td><td><span class="badge ${oBadge(o.status)}">${o.status}</span></td><td><div class="td-amt">$${o.total}<div class="sub">$${o.deposit} dep.</div></div></td><td><div class="td-muted">${fmtDate(o.date)}</div></td><td><button class="row-btn" onclick="event.stopPropagation();openOrderModal('${o.ref}')">Open →</button></td></tr>`).join('');
