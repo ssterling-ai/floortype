@@ -431,7 +431,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       <div class="m-sec"><div class="m-sec-title">Reference Materials</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Files Uploaded</div><div class="d-val" id="qm-files">—</div></div><div class="d-item"><div class="d-lbl">Shared Folder</div><div class="d-val" id="qm-link">—</div></div></div></div>
       <div class="m-sec"><div class="m-sec-title">Client Notes</div><div class="m-notes" id="qm-notes">—</div></div>
       <div class="m-sec"><div class="m-sec-title">Your Quote</div>
-        <div class="q-editor"><div class="qe-lbl">Send Confirmed Quote to Client</div><div class="qe-row"><div class="qe-field"><label>Low ($)</label><input class="qe-input" type="number" id="qm-low" placeholder="e.g. 4500"></div><div class="qe-field"><label>High ($)</label><input class="qe-input" type="number" id="qm-high" placeholder="e.g. 6500"></div><button class="qe-send" onclick="sendConfirmedQuote()">Send →</button></div></div>
+        <div class="q-editor"><div class="qe-lbl">Send Confirmed Quote to Client</div><div class="qe-row"><div class="qe-field" style="flex:1;"><label>Confirmed Price ($)</label><input class="qe-input" type="number" id="qm-price" placeholder="e.g. 5200"></div><button class="qe-send" onclick="sendConfirmedQuote()">Send →</button></div></div>
       </div>
       <div class="m-sec"><div class="m-sec-title">Update Status</div><div style="display:flex;gap:10px;align-items:center"><select class="status-select" id="qm-status"><option>Received</option><option>Quoted</option><option>Approved</option><option>On Hold</option><option>Declined</option></select><button class="btn-convert" onclick="convertQuoteToOrder()">Convert to Order</button></div></div>
     </div>
@@ -556,7 +556,7 @@ async function saveData(){
       await fetch(`${SUPABASE_URL}/rest/v1/quotes?ref=eq.${curQuoteRef}`, {
         method: 'PATCH',
         headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ status: q.status, confirmed_low: q.estimateLow, confirmed_high: q.estimateHigh })
+        body: JSON.stringify({ status: q.status, confirmed_price: q.confirmedPrice||null })
       });
     }
   }
@@ -657,8 +657,8 @@ function openQuoteModal(ref){
   document.getElementById('qm-link').innerHTML=q.sharedLink?`<a href="${q.sharedLink}" target="_blank" style="color:var(--purple-deep)">Open folder ↗</a>`:'None';
   set('qm-notes',q.notes||'No notes.');
   document.getElementById('qm-status').value=q.status;
-  if(q.estimateLow)document.getElementById('qm-low').value=q.estimateLow;
-  if(q.estimateHigh)document.getElementById('qm-high').value=q.estimateHigh;
+  if(q.confirmedPrice)document.getElementById('qm-price').value=q.confirmedPrice;
+  else if(q.estimateLow)document.getElementById('qm-price').value=q.estimateLow;
   showOverlay('quote-modal');
 }
 
@@ -685,11 +685,12 @@ async function saveOrderStatus(){
 }
 function saveQuoteStatus(){const q=quotes.find(x=>x.ref===curQuoteRef);if(q){q.status=document.getElementById('qm-status').value;saveData();renderAll();}closeOverlayDirect('quote-modal');showToast('Quote updated ✓','success');}
 function sendConfirmedQuote(){
-  const low=document.getElementById('qm-low').value,high=document.getElementById('qm-high').value;
-  if(!low||!high){showToast('Enter both low and high values','warn');return;}
+  const price=document.getElementById('qm-price').value;
+  if(!price){showToast('Enter a confirmed price','warn');return;}
   const q=quotes.find(x=>x.ref===curQuoteRef);
-  if(q){q.status='Quoted';q.estimateLow=parseInt(low);q.estimateHigh=parseInt(high);saveData();renderAll();}
-  closeOverlayDirect('quote-modal');showToast(`Quote $${parseInt(low).toLocaleString()} – $${parseInt(high).toLocaleString()} sent ✓`,'success');
+  if(q){q.status='Quoted';q.confirmedPrice=parseInt(price);saveData();renderAll();}
+  // TODO: send email to client with confirmed price
+  closeOverlayDirect('quote-modal');showToast(`Quote $${parseInt(price).toLocaleString()} sent to client ✓`,'success');
 }
 function convertQuoteToOrder(){const q=quotes.find(x=>x.ref===curQuoteRef);if(!q)return;q.status='Approved';saveData();renderAll();closeOverlayDirect('quote-modal');showToast('Quote approved — client notified ✓','success');}
 
