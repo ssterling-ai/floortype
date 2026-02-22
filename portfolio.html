@@ -34,24 +34,6 @@
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
     overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* ── CURSOR ── */
-  .cursor {
-    width: 8px; height: 8px;
-    background: var(--purple-deep);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 9999;
-  }
-  .cursor-ring {
-    width: 36px; height: 36px;
-    border: 1.5px solid rgba(107,86,200,0.4);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 9998;
-    transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, border-color 0.3s ease;
   }
 
   
@@ -145,6 +127,7 @@
   .port-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(107,86,200,0.15); border-color: var(--purple-mid); }
   .port-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: var(--border);
     display: flex; align-items: center; justify-content: center; }
+  .port-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
   .port-img-placeholder { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--purple-bg), var(--mint-bg));
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
   .port-img-placeholder span { font-size: 32px; }
@@ -364,7 +347,7 @@ function renderPortfolio(filter) {
         const imgUrl = STORAGE_BASE + item.image_path;
         html += `<div class="port-card">
           <img src="${imgUrl}" alt="${item.title}" class="port-img" loading="lazy"
-            onerror="this.parentElement.querySelector('.port-img').style.display='none';this.parentElement.querySelector('.port-img-placeholder').style.display='flex'">
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div class="port-img-placeholder" style="display:none;"><span>${meta.icon}</span><p>Image unavailable</p></div>
           <div class="port-card-body">
             <div class="port-card-tag">${item.subcategory || meta.title}</div>
