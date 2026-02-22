@@ -303,96 +303,12 @@
   <button class="port-filter" onclick="filterPort('animations', this)" id="filter-animations">Animations</button>
 </div>
 
-<!-- FLOOR PLANS -->
-<div class="port-section" id="section-floor-plans">
-  <div class="port-section-title" id="floor-plans">3D Floor Plans</div>
-  <div class="port-section-desc">Architectural floor plans transformed into clear, photorealistic 3D layouts.</div>
-  <div class="port-grid">
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🏠</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Floor Plan</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio images coming soon</div>
-      </div>
-    </div>
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🏠</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Floor Plan</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio images coming soon</div>
-      </div>
-    </div>
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🏠</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Floor Plan</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio images coming soon</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- RENDERINGS -->
-<div class="port-section" id="section-renderings">
-  <div class="port-section-title" id="renderings">3D Renderings</div>
-  <div class="port-section-desc">Photorealistic interior, exterior, and aerial visualizations.</div>
-  <div class="port-grid">
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🎨</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Interior Rendering</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio images coming soon</div>
-      </div>
-    </div>
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🎨</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Exterior Rendering</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio images coming soon</div>
-      </div>
-    </div>
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🎨</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Aerial Rendering</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio images coming soon</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ANIMATIONS -->
-<div class="port-section" id="section-animations">
-  <div class="port-section-title" id="animations">Animations</div>
-  <div class="port-section-desc">Cinematic fly-through videos for sales launches and investor presentations.</div>
-  <div class="port-grid">
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🎬</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Fly-Through Animation</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio videos coming soon</div>
-      </div>
-    </div>
-    <div class="port-card">
-      <div class="port-img-placeholder"><span>🎬</span><p>Coming Soon</p></div>
-      <div class="port-card-body">
-        <div class="port-card-tag">Fly-Through Animation</div>
-        <div class="port-card-title">Sample Project</div>
-        <div class="port-card-sub">Portfolio videos coming soon</div>
-      </div>
-    </div>
-  </div>
+<div id="portfolioContainer" style="min-height:400px;">
+  <div style="text-align:center;padding:80px;color:var(--muted);font-size:14px;">Loading portfolio…</div>
 </div>
 
 <div class="cta-band reveal">
-  <h2>Ready to Add Your Project?</h2>
+  <h2>Ready to Start a Project?</h2>
   <p>Get a quote in 24 hours or order floor plans today.</p>
   <div class="cta-btns">
     <a href="/quote" class="btn-primary">Request a Quote →</a>
@@ -401,32 +317,101 @@
 </div>
 
 <script>
-function filterPort(cat, btn) {
-  document.querySelectorAll('.port-filter').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const sections = ['floor-plans','renderings','animations'];
-  sections.forEach(id => {
-    const el = document.getElementById('section-' + id);
-    if(cat === 'all' || cat === id) { el.style.display = 'block'; }
-    else { el.style.display = 'none'; }
-  });
-  // Scroll to section anchor if specific category
-  if(cat !== 'all') {
-    const el = document.getElementById(cat);
-    if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcGJpZ2J2bHNybHJxbmNmYWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAzMjEsImV4cCI6MjA4NzEzNjMyMX0.rlFyDdgeXHWmqbN_Pu3YHcbWoNqS_gdnuEEv4XyK9yM';
+const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/portfolio/`;
+
+const SECTION_META = {
+  'floor-plans': { title: '3D Floor Plans', desc: 'Architectural floor plans transformed into clear, photorealistic 3D layouts.', icon: '🏠' },
+  'renderings':  { title: '3D Renderings',  desc: 'Photorealistic interior, exterior, and aerial visualizations.', icon: '🎨' },
+  'animations':  { title: 'Animations',     desc: 'Cinematic fly-through videos for sales launches and investor presentations.', icon: '🎬' }
+};
+
+let allItems = [];
+let activeFilter = 'all';
+
+async function loadPortfolio() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/portfolio_items?active=eq.true&order=sort_order.asc,created_at.desc`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    allItems = await res.json();
+    renderPortfolio(activeFilter);
+  } catch(e) {
+    document.getElementById('portfolioContainer').innerHTML =
+      '<div style="text-align:center;padding:80px;color:var(--muted);font-size:14px;">Unable to load portfolio. Please try again shortly.</div>';
   }
 }
 
-// Handle anchor links from footer (#floor-plans etc)
+function renderPortfolio(filter) {
+  const container = document.getElementById('portfolioContainer');
+  const categories = filter === 'all' ? ['floor-plans','renderings','animations'] : [filter];
+  let html = '';
+
+  categories.forEach(cat => {
+    const items = allItems.filter(i => i.category === cat);
+    const meta = SECTION_META[cat];
+    if(filter === 'all' && !items.length) return;
+
+    html += `<div class="port-section" id="section-${cat}">
+      <div class="port-section-title" id="${cat}">${meta.title}</div>
+      <div class="port-section-desc">${meta.desc}</div>
+      <div class="port-grid">`;
+
+    if(items.length) {
+      items.forEach(item => {
+        const imgUrl = STORAGE_BASE + item.image_path;
+        html += `<div class="port-card">
+          <img src="${imgUrl}" alt="${item.title}" class="port-img" loading="lazy"
+            onerror="this.parentElement.querySelector('.port-img').style.display='none';this.parentElement.querySelector('.port-img-placeholder').style.display='flex'">
+          <div class="port-img-placeholder" style="display:none;"><span>${meta.icon}</span><p>Image unavailable</p></div>
+          <div class="port-card-body">
+            <div class="port-card-tag">${item.subcategory || meta.title}</div>
+            <div class="port-card-title">${item.title}</div>
+            ${item.location ? `<div class="port-card-sub">${item.location}</div>` : ''}
+          </div>
+        </div>`;
+      });
+    } else {
+      html += `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-size:14px;">No ${meta.title.toLowerCase()} yet — check back soon.</div>`;
+    }
+
+    html += `</div></div>`;
+  });
+
+  if(!html) html = '<div style="text-align:center;padding:80px;color:var(--muted);font-size:14px;">No items found.</div>';
+  container.innerHTML = html;
+}
+
+function filterPort(cat, btn) {
+  document.querySelectorAll('.port-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = cat;
+  renderPortfolio(cat);
+  if(cat !== 'all') {
+    setTimeout(() => {
+      const el = document.getElementById(cat);
+      if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
+}
+
+// Handle anchor links from footer
 window.addEventListener('DOMContentLoaded', () => {
+  loadPortfolio();
   const hash = window.location.hash.replace('#','');
   if(hash && ['floor-plans','renderings','animations'].includes(hash)) {
     const btn = document.getElementById('filter-' + hash);
-    if(btn) filterPort(hash, btn);
+    if(btn) {
+      activeFilter = hash;
+      btn.classList.add('active');
+      document.querySelector('.port-filter').classList.remove('active');
+    }
     setTimeout(() => {
       const el = document.getElementById(hash);
       if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 300);
+    }, 400);
   }
 });
 </script>
