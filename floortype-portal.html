@@ -721,19 +721,51 @@ let currentOrderRef = null;
 let orderFilter = 'all';
 
 // Restore session on page load - called after DOM ready
-function restoreSession() {
+async function restoreSession() {
   try {
     const saved = localStorage.getItem('ft_session');
     if (!saved) return;
     const session = JSON.parse(saved);
-    if (!session?.user || !session?.token) return;
-    currentUser = { ...session.user, token: session.token };
+    if (!session?.user || !session?.refresh_token) return;
+
+    // Use refresh token to get a fresh access token
+    const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcGJpZ2J2bHNybHJxbmNmYWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAzMjEsImV4cCI6MjA4NzEzNjMyMX0.rlFyDdgeXHWmqbN_Pu3YHcbWoNqS_gdnuEEv4XyK9yM';
+
+    const refreshRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ refresh_token: session.refresh_token })
+    });
+
+    if (!refreshRes.ok) {
+      localStorage.removeItem('ft_session');
+      return;
+    }
+
+    const refreshData = await refreshRes.json();
+    const newToken = refreshData.access_token;
+    const newRefreshToken = refreshData.refresh_token;
+
+    currentUser = { ...session.user, token: newToken };
     orders = session.orders || [];
+
+    // Update stored session with new tokens
+    localStorage.setItem('ft_session', JSON.stringify({
+      user: currentUser,
+      token: newToken,
+      refresh_token: newRefreshToken,
+      orders: orders
+    }));
+
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appSidebar').style.display = 'flex';
     document.getElementById('appMain').style.display = 'flex';
     initApp();
-  } catch(e) { localStorage.removeItem('ft_session'); }
+  } catch(e) { 
+    console.warn('Session restore failed:', e);
+    localStorage.removeItem('ft_session'); 
+  }
 }
 
 // ── SUPABASE ──
@@ -860,13 +892,6 @@ async function doLogin(){
 
   btn.textContent = 'Sign In →';
   btn.disabled = false;
-
-  // Persist session so page refresh doesn't log out
-  localStorage.setItem('ft_session', JSON.stringify({
-    user: currentUser,
-    token: userToken,
-    orders: orders
-  }));
 
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('appSidebar').style.display = 'flex';
