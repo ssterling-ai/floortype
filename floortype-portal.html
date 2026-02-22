@@ -537,7 +537,11 @@
   </button>
   <button class="nav-item" id="nav-new" onclick="openNewOrder()">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
-    New Order
+    New Floor Plan
+  </button>
+  <button class="nav-item" onclick="openNewQuote()">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M5 5.5h4M5 10.5h3"/></svg>
+    Request 3D Quote
   </button>
 
   <div class="sidebar-bottom">
@@ -564,7 +568,8 @@
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 1a5 5 0 015 5v3l1 2H2l1-2V6a5 5 0 015-5z"/><path d="M6.5 13a1.5 1.5 0 003 0"/></svg>
         <span class="notif-badge" id="notifBadge"></span>
       </button>
-      <a href="#" onclick="openNewOrder()" class="topbar-cta">+ New Order</a>
+      <a href="#" onclick="openNewOrder()" class="topbar-cta">+ Floor Plan</a>
+      <a href="#" onclick="openNewQuote()" class="topbar-cta" style="background:rgba(42,181,160,0.12);color:var(--mint-deep);border-color:rgba(42,181,160,0.3);">+ 3D Quote</a>
     </div>
   </div>
 
@@ -579,6 +584,7 @@
         </div>
         <div class="welcome-actions">
           <a href="#" onclick="openNewOrder()" class="btn-primary">+ New Floor Plan</a>
+          <a href="#" onclick="openNewQuote()" class="btn-secondary" style="text-decoration:none;">+ Request 3D Quote</a>
           <button class="btn-secondary" onclick="showView('orders')">View All Orders</button>
         </div>
       </div>
@@ -1569,6 +1575,16 @@ function openNewOrder() {
   window.open(`/order?${params.toString()}`, '_blank');
 }
 
+function openNewQuote() {
+  if(!currentUser) { window.open('/quote','_blank'); return; }
+  const params = new URLSearchParams({
+    email: currentUser.email || '',
+    name: currentUser.name || '',
+    company: currentUser.company || ''
+  });
+  window.open(`/quote?${params.toString()}`, '_blank');
+}
+
 async function confirmReview(orderRef, projectName, currentStage) {
   const confirmed = confirm(
     'Once confirmed, no further comments should be submitted to ReviewStudio.\n\nAre you ready to confirm that all review comments are complete?'
@@ -1661,6 +1677,16 @@ function openNewOrder() {
     name: currentUser.name || ''
   });
   window.open(`/order?${params.toString()}`, '_blank');
+}
+
+function openNewQuote() {
+  if(!currentUser) { window.open('/quote','_blank'); return; }
+  const params = new URLSearchParams({
+    email: currentUser.email || '',
+    name: currentUser.name || '',
+    company: currentUser.company || ''
+  });
+  window.open(`/quote?${params.toString()}`, '_blank');
 }
 
 async function confirmReview(orderRef, projectName, currentStage) {
