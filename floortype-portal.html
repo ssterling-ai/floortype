@@ -687,6 +687,53 @@
       <div id="filesViewContainer"></div>
     </div>
 
+    <!-- ── PROFILE VIEW ── -->
+    <div class="view" id="view-profile">
+      <div style="max-width:540px;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--dark);margin-bottom:4px;">My Profile</h2>
+        <p style="font-size:14px;color:var(--muted);font-weight:300;margin-bottom:32px;">Update your name, company, and account details.</p>
+
+        <div style="background:white;border-radius:20px;border:1px solid var(--border);padding:32px;box-shadow:0 2px 10px rgba(107,86,200,0.05);margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Account Info</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">First Name</label>
+              <input id="profileFirstName" type="text" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">Last Name</label>
+              <input id="profileLastName" type="text" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">Company <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
+            <input id="profileCompany" type="text" placeholder="e.g. Meridian Real Estate Group" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">Email Address</label>
+            <input id="profileEmail" type="email" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
+            <div style="font-size:11px;color:var(--muted);margin-top:5px;">Changing your email will require you to sign in again.</div>
+          </div>
+          <div id="profileInfoMsg" style="display:none;font-size:13px;margin-bottom:16px;padding:10px 14px;border-radius:8px;"></div>
+          <button onclick="saveProfile()" style="padding:12px 28px;background:linear-gradient(135deg,var(--purple-deep),var(--mint-deep));color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;">Save Changes</button>
+        </div>
+
+        <div style="background:white;border-radius:20px;border:1px solid var(--border);padding:32px;box-shadow:0 2px 10px rgba(107,86,200,0.05);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Change Password</div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">New Password</label>
+            <input id="profilePw1" type="password" placeholder="At least 8 characters" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">Confirm New Password</label>
+            <input id="profilePw2" type="password" placeholder="Repeat new password" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <div id="profilePwMsg" style="display:none;font-size:13px;margin-bottom:16px;padding:10px 14px;border-radius:8px;"></div>
+          <button onclick="changePassword()" style="padding:12px 28px;background:white;color:var(--purple-deep);border:2px solid var(--purple-deep);border-radius:12px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;">Update Password</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
