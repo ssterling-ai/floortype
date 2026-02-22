@@ -802,6 +802,7 @@ async function doLogin(){
 
     orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
       ref: o.ref,
+      project_name: o.project_name || '',
       date: o.created_at,
       address: o.address,
       floors: o.floors,
