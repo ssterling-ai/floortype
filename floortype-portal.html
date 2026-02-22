@@ -541,13 +541,13 @@
   </button>
 
   <div class="sidebar-bottom">
-    <div class="sidebar-user">
+    <div class="sidebar-user" onclick="showView('profile')" style="cursor:pointer;" title="Edit profile">
       <div class="user-avatar" id="userAvatar">S</div>
-      <div>
-        <div class="user-name" id="userName">Sarah M.</div>
-        <div class="user-email" id="userEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e19280938089cf8ca18c8493888588808f9384cf828e8c">[email&#160;protected]</a></div>
+      <div style="flex:1;min-width:0;">
+        <div class="user-name" id="userName">—</div>
+        <div class="user-email" id="userEmail" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
       </div>
-      <button class="logout-btn" onclick="doLogout()" title="Sign out">↩</button>
+      <button class="logout-btn" onclick="event.stopPropagation();doLogout()" title="Sign out">↩</button>
     </div>
   </div>
 </div>
@@ -895,7 +895,8 @@ async function doLogin(){
     const userName = authData.user?.user_metadata?.full_name || 
                      email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());
     const initials = userName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    currentUser = { email, name: userName, initials, token: userToken };
+    const userCompany = authData.user?.user_metadata?.company || '';
+  currentUser = { email, name: userName, initials, token: userToken, company: userCompany };
 
     // Save session to localStorage for persistent login
     try {
@@ -1390,7 +1391,103 @@ function showView(v){
   if(ni) ni.classList.add('active');
   if(v==='orders') renderOrdersList();
   if(v==='files') renderFilesView();
+  if(v==='profile') populateProfileForm();
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function populateProfileForm(){
+  if(!currentUser) return;
+  const parts = (currentUser.name||'').split(' ');
+  document.getElementById('profileFirstName').value = parts[0] || '';
+  document.getElementById('profileLastName').value = parts.slice(1).join(' ') || '';
+  document.getElementById('profileEmail').value = currentUser.email || '';
+  document.getElementById('profileCompany').value = currentUser.company || '';
+  // Clear password fields and messages
+  document.getElementById('profilePw1').value = '';
+  document.getElementById('profilePw2').value = '';
+  document.getElementById('profileInfoMsg').style.display = 'none';
+  document.getElementById('profilePwMsg').style.display = 'none';
+}
+
+function showProfileMsg(id, msg, success){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = success ? '#F0FDF4' : '#FFF0F0';
+  el.style.color = success ? '#16A34A' : '#DC2626';
+  el.style.border = `1px solid ${success ? '#86EFAC' : '#FCA5A5'}`;
+}
+
+async function saveProfile(){
+  const firstName = document.getElementById('profileFirstName').value.trim();
+  const lastName = document.getElementById('profileLastName').value.trim();
+  const email = document.getElementById('profileEmail').value.trim();
+  const company = document.getElementById('profileCompany').value.trim();
+
+  if(!firstName){ showProfileMsg('profileInfoMsg','Please enter your first name.',false); return; }
+  if(!email || !email.includes('@')){ showProfileMsg('profileInfoMsg','Please enter a valid email.',false); return; }
+
+  const fullName = [firstName, lastName].filter(Boolean).join(' ');
+  const emailChanged = email !== currentUser.email;
+
+  try {
+    const body = {
+      data: { full_name: fullName, company: company }
+    };
+    if(emailChanged) body.email = email;
+
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { ...SB_HEADERS, 'Authorization': `Bearer ${currentUser.token}` },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.msg || data.message || 'Update failed');
+
+    // Update local state
+    const initials = fullName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    currentUser = { ...currentUser, name: fullName, initials, email: emailChanged ? email : currentUser.email, company };
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = fullName;
+    document.getElementById('userEmail').textContent = currentUser.email;
+
+    // Update session
+    localStorage.setItem('ft_session', JSON.stringify({
+      user: currentUser, token: currentUser.token, refresh_token: '', orders
+    }));
+
+    if(emailChanged){
+      showProfileMsg('profileInfoMsg','Profile updated. Please check your new email to confirm the change, then sign in again.', true);
+      setTimeout(doLogout, 3000);
+    } else {
+      showProfileMsg('profileInfoMsg','Profile updated successfully.', true);
+    }
+  } catch(e){
+    showProfileMsg('profileInfoMsg', e.message || 'Something went wrong.', false);
+  }
+}
+
+async function changePassword(){
+  const pw1 = document.getElementById('profilePw1').value;
+  const pw2 = document.getElementById('profilePw2').value;
+
+  if(!pw1 || pw1.length < 8){ showProfileMsg('profilePwMsg','Password must be at least 8 characters.',false); return; }
+  if(pw1 !== pw2){ showProfileMsg('profilePwMsg','Passwords do not match.',false); return; }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { ...SB_HEADERS, 'Authorization': `Bearer ${currentUser.token}` },
+      body: JSON.stringify({ password: pw1 })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.msg || data.message || 'Update failed');
+    document.getElementById('profilePw1').value = '';
+    document.getElementById('profilePw2').value = '';
+    showProfileMsg('profilePwMsg','Password updated successfully.', true);
+  } catch(e){
+    showProfileMsg('profilePwMsg', e.message || 'Something went wrong.', false);
+  }
 }
 
 function checkReviewDot(){
