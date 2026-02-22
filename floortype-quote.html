@@ -587,7 +587,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Each image = one camera angle. e.g. "living room from entry" = 1 image. Est. $1,400–$2,000/image.</div>
+                  <div class="render-note">Each image = one camera angle. e.g. "living room from entry" = 1 image. </div>
                 </div>
               </div>
 
@@ -609,7 +609,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Street view, courtyard, amenity deck — each angle = 1 image. Est. $1,800–$3,500/image.</div>
+                  <div class="render-note">Street view, courtyard, amenity deck — each angle = 1 image. </div>
                 </div>
               </div>
 
@@ -631,7 +631,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Great for site plans, investor decks, and planning presentations. Est. $2,500–$3,000/image.</div>
+                  <div class="render-note">Great for site plans, investor decks, and planning presentations. </div>
                 </div>
               </div>
 
@@ -653,7 +653,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Ideal for leasing and sales collateral. Est. $800–$1,100/image.</div>
+                  <div class="render-note">Ideal for leasing and sales collateral. </div>
                 </div>
               </div>
             </div>
@@ -685,7 +685,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Delivered as a web embed. Nodes can be linked for a walkthrough experience. Est. $1,200–$2,000/node.</div>
+                  <div class="render-note">Delivered as a web embed. Nodes can be linked for a walkthrough experience. </div>
                 </div>
               </div>
 
@@ -707,7 +707,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Great for showing rooftop decks, courtyards, and street presence. Est. $1,400–$2,400/node.</div>
+                  <div class="render-note">Great for showing rooftop decks, courtyards, and street presence. </div>
                 </div>
               </div>
 
@@ -729,7 +729,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Powerful for investor presentations and site planning. Est. $2,500–$3,500/node.</div>
+                  <div class="render-note">Powerful for investor presentations and site planning. </div>
                 </div>
               </div>
 
@@ -751,7 +751,7 @@
                       <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
                     </div>
                   </div>
-                  <div class="render-note">Ideal for leasing, presales, and remote tours. Est. $700–$1,100/node.</div>
+                  <div class="render-note">Ideal for leasing, presales, and remote tours. </div>
                 </div>
               </div>
             </div>
@@ -798,20 +798,20 @@
           <label class="form-label">Quality Tier</label>
           <div class="info-box">
             <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="5.5" r="0.7" fill="currentColor"/></svg>
-            <div class="info-box-text">Choose the tier that best matches your project's design ambition. Pricing shown per image/node — we'll confirm in your quote.</div>
+            <div class="info-box-text">Choose the tier that best matches your project's design ambition. This helps us scope the work — we'll confirm in your quote.</div>
           </div>
           <div class="complexity-grid" style="grid-template-columns:1fr 1fr;">
             <div class="complexity-card" data-complexity="standard" onclick="selectComplexity(this)">
               <div class="complexity-tier">Standard</div>
               <div class="complexity-desc">Professional quality with accurate materials, lighting, and clean photorealistic output. Perfect for pre-sales, planning applications, and leasing collateral across most market-rate and affordable developments.</div>
               <div class="complexity-examples">Market-rate residential · Value housing · Straightforward commercial · Standard finishes</div>
-              <div class="complexity-range" style="margin-top:10px;">Static: from $800/image · 360°: from $700/node</div>
+              
             </div>
             <div class="complexity-card selected" data-complexity="premium" onclick="selectComplexity(this)">
               <div class="complexity-tier">Premium</div>
               <div class="complexity-desc">Studio-grade photorealism with custom material libraries, atmospheric lighting, full entourage, and environment design. Built for high-end sales launches, flagship projects, and award submissions where quality is the differentiator.</div>
               <div class="complexity-examples">Luxury residential · High-end mixed-use · Boutique hotel · Flagship commercial</div>
-              <div class="complexity-range" style="margin-top:10px;">Static: from $1,400/image · 360°: from $1,200/node</div>
+              
             </div>
           </div>
         </div>
@@ -1445,15 +1445,14 @@ function toggleUploadSection(id){ document.getElementById(id).classList.toggle('
 function calcEstimate(){
   const types = Object.keys(state.renders);
   if(!types.length) return null;
-  const tierRates = RATES[state.complexity] || RATES.standard;
-  const tierMult = TIER_MULT[state.complexity] || 1;
+  const rates = RATES.standard; // Tier does not affect estimate — ranges already span both tiers
   const timeMult = TIMELINE_MULT[state.timeline] || 1;
   let low=0, high=0;
   types.forEach(t=>{
     const v = state.renders[t]?.views||1;
-    const r = tierRates[t] || tierRates['static-interior'];
-    low  += r.low  * tierMult * v;
-    high += r.high * tierMult * v;
+    const r = rates[t] || rates['static-interior'];
+    low  += r.low  * v;
+    high += r.high * v;
   });
   low  = Math.round(low  * timeMult / 100) * 100;
   high = Math.round(high * timeMult / 100) * 100;
