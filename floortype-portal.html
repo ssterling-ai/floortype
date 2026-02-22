@@ -881,6 +881,17 @@ async function doLogin(){
     const initials = userName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     currentUser = { email, name: userName, initials, token: userToken };
 
+    // Save session to localStorage for persistent login
+    try {
+      localStorage.setItem('ft_session', JSON.stringify({
+        user: currentUser,
+        token: userToken,
+        refresh_token: authData.refresh_token,
+        orders: orders
+      }));
+      console.log('Session saved, refresh_token present:', !!authData.refresh_token);
+    } catch(e2) { console.warn('Could not save session:', e2); }
+
   } catch(e) {
     console.error('Login failed:', e);
     document.getElementById('loginError').textContent = 'Something went wrong. Please try again.';
