@@ -775,7 +775,7 @@
               <div class="render-card-body">
                 <div onclick="event.stopPropagation()">
                   <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Duration</label>
-                  <select class="form-input" id="flythroughDuration" style="font-size:13px;max-width:260px;">
+                  <select class="form-input" id="flythroughDuration" style="font-size:13px;max-width:260px;" onchange="updateSummary()">
                     <option value="">Select duration…</option>
                     <option>15 seconds</option>
                     <option>30 seconds</option>
@@ -1276,7 +1276,7 @@ const RATES = {
     '360-exterior':    { low:1400, high:2400 },
     '360-aerial':      { low:2500, high:3500 },
     '360-modelunit':   { low:700,  high:1100 },
-    flythrough:        { low:3000, high:8000 }
+    flythrough:        null // priced per-second, handled separately
   },
   premium: {
     'static-interior': { low:1400, high:2000 },
@@ -1287,7 +1287,7 @@ const RATES = {
     '360-exterior':    { low:1400, high:2400 },
     '360-aerial':      { low:2500, high:3500 },
     '360-modelunit':   { low:700,  high:1100 },
-    flythrough:        { low:3000, high:8000 }
+    flythrough:        null // priced per-second, handled separately
   }
 };
 const TIER_MULT = { standard:1, premium:1.5 };
@@ -1449,10 +1449,23 @@ function calcEstimate(){
   const timeMult = TIMELINE_MULT[state.timeline] || 1;
   let low=0, high=0;
   types.forEach(t=>{
-    const v = state.renders[t]?.views||1;
-    const r = rates[t] || rates['static-interior'];
-    low  += r.low  * v;
-    high += r.high * v;
+    if(t === 'flythrough'){
+      // $150/second — parse duration from dropdown
+      const durationMap = {
+        '15 seconds': 15, '30 seconds': 30, '45 seconds': 45,
+        '60 seconds': 60, '90 seconds': 90, '120 seconds': 120
+      };
+      const sel = document.getElementById('flythroughDuration');
+      const secs = sel ? (durationMap[sel.value] || 0) : 0;
+      const cost = secs * 150;
+      low  += cost;
+      high += cost;
+    } else {
+      const v = state.renders[t]?.views||1;
+      const r = rates[t] || rates['static-interior'];
+      low  += r.low  * v;
+      high += r.high * v;
+    }
   });
   low  = Math.round(low  * timeMult / 100) * 100;
   high = Math.round(high * timeMult / 100) * 100;
@@ -1475,7 +1488,13 @@ function updateSummary(){
     }
   }
   // Renders
-  const rNames = { interior:'Interior', exterior:'Exterior', aerial:'Aerial', '360':'360° Tour', flythrough:'Fly-Through' };
+  const rNames = { 
+    'static-interior':'Static Interior', 'static-exterior':'Static Exterior',
+    'static-aerial':'Static Aerial', 'static-modelunit':'Static Model Unit',
+    '360-interior':'360° Interior', '360-exterior':'360° Exterior',
+    '360-aerial':'360° Aerial', '360-modelunit':'360° Model Unit',
+    flythrough:'Fly-Through'
+  };
   const types = Object.keys(state.renders);
   const scRenders = document.getElementById('scRenders');
   if(scRenders){
@@ -1500,10 +1519,17 @@ function updateSummary(){
 
 // ── REVIEW SUMMARY ──
 function buildReview(){
-  const rNames = { interior:'Interior', exterior:'Exterior', aerial:'Aerial', '360':'360° Tour', flythrough:'Fly-Through' };
+  const rNames = { 
+    'static-interior':'Static Interior', 'static-exterior':'Static Exterior',
+    'static-aerial':'Static Aerial', 'static-modelunit':'Static Model Unit',
+    '360-interior':'360° Interior', '360-exterior':'360° Exterior',
+    '360-aerial':'360° Aerial', '360-modelunit':'360° Model Unit',
+    flythrough:'Fly-Through'
+  };
   const types = Object.keys(state.renders);
   const est = calcEstimate();
   const totalFiles = Object.values(state.sectionFiles).reduce((s,a)=>s+a.length,0);
+  const durSel = document.getElementById('flythroughDuration');
   document.getElementById('reviewGrid').innerHTML = `
     <div class="review-block">
       <div class="rb-title">Project</div>
@@ -1514,7 +1540,10 @@ function buildReview(){
     </div>
     <div class="review-block">
       <div class="rb-title">Renderings</div>
-      ${types.length ? types.map(t=>`<div class="rb-item"><strong>${rNames[t]}</strong> × ${state.renders[t].views} view${state.renders[t].views>1?'s':''}</div>`).join('') : '<div class="rb-item">—</div>'}
+      ${types.length ? types.map(t=> t==='flythrough'
+        ? `<div class="rb-item"><strong>Fly-Through</strong> — ${durSel?.value||'duration TBD'}</div>`
+        : `<div class="rb-item"><strong>${rNames[t]||t}</strong> × ${state.renders[t].views} ${t.startsWith('360')?'node':'image'}${state.renders[t].views>1?'s':''}</div>`
+      ).join('') : '<div class="rb-item">—</div>'}
     </div>
     <div class="review-block">
       <div class="rb-title">Complexity & Timeline</div>
