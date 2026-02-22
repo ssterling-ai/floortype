@@ -965,8 +965,8 @@ function renderOrdersList(){
   let filtered = orders.filter(o=>{
     const mf = orderFilter==='all'||(orderFilter==='active'&&o.status!=='Complete')||o.status===orderFilter;
       const ms = !s || o.ref.toLowerCase().includes(s) || (o.project_name&&o.project_name.toLowerCase().includes(s)) || o.address.toLowerCase().includes(s);
-    const ms = !search||o.ref.toLowerCase().includes(search)||o.address.toLowerCase().includes(search);
-    return mf&&ms;
+    const ms2 = !search||o.ref.toLowerCase().includes(search)||o.address.toLowerCase().includes(search);
+    return mf&&ms2;
   });
   const c = document.getElementById('ordersListCards');
   if(!filtered.length){
