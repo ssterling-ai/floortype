@@ -721,42 +721,17 @@ let currentOrderRef = null;
 let orderFilter = 'all';
 
 // Restore session on page load - called after DOM ready
-async function restoreSession() {
+function restoreSession() {
   try {
     const saved = localStorage.getItem('ft_session');
     if (!saved) return;
     const session = JSON.parse(saved);
-    if (!session?.user || !session?.refresh_token) return;
+    if (!session?.user || !session?.token) return;
 
-    // Use refresh token to get a fresh access token
-    const SUPABASE_URL = 'https://ompbigbvlsrlrqncfaag.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcGJpZ2J2bHNybHJxbmNmYWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAzMjEsImV4cCI6MjA4NzEzNjMyMX0.rlFyDdgeXHWmqbN_Pu3YHcbWoNqS_gdnuEEv4XyK9yM';
-
-    const refreshRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
-      body: JSON.stringify({ refresh_token: session.refresh_token })
-    });
-
-    if (!refreshRes.ok) {
-      localStorage.removeItem('ft_session');
-      return;
-    }
-
-    const refreshData = await refreshRes.json();
-    const newToken = refreshData.access_token;
-    const newRefreshToken = refreshData.refresh_token;
-
-    currentUser = { ...session.user, token: newToken };
+    currentUser = { ...session.user, token: session.token };
     orders = session.orders || [];
 
-    // Update stored session with new tokens
-    localStorage.setItem('ft_session', JSON.stringify({
-      user: currentUser,
-      token: newToken,
-      refresh_token: newRefreshToken,
-      orders: orders
-    }));
+    console.log('Session restored for:', currentUser.email);
 
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appSidebar').style.display = 'flex';
@@ -1001,9 +976,8 @@ function renderOrdersList(){
   const search = document.getElementById('ordersSearch').value.toLowerCase();
   let filtered = orders.filter(o=>{
     const mf = orderFilter==='all'||(orderFilter==='active'&&o.status!=='Complete')||o.status===orderFilter;
-      const ms = !s || o.ref.toLowerCase().includes(s) || (o.project_name&&o.project_name.toLowerCase().includes(s)) || o.address.toLowerCase().includes(s);
-    const ms2 = !search||o.ref.toLowerCase().includes(search)||o.address.toLowerCase().includes(search);
-    return mf&&ms2;
+    const ms = !search || o.ref.toLowerCase().includes(search) || (o.project_name&&o.project_name.toLowerCase().includes(search)) || o.address.toLowerCase().includes(search);
+    return mf&&ms;
   });
   const c = document.getElementById('ordersListCards');
   if(!filtered.length){
