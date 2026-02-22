@@ -557,182 +557,263 @@
       <!-- ── STEP 2: Rendering Package ── -->
       <div class="step-panel" id="step2">
         <h2 class="step-heading">Rendering Package</h2>
-        <p class="step-sub">Select the types of renderings you need and configure each one. You can mix and match.</p>
+        <p class="step-sub">Select the types of renderings you need across Static and 360° Virtual Tour categories. You can mix and match across both.</p>
 
         <div class="form-group">
-          <label class="form-label">Rendering Types <span class="opt">— Select all that apply</span></label>
-          <div class="render-grid" id="renderGrid">
 
-            <div class="render-card" data-type="interior" onclick="toggleRender(this)">
-              <div class="render-card-top">
-                <div class="render-icon rc-default">🛋️</div>
-                <div style="flex:1;">
-                  <div class="render-name">Interior</div>
-                  <div class="render-desc">Living spaces, kitchens, lobbies, amenities — photorealistic room-level views</div>
-                </div>
-                <div class="render-card-check"></div>
-              </div>
-              <div class="render-card-body">
-                <div class="views-row">
-                  <span class="views-label">Number of views / rooms</span>
-                  <div class="views-counter">
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
-                    <div class="vc-num">1</div>
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+          <!-- STATIC RENDERINGS -->
+          <div style="margin-bottom:28px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:700;color:var(--dark);letter-spacing:0.02em;">📷 Static Renderings</div>
+              <div style="flex:1;height:1px;background:var(--border);"></div>
+              <div style="font-size:11px;color:var(--muted);font-weight:500;">Per image pricing</div>
+            </div>
+            <div class="render-grid" id="renderGrid">
+              <div class="render-card" data-type="static-interior" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🛋️</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Interior Amenity</div>
+                    <div class="render-desc">Living spaces, lobbies, amenity areas — photorealistic room-level views</div>
                   </div>
+                  <div class="render-card-check"></div>
                 </div>
-                <div class="render-note">Each view = one camera angle in one room. e.g. "living room from entry" = 1 view.</div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of images</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Each image = one camera angle. e.g. "living room from entry" = 1 image. Est. $1,400–$2,000/image.</div>
+                </div>
+              </div>
+
+              <div class="render-card" data-type="static-exterior" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🏗️</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Exterior Amenity</div>
+                    <div class="render-desc">Building facades, street-level views, landscaping, and outdoor spaces</div>
+                  </div>
+                  <div class="render-card-check"></div>
+                </div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of images</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Street view, courtyard, amenity deck — each angle = 1 image. Est. $1,800–$3,500/image.</div>
+                </div>
+              </div>
+
+              <div class="render-card" data-type="static-aerial" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🛸</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Aerial / Bird's Eye</div>
+                    <div class="render-desc">High-altitude views showing site context, massing, and surroundings</div>
+                  </div>
+                  <div class="render-card-check"></div>
+                </div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of images</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Great for site plans, investor decks, and planning presentations. Est. $2,500–$3,000/image.</div>
+                </div>
+              </div>
+
+              <div class="render-card" data-type="static-modelunit" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🏠</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Model Unit</div>
+                    <div class="render-desc">Individual unit interiors — bedrooms, kitchens, baths, living areas</div>
+                  </div>
+                  <div class="render-card-check"></div>
+                </div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of images</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Ideal for leasing and sales collateral. Est. $800–$1,100/image.</div>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div class="render-card" data-type="exterior" onclick="toggleRender(this)">
-              <div class="render-card-top">
-                <div class="render-icon rc-default">🏗️</div>
-                <div style="flex:1;">
-                  <div class="render-name">Exterior</div>
-                  <div class="render-desc">Building facades, street-level views, landscaping — showing the full envelope</div>
-                </div>
-                <div class="render-card-check"></div>
-              </div>
-              <div class="render-card-body">
-                <div class="views-row">
-                  <span class="views-label">Number of views / angles</span>
-                  <div class="views-counter">
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
-                    <div class="vc-num">1</div>
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+          <!-- 360 VIRTUAL TOUR RENDERINGS -->
+          <div style="margin-bottom:28px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:700;color:var(--dark);letter-spacing:0.02em;">🔄 360° Virtual Tour Renderings</div>
+              <div style="flex:1;height:1px;background:var(--border);"></div>
+              <div style="font-size:11px;color:var(--muted);font-weight:500;">Interactive panoramas</div>
+            </div>
+            <div class="render-grid">
+              <div class="render-card" data-type="360-interior" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🛋️</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Interior Amenity</div>
+                    <div class="render-desc">Interactive 360° panoramas of lobbies, amenities, and common areas</div>
                   </div>
+                  <div class="render-card-check"></div>
                 </div>
-                <div class="render-note">Typically: main street view, courtyard, amenity deck. Each angle = 1 view.</div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of nodes / rooms</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Delivered as a web embed. Nodes can be linked for a walkthrough experience. Est. $1,200–$2,000/node.</div>
+                </div>
+              </div>
+
+              <div class="render-card" data-type="360-exterior" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🏗️</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Exterior Amenity</div>
+                    <div class="render-desc">360° panoramic views of building exteriors and outdoor amenity spaces</div>
+                  </div>
+                  <div class="render-card-check"></div>
+                </div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of nodes</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Great for showing rooftop decks, courtyards, and street presence. Est. $1,400–$2,400/node.</div>
+                </div>
+              </div>
+
+              <div class="render-card" data-type="360-aerial" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🛸</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Aerial / Bird's Eye</div>
+                    <div class="render-desc">360° panoramic aerial views showing full site context and surroundings</div>
+                  </div>
+                  <div class="render-card-check"></div>
+                </div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of nodes</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Powerful for investor presentations and site planning. Est. $2,500–$3,500/node.</div>
+                </div>
+              </div>
+
+              <div class="render-card" data-type="360-modelunit" onclick="toggleRender(this)">
+                <div class="render-card-top">
+                  <div class="render-icon rc-default">🏠</div>
+                  <div style="flex:1;">
+                    <div class="render-name">Model Unit</div>
+                    <div class="render-desc">Immersive 360° tours of individual unit interiors — buyers explore every room</div>
+                  </div>
+                  <div class="render-card-check"></div>
+                </div>
+                <div class="render-card-body">
+                  <div class="views-row">
+                    <span class="views-label">Number of nodes / rooms</span>
+                    <div class="views-counter">
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
+                      <div class="vc-num">1</div>
+                      <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
+                    </div>
+                  </div>
+                  <div class="render-note">Ideal for leasing, presales, and remote tours. Est. $700–$1,100/node.</div>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div class="render-card" data-type="aerial" onclick="toggleRender(this)">
-              <div class="render-card-top">
-                <div class="render-icon rc-default">🛸</div>
-                <div style="flex:1;">
-                  <div class="render-name">Aerial / Bird's Eye</div>
-                  <div class="render-desc">High-altitude views showing site context, massing, and relationship to surroundings</div>
-                </div>
-                <div class="render-card-check"></div>
-              </div>
-              <div class="render-card-body">
-                <div class="views-row">
-                  <span class="views-label">Number of aerial views</span>
-                  <div class="views-counter">
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
-                    <div class="vc-num">1</div>
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
-                  </div>
-                </div>
-                <div class="render-note">Great for site plans, investor decks, and planning presentations.</div>
-              </div>
+          <!-- ANIMATED FLY-THROUGH -->
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:700;color:var(--dark);letter-spacing:0.02em;">🎬 Animated Fly-Through</div>
+              <div style="flex:1;height:1px;background:var(--border);"></div>
             </div>
-
-            <div class="render-card" data-type="360" onclick="toggleRender(this)">
-              <div class="render-card-top">
-                <div class="render-icon rc-default">🔄</div>
-                <div style="flex:1;">
-                  <div class="render-name">360° Virtual Tour</div>
-                  <div class="render-desc">Interactive panoramic views embedded on your website — clients explore the space themselves</div>
-                </div>
-                <div class="render-card-check"></div>
-              </div>
-              <div class="render-card-body">
-                <div class="views-row">
-                  <span class="views-label">Number of 360° rooms / nodes</span>
-                  <div class="views-counter">
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,-1)">−</button>
-                    <div class="vc-num">1</div>
-                    <button class="vc-btn" onclick="event.stopPropagation();changeViews(this,1)">+</button>
-                  </div>
-                </div>
-                <div class="render-note">Delivered as a web embed link. Multiple nodes can be linked for a walkthrough experience.</div>
-              </div>
-            </div>
-
-            <div class="render-card" data-type="flythrough" onclick="toggleRender(this)" style="grid-column:1/-1;">
+            <div class="render-card" data-type="flythrough" onclick="toggleRender(this)">
               <div class="render-card-top">
                 <div class="render-icon rc-default">🎬</div>
                 <div style="flex:1;">
-                  <div class="render-name">Animated Fly-Through</div>
-                  <div class="render-desc">Cinematic video walkthrough of your property — ideal for sales launches, investor presentations, and social media</div>
+                  <div class="render-name">Animated Fly-Through Video</div>
+                  <div class="render-desc">Cinematic video walkthrough — ideal for sales launches, investor presentations, and social media</div>
                 </div>
                 <div class="render-card-check"></div>
               </div>
               <div class="render-card-body">
-                <div class="form-row" onclick="event.stopPropagation()">
-                  <div>
-                    <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Approximate Duration</label>
-                    <select class="form-input" id="flythroughDuration" style="font-size:13px;">
-                      <option>30 seconds</option>
-                      <option>60 seconds</option>
-                      <option>90 seconds</option>
-                      <option>2 minutes</option>
-                      <option>3+ minutes</option>
-                      <option>Not sure — advise me</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Output Format</label>
-                    <select class="form-input" id="flythroughFormat" style="font-size:13px;">
-                      <option>MP4 (web/social)</option>
-                      <option>4K MP4 (broadcast/print)</option>
-                      <option>Both</option>
-                    </select>
-                  </div>
+                <div onclick="event.stopPropagation()">
+                  <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Duration</label>
+                  <select class="form-input" id="flythroughDuration" style="font-size:13px;max-width:260px;">
+                    <option value="">Select duration…</option>
+                    <option>15 seconds</option>
+                    <option>30 seconds</option>
+                    <option>45 seconds</option>
+                    <option>60 seconds</option>
+                    <option>90 seconds</option>
+                    <option>120 seconds</option>
+                  </select>
                 </div>
-                <div class="render-note" style="margin-top:10px;">Fly-throughs include 3–4 rounds of revision on camera path and pacing before final render.</div>
+                <div class="render-note" style="margin-top:10px;">Fly-throughs include 3–4 rounds of revision on camera path and pacing before final render. Pricing quoted based on duration and scope.</div>
               </div>
             </div>
-
           </div>
-          <div class="field-error" id="err-renders" style="margin-top:8px;">Please select at least one rendering type</div>
+
+          <div class="field-error" id="err-renders" style="margin-top:16px;">Please select at least one rendering type</div>
         </div>
 
-        <!-- Complexity -->
+        <!-- Complexity — 2 tiers -->
         <div class="form-group">
-          <label class="form-label">Complexity Level</label>
+          <label class="form-label">Quality Tier</label>
           <div class="info-box">
             <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="5.5" r="0.7" fill="currentColor"/></svg>
-            <div class="info-box-text">Choose the tier that best matches your project's design ambition. This helps us scope the work — we'll confirm or adjust in your quote.</div>
+            <div class="info-box-text">Choose the tier that best matches your project's design ambition. Pricing shown per image/node — we'll confirm in your quote.</div>
           </div>
-          <div class="complexity-grid">
+          <div class="complexity-grid" style="grid-template-columns:1fr 1fr;">
             <div class="complexity-card" data-complexity="standard" onclick="selectComplexity(this)">
               <div class="complexity-tier">Standard</div>
-              <div class="complexity-desc">Clean, accurate, professional quality. Great for pre-sales, planning applications, and marketing materials.</div>
-              <div class="complexity-examples">Value / affordable housing · Straightforward layouts · Standard finishes</div>
-              <div class="complexity-range">Est. base from $299/view</div>
+              <div class="complexity-desc">Professional quality with accurate materials, lighting, and clean photorealistic output. Perfect for pre-sales, planning applications, and leasing collateral across most market-rate and affordable developments.</div>
+              <div class="complexity-examples">Market-rate residential · Value housing · Straightforward commercial · Standard finishes</div>
+              <div class="complexity-range" style="margin-top:10px;">Static: from $800/image · 360°: from $700/node</div>
             </div>
             <div class="complexity-card selected" data-complexity="premium" onclick="selectComplexity(this)">
               <div class="complexity-tier">Premium</div>
-              <div class="complexity-desc">High-detail photorealistic output with rich materials, lighting, and contextual entourage.</div>
-              <div class="complexity-examples">Mid-market residential · Boutique commercial · Mixed-use</div>
-              <div class="complexity-range">Est. base from $599/view</div>
-            </div>
-            <div class="complexity-card" data-complexity="luxury" onclick="selectComplexity(this)">
-              <div class="complexity-tier">Luxury</div>
-              <div class="complexity-desc">Studio-grade output with custom material libraries, atmospheric lighting, and full environment design.</div>
-              <div class="complexity-examples">High-end residential · Flagship commercial · Award submissions</div>
-              <div class="complexity-range">Est. base from $999/view</div>
+              <div class="complexity-desc">Studio-grade photorealism with custom material libraries, atmospheric lighting, full entourage, and environment design. Built for high-end sales launches, flagship projects, and award submissions where quality is the differentiator.</div>
+              <div class="complexity-examples">Luxury residential · High-end mixed-use · Boutique hotel · Flagship commercial</div>
+              <div class="complexity-range" style="margin-top:10px;">Static: from $1,400/image · 360°: from $1,200/node</div>
             </div>
           </div>
-        </div>
-
-        <!-- Square footage -->
-        <div class="form-group">
-          <label class="form-label">Approximate Total Project Size <span class="opt">(optional)</span></label>
-          <div class="sqft-row">
-            <div class="sqft-input-wrap">
-              <input class="form-input" id="sqftInput" type="number" placeholder="e.g. 85,000" min="0" oninput="updateSummary()">
-              <span class="sqft-unit">sq ft</span>
-            </div>
-            <div class="sqft-unknown">
-              <input type="checkbox" id="sqftUnknown" onchange="toggleSqft(this)">
-              <label for="sqftUnknown">I don't know / not yet determined</label>
-            </div>
-          </div>
-          <div class="form-hint">Helps us refine the estimate. Don't worry if you don't have this yet — we'll gather it during scoping.</div>
         </div>
 
         <div class="step-nav">
@@ -744,35 +825,41 @@
       <!-- ── STEP 3: Deliverables & Timeline ── -->
       <div class="step-panel" id="step3">
         <h2 class="step-heading">Deliverables & Timeline</h2>
-        <p class="step-sub">What formats do you need, and when do you need them? Being specific here helps us plan production accurately.</p>
+        <p class="step-sub">Every project follows a structured review process so you stay in control throughout production.</p>
 
+        <!-- Revision process explainer -->
         <div class="form-group">
-          <label class="form-label">Output Formats <span class="opt">— Select all required</span></label>
-          <div class="deliverable-grid">
-            <div class="del-item selected" data-fmt="still" onclick="toggleDeliverable(this)">
-              <div class="del-check">✓</div>
-              <div class="del-info"><div class="del-name">Still Renderings</div><div class="del-desc">PNG / JPG · High-resolution</div></div>
+          <label class="form-label">What You Receive</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px;">
+
+            <div style="border:1.5px solid var(--border);border-radius:14px;padding:20px;background:white;">
+              <div style="font-size:20px;margin-bottom:10px;">🖼️</div>
+              <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:6px;">High-Resolution Files</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.6;">All static renderings delivered as print-ready and web-optimised files. 360° tours delivered as hosted embed links ready for your website.</div>
             </div>
-            <div class="del-item selected" data-fmt="print" onclick="toggleDeliverable(this)">
-              <div class="del-check">✓</div>
-              <div class="del-info"><div class="del-name">Print-Ready Files</div><div class="del-desc">PDF / TIFF · 300dpi+</div></div>
+
+            <div style="border:1.5px solid var(--border);border-radius:14px;padding:20px;background:white;">
+              <div style="font-size:20px;margin-bottom:10px;">🔄</div>
+              <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:6px;">Draft Review Rounds</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.6;">Standard projects include <strong>2 full draft rounds</strong>. Each round is reviewed through our client portal where you can leave detailed comments before we revise.</div>
             </div>
-            <div class="del-item selected" data-fmt="web" onclick="toggleDeliverable(this)">
-              <div class="del-check">✓</div>
-              <div class="del-info"><div class="del-name">Web-Optimised</div><div class="del-desc">Compressed JPG / WebP</div></div>
+
+            <div style="border:1.5px solid var(--border);border-radius:14px;padding:20px;background:white;">
+              <div style="font-size:20px;margin-bottom:10px;">💬</div>
+              <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:6px;">Structured Feedback</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.6;">Drafts are shared via ReviewStudio — a professional annotation tool that lets you mark up images and leave pinned comments directly on the rendering.</div>
             </div>
-            <div class="del-item" data-fmt="360embed" onclick="toggleDeliverable(this)">
-              <div class="del-check"></div>
-              <div class="del-info"><div class="del-name">360° Web Embed</div><div class="del-desc">Hosted interactive link</div></div>
+
+            <div style="border:1.5px solid var(--border);border-radius:14px;padding:20px;background:white;">
+              <div style="font-size:20px;margin-bottom:10px;">📦</div>
+              <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:6px;">Final Delivery</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.6;">Once approved, final files are delivered through your client portal and available to download at any time. Fly-throughs include an additional round of camera path review.</div>
             </div>
-            <div class="del-item" data-fmt="mp4" onclick="toggleDeliverable(this)">
-              <div class="del-check"></div>
-              <div class="del-info"><div class="del-name">Animated Video (MP4)</div><div class="del-desc">1080p or 4K</div></div>
-            </div>
-            <div class="del-item" data-fmt="source" onclick="toggleDeliverable(this)">
-              <div class="del-check"></div>
-              <div class="del-info"><div class="del-name">Source / Editable Files</div><div class="del-desc">On request · additional fee</div></div>
-            </div>
+
+          </div>
+          <div class="info-box mint" style="margin-top:4px;">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="info-box-text">Output formats — PNG, JPG, PDF, WebP, MP4 — are determined based on your project type and finalised during scoping. You'll never need to ask.</div>
           </div>
         </div>
 
@@ -1178,12 +1265,32 @@ const state = {
   phaseCounter: 0
 };
 
-// ── BASE RATES (easily swappable for real vendor pricing) ──
+// ── BASE RATES — midpoint of quoted ranges, per image/node ──
 const RATES = {
-  standard:  { interior:299, exterior:349, aerial:399, '360':599, flythrough:1499 },
-  premium:   { interior:599, exterior:699, aerial:799, '360':1199, flythrough:2999 },
-  luxury:    { interior:999, exterior:1199, aerial:1499, '360':1999, flythrough:4999 }
+  standard: {
+    'static-interior': { low:1400, high:2000 },
+    'static-exterior': { low:1800, high:3500 },
+    'static-aerial':   { low:2500, high:3000 },
+    'static-modelunit':{ low:800,  high:1100 },
+    '360-interior':    { low:1200, high:2000 },
+    '360-exterior':    { low:1400, high:2400 },
+    '360-aerial':      { low:2500, high:3500 },
+    '360-modelunit':   { low:700,  high:1100 },
+    flythrough:        { low:3000, high:8000 }
+  },
+  premium: {
+    'static-interior': { low:1400, high:2000 },
+    'static-exterior': { low:1800, high:3500 },
+    'static-aerial':   { low:2500, high:3000 },
+    'static-modelunit':{ low:800,  high:1100 },
+    '360-interior':    { low:1200, high:2000 },
+    '360-exterior':    { low:1400, high:2400 },
+    '360-aerial':      { low:2500, high:3500 },
+    '360-modelunit':   { low:700,  high:1100 },
+    flythrough:        { low:3000, high:8000 }
+  }
 };
+const TIER_MULT = { standard:1, premium:1.5 };
 const TIMELINE_MULT = { standard:1, expedited:1.25, urgent:1.5 };
 
 // ── PHASES ──
@@ -1338,18 +1445,19 @@ function toggleUploadSection(id){ document.getElementById(id).classList.toggle('
 function calcEstimate(){
   const types = Object.keys(state.renders);
   if(!types.length) return null;
-  const rates = RATES[state.complexity] || RATES.premium;
-  const mult = TIMELINE_MULT[state.timeline] || 1;
+  const tierRates = RATES[state.complexity] || RATES.standard;
+  const tierMult = TIER_MULT[state.complexity] || 1;
+  const timeMult = TIMELINE_MULT[state.timeline] || 1;
   let low=0, high=0;
   types.forEach(t=>{
     const v = state.renders[t]?.views||1;
-    const r = rates[t]||rates.interior;
-    low += r * v;
-    high += r * v * 1.4;
+    const r = tierRates[t] || tierRates['static-interior'];
+    low  += r.low  * tierMult * v;
+    high += r.high * tierMult * v;
   });
-  low = Math.round(low*mult/100)*100;
-  high = Math.round(high*mult/100)*100;
-  if(state.phases.length>1){ low*=state.phases.length*0.85; high*=state.phases.length*0.85; }
+  low  = Math.round(low  * timeMult / 100) * 100;
+  high = Math.round(high * timeMult / 100) * 100;
+  if(state.phases.length > 1){ low = Math.round(low * state.phases.length * 0.85); high = Math.round(high * state.phases.length * 0.85); }
   return { low, high };
 }
 
