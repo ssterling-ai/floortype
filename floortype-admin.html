@@ -392,6 +392,10 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       </div>
       <div class="m-sec"><div class="m-sec-title">Update Status</div><select class="status-select" id="om-status"><option>Received</option><option>Pending Invoice Approval</option><option>In Progress</option><option>In Review</option><option>Complete</option><option>On Hold</option></select></div>
       <div class="m-sec">
+        <div class="m-sec-title">Project Name</div>
+        <input class="status-select" type="text" id="om-project-name-input" placeholder="e.g. Riverside Penthouse — Unit 4B" style="font-size:13px;">
+      </div>
+      <div class="m-sec">
         <div class="m-sec-title">Project Stage <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:6px;">Shown to client in their portal</span></div>
         <select class="status-select" id="om-stage">
           <option value="">— Not set —</option>
@@ -627,6 +631,7 @@ function openOrderModal(ref){
   const o=orders.find(x=>x.ref===ref);if(!o)return;curOrderRef=ref;
   set('om-ref',o.ref);set('om-name',o.name);set('om-email',o.email);set('om-address',o.address);
   document.getElementById('om-project-name').textContent = o.project_name || '';
+  document.getElementById('om-project-name-input').value = o.project_name || '';
   set('om-floors',o.floors+' floor'+(o.floors>1?'s':''));set('om-style',o.style);
   set('om-total','$'+o.total);set('om-deposit','$'+o.deposit);
   set('om-addons',Object.keys(o.addons||{}).length?Object.entries(o.addons).map(([n,p])=>`${n} (+$${p})`).join(', '):'None');
@@ -663,12 +668,13 @@ async function saveOrderStatus(){
     o.status=document.getElementById('om-status').value;
     o.stage=document.getElementById('om-stage').value;
     o.review_link=document.getElementById('om-review-link').value.trim();
+    o.project_name=document.getElementById('om-project-name-input').value.trim();
     // Save stage to Supabase addons field temporarily (until schema updated)
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${curOrderRef}`,{
         method:'PATCH',
         headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-        body:JSON.stringify({status:o.status, project_stage: o.stage, review_link: o.review_link||null})
+        body:JSON.stringify({status:o.status, project_stage: o.stage, review_link: o.review_link||null, project_name: o.project_name||null})
       });
     } catch(e){ console.warn('Stage save failed:',e); }
     saveData();
