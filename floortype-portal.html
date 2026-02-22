@@ -200,7 +200,12 @@
     background:white;border-radius:16px;border:1px solid var(--border);
     padding:22px 20px;box-shadow:0 2px 10px rgba(107,86,200,0.05);
     position:relative;overflow:hidden;
+    cursor:pointer;transition:box-shadow 0.2s, transform 0.15s, border-color 0.2s;
+    user-select:none;
   }
+  .ov-stat:hover{ transform:translateY(-2px); box-shadow:0 6px 20px rgba(107,86,200,0.12); }
+  .ov-stat.selected{ border-color:var(--purple-deep); box-shadow:0 0 0 3px var(--purple-bg),0 6px 20px rgba(107,86,200,0.15); }
+  .ov-stat.action-required.selected{ border-color:#F0C000; box-shadow:0 0 0 3px rgba(240,192,0,0.15),0 6px 20px rgba(240,192,0,0.2); }
   .ov-stat.action-required{
     border-color:#F0C000;
     background:#FFFDF0;
@@ -210,7 +215,7 @@
     position:absolute;inset:0;
     background:linear-gradient(120deg,transparent 0%,rgba(255,220,0,0.18) 40%,rgba(255,180,0,0.10) 60%,transparent 100%);
     background-size:200% 100%;
-    animation:shimmer 2.8s ease-in-out infinite;
+    animation:shimmer 5s ease-in-out infinite;
   }
   @keyframes shimmer{
     0%{background-position:200% 0}
@@ -579,32 +584,25 @@
       </div>
 
       <div class="overview-grid">
-        <div class="ov-stat action-required" id="statActionCard" style="display:none;">
+        <div class="ov-stat action-required" id="statActionCard" style="display:none;" onclick="selectStatCard('action')">
           <div class="ov-stat-icon">⚡</div>
           <div class="ov-stat-label">Action Required</div>
           <div class="ov-stat-num amber" id="ovAction">0</div>
           <div class="ov-stat-sub">Draft ready for your review</div>
-          <span class="ov-stat-cta" onclick="showView('orders')">Review now →</span>
         </div>
-        <div class="ov-stat" id="statActionEmpty" style="display:none;">
+        <div class="ov-stat" id="statActionEmpty" style="display:none;" onclick="selectStatCard('action')">
           <div class="ov-stat-icon">✅</div>
           <div class="ov-stat-label">Action Required</div>
           <div class="ov-stat-num mint">0</div>
           <div class="ov-stat-sub">You're all caught up</div>
         </div>
-        <div class="ov-stat">
-          <div class="ov-stat-icon">🎨</div>
+        <div class="ov-stat" id="statProductionCard" onclick="selectStatCard('production')">
+          <div class="ov-stat-icon">🔨</div>
           <div class="ov-stat-label">In Production</div>
           <div class="ov-stat-num purple" id="ovProgress">0</div>
           <div class="ov-stat-sub">Actively being worked on</div>
         </div>
-        <div class="ov-stat">
-          <div class="ov-stat-icon">✏️</div>
-          <div class="ov-stat-label">In Revisions</div>
-          <div class="ov-stat-num purple" id="ovRevisions">0</div>
-          <div class="ov-stat-sub">Revisions in progress</div>
-        </div>
-        <div class="ov-stat">
+        <div class="ov-stat" id="statFinalCard" onclick="selectStatCard('final')">
           <div class="ov-stat-icon">📦</div>
           <div class="ov-stat-label">Final Ready</div>
           <div class="ov-stat-num mint" id="ovComplete">0</div>
@@ -613,7 +611,7 @@
       </div>
 
       <div class="section-header">
-        <div class="section-title-sm">Recent Orders</div>
+        <div class="section-title-sm" id="overviewSectionTitle">Recent Orders</div>
         <span class="see-all" onclick="showView('orders')">See all →</span>
       </div>
       <div class="order-cards" id="overviewOrderCards"></div>
@@ -968,22 +966,76 @@ function initApp(){
 }
 
 // ── OVERVIEW ──
+let activeStatFilter = null;
+
+function selectStatCard(filter) {
+  // Toggle off if already selected
+  if (activeStatFilter === filter) {
+    activeStatFilter = null;
+  } else {
+    activeStatFilter = filter;
+  }
+  // Update selected state on cards
+  document.querySelectorAll('.ov-stat').forEach(c => c.classList.remove('selected'));
+  if (activeStatFilter) {
+    const map = { action: ['statActionCard','statActionEmpty'], production: ['statProductionCard'], final: ['statFinalCard'] };
+    (map[activeStatFilter]||[]).forEach(id => {
+      const el = document.getElementById(id);
+      if(el && el.style.display !== 'none') el.classList.add('selected');
+    });
+  }
+  renderOverviewCards();
+}
+
+function renderOverviewCards() {
+  const draftStages = ['draft-1-ready','draft-2-ready','final-draft-ready'];
+  const container = document.getElementById('overviewOrderCards');
+  const titleEl = document.getElementById('overviewSectionTitle');
+  let filtered, title;
+
+  if (activeStatFilter === 'action') {
+    filtered = orders.filter(o => o.review_link && draftStages.includes(o.stage) && o.review_confirmed !== o.stage);
+    title = 'Action Required';
+  } else if (activeStatFilter === 'production') {
+    filtered = orders.filter(o => !['delivered'].includes(o.stage) && o.status !== 'Complete' && !(o.review_link && draftStages.includes(o.stage) && o.review_confirmed !== o.stage));
+    title = 'In Production';
+  } else if (activeStatFilter === 'final') {
+    filtered = orders.filter(o => o.stage === 'delivered' || o.status === 'Complete');
+    title = 'Final Ready';
+  } else {
+    // Default: recent orders, action-required first
+    const sorted = [...orders].sort((a,b)=>{
+      const aU = a.review_link && draftStages.includes(a.stage) ? 1 : 0;
+      const bU = b.review_link && draftStages.includes(b.stage) ? 1 : 0;
+      if(aU !== bU) return bU - aU;
+      return new Date(b.date) - new Date(a.date);
+    });
+    filtered = sorted.slice(0,4);
+    title = 'Recent Orders';
+  }
+
+  if(titleEl) titleEl.textContent = title;
+
+  if(!filtered.length) {
+    container.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px;">No orders in this category.</div>`;
+  } else {
+    container.innerHTML = filtered.map(o=>orderCardHTML(o)).join('');
+  }
+}
+
 function renderOverview(){
   const draftStages = ['draft-1-ready','draft-2-ready','final-draft-ready'];
-  const revisionStages = ['draft-1-revisions','draft-2-revisions'];
 
-  const actionRequired = orders.filter(o => 
+  const actionRequired = orders.filter(o =>
     o.review_link && draftStages.includes(o.stage) && o.review_confirmed !== o.stage
   ).length;
-  const inProduction = orders.filter(o => 
-    ['in-production','pre-production','awaiting-assets'].includes(o.stage)
+  const inProduction = orders.filter(o =>
+    o.status !== 'Complete' && !draftStages.includes(o.stage)
   ).length;
-  const inRevisions = orders.filter(o => revisionStages.includes(o.stage)).length;
-  const finalReady = orders.filter(o => 
+  const finalReady = orders.filter(o =>
     o.stage === 'delivered' || o.status === 'Complete'
   ).length;
 
-  // Action required card — show yellow if any, green empty state if none
   if(actionRequired > 0){
     document.getElementById('statActionCard').style.display = 'block';
     document.getElementById('statActionEmpty').style.display = 'none';
@@ -994,24 +1046,10 @@ function renderOverview(){
   }
 
   document.getElementById('ovProgress').textContent = inProduction;
-  document.getElementById('ovRevisions').textContent = inRevisions;
   document.getElementById('ovComplete').textContent = finalReady;
   document.getElementById('activeCount').textContent = orders.filter(o=>o.status!=='Complete').length;
 
-  const review = orders.filter(o=>o.status==='In Review').length;
-  if(review>0 && document.getElementById('reviewPrompt')){ 
-    document.getElementById('reviewPrompt').style.display='inline'; 
-  }
-
-  const container = document.getElementById('overviewOrderCards');
-  // Prioritize action-required orders first, then by date
-  const sorted = [...orders].sort((a,b)=>{
-    const aUrgent = a.review_link && draftStages.includes(a.stage) ? 1 : 0;
-    const bUrgent = b.review_link && draftStages.includes(b.stage) ? 1 : 0;
-    if(aUrgent !== bUrgent) return bUrgent - aUrgent;
-    return new Date(b.date) - new Date(a.date);
-  });
-  container.innerHTML = sorted.slice(0,4).map(o=>orderCardHTML(o)).join('');
+  renderOverviewCards();
 }
 
 // ── ORDER CARD HTML ──
