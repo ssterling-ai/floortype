@@ -723,7 +723,7 @@ let orderFilter = 'all';
 // Restore session on page load - called after DOM ready
 function restoreSession() {
   try {
-    const saved = sessionStorage.getItem('ft_session');
+    const saved = localStorage.getItem('ft_session');
     if (!saved) return;
     const session = JSON.parse(saved);
     if (!session?.user || !session?.token) return;
@@ -733,7 +733,7 @@ function restoreSession() {
     document.getElementById('appSidebar').style.display = 'flex';
     document.getElementById('appMain').style.display = 'flex';
     initApp();
-  } catch(e) { sessionStorage.removeItem('ft_session'); }
+  } catch(e) { localStorage.removeItem('ft_session'); }
 }
 
 // ── SUPABASE ──
@@ -862,7 +862,7 @@ async function doLogin(){
   btn.disabled = false;
 
   // Persist session so page refresh doesn't log out
-  sessionStorage.setItem('ft_session', JSON.stringify({
+  localStorage.setItem('ft_session', JSON.stringify({
     user: currentUser,
     token: userToken,
     orders: orders
@@ -887,7 +887,7 @@ async function doLogout(){
   currentUser = null;
   currentSession = null;
   orders = [];
-  sessionStorage.removeItem('ft_session');
+  localStorage.removeItem('ft_session');
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPassword').value = '';
   document.getElementById('loginError').style.display = 'none';
