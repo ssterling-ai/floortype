@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floortype — Contact Us</title>
+<title>Floortype — Talk to Us</title>
+<meta name="description" content="Book a live walkthrough with the Floortype team. We'll review your project, walk you through our process, and give you a clear plan from brief to final delivery.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -35,7 +36,9 @@
     font-weight: 300;
     overflow-x: hidden;
   }
-  /* ── NAV ── */
+
+  
+/* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0;
     z-index: 100;
@@ -89,58 +92,214 @@
 
   
 
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  html {{ scroll-behavior: smooth; }}
-  body {{ background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }}
-  .page-hero {{ background: var(--dark); padding: 80px 64px; position: relative; overflow: hidden; }}
-  .page-hero::before {{ content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
-    top: -200px; right: -100px; pointer-events: none; }}
-  .page-hero-eyebrow {{ font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }}
-  .page-hero-eyebrow::before {{ content: ''; width: 20px; height: 2px;
-    background: linear-gradient(90deg, var(--purple), var(--mint)); border-radius: 2px; }}
-  .page-hero h1 {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px);
-    letter-spacing: 0.02em; color: white; margin-bottom: 16px; line-height: 0.95; }}
-  .page-hero h1 em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple); }}
-  .page-hero p {{ font-size: 16px; color: rgba(255,255,255,0.5); max-width: 560px; line-height: 1.7; font-weight: 300; }}
-  .page-body {{ max-width: 900px; margin: 0 auto; padding: 64px 32px; }}
-  .page-body-wide {{ max-width: 1100px; margin: 0 auto; padding: 64px 32px; }}
-  .reveal {{ opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }}
-  .reveal.visible {{ opacity: 1; transform: none; }}
-  .section-label {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 12px; }}
-  .section-title {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 52px);
-    letter-spacing: 0.04em; color: var(--dark); margin-bottom: 16px; }}
-  .section-title em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple-deep); }}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
-  .contact-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }}
-  @media(max-width:700px) {{ .contact-grid {{ grid-template-columns: 1fr; }} }}
-  .contact-form-wrap {{ background: white; border: 1.5px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: 0 4px 24px rgba(107,86,200,0.07); }}
-  .form-group {{ margin-bottom: 20px; }}
-  .form-label {{ display: block; font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 7px; }}
-  .form-input {{ width: 100%; padding: 11px 15px; border: 1.5px solid var(--border); border-radius: 10px;
-    font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--dark); background: white; outline: none;
-    transition: border-color 0.2s; box-sizing: border-box; }}
-  .form-input:focus {{ border-color: var(--purple-mid); box-shadow: 0 0 0 3px rgba(155,135,232,0.1); }}
-  textarea.form-input {{ resize: vertical; min-height: 120px; line-height: 1.6; }}
-  .form-row {{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }}
-  .submit-btn {{ width: 100%; padding: 14px; background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
-    color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
-    font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }}
-  .submit-btn:hover {{ transform: translateY(-1px); box-shadow: 0 6px 20px rgba(107,86,200,0.3); }}
-  .contact-info {{ display: flex; flex-direction: column; gap: 20px; }}
-  .contact-card {{ background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 24px; }}
-  .contact-card-icon {{ font-size: 24px; margin-bottom: 10px; }}
-  .contact-card-title {{ font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }}
-  .contact-card-desc {{ font-size: 13px; color: var(--muted); line-height: 1.6; }}
-  .contact-card-link {{ display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 600;
-    color: var(--purple-deep); text-decoration: none; }}
-  .contact-card-link:hover {{ text-decoration: underline; }}
-  .form-success {{ display: none; text-align: center; padding: 32px; }}
-  .form-success-icon {{ font-size: 48px; margin-bottom: 16px; }}
-  .form-success h3 {{ font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; color: var(--dark); margin-bottom: 8px; }}
-  .form-success p {{ font-size: 14px; color: var(--muted); }}
+  /* ── FULL PAGE SPLIT ── */
+  .contact-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 68px);
+  }
+  @media(max-width: 860px) {
+    .contact-wrap { grid-template-columns: 1fr; }
+  }
+
+  /* ── LEFT PANEL ── */
+  .contact-left {
+    background: var(--dark);
+    padding: 72px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-left::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.12), transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+  }
+  .contact-left::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,232,218,0.08), transparent 70%);
+    bottom: -100px; left: -100px;
+    pointer-events: none;
+  }
+  .contact-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--purple);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+    position: relative; z-index: 1;
+  }
+  .contact-eyebrow::before {
+    content: ''; width: 20px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+    border-radius: 2px; flex-shrink: 0;
+  }
+  .contact-left h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 5vw, 72px);
+    letter-spacing: 0.02em; line-height: 0.92;
+    color: white; margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .contact-left h1 em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic; color: var(--purple);
+  }
+  .contact-left p {
+    font-size: 15px; color: rgba(255,255,255,0.45);
+    line-height: 1.75; max-width: 420px;
+    margin-bottom: 40px; font-weight: 300;
+    position: relative; z-index: 1;
+  }
+
+  /* ── BENEFIT LIST ── */
+  .benefit-list {
+    display: flex; flex-direction: column; gap: 16px;
+    position: relative; z-index: 1;
+  }
+  .benefit-item {
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .benefit-dot {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+    font-size: 13px;
+  }
+  .benefit-text {
+    font-size: 14px; color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+  }
+  .benefit-text strong {
+    color: white; font-weight: 600; display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ── SOCIAL PROOF ── */
+  .contact-proof {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; gap: 32px;
+    position: relative; z-index: 1;
+  }
+  .proof-stat { }
+  .proof-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.04em;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .proof-num.purple { color: var(--purple); }
+  .proof-num.mint { color: var(--mint); }
+  .proof-label {
+    font-size: 12px; color: rgba(255,255,255,0.35);
+    font-weight: 500; letter-spacing: 0.04em;
+  }
+
+  /* ── RIGHT PANEL ── */
+  .contact-right {
+    background: white;
+    padding: 72px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  @media(max-width:860px) {
+    .contact-left { padding: 52px 32px; }
+    .contact-right { padding: 52px 32px; }
+  }
+  .form-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.06em;
+    color: var(--dark); margin-bottom: 6px;
+  }
+  .form-sub {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 32px; line-height: 1.6;
+  }
+
+  /* ── FORM ── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--dark); margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  .form-label .opt { color: var(--muted); font-weight: 400; }
+  .form-input {
+    width: 100%; padding: 12px 15px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark); background: white; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-input:focus {
+    border-color: var(--purple-mid);
+    box-shadow: 0 0 0 3px rgba(155,135,232,0.1);
+  }
+  .form-input.error { border-color: #DC2626; }
+  textarea.form-input { resize: vertical; min-height: 110px; line-height: 1.6; }
+  select.form-input { cursor: pointer; }
+
+  /* ── SUBMIT ── */
+  .submit-btn {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--purple-deep), var(--mint-deep));
+    color: white; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: all 0.2s;
+    margin-top: 6px; letter-spacing: 0.02em;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(107,86,200,0.35);
+  }
+  .form-error {
+    display: none; font-size: 13px; color: #DC2626;
+    margin-bottom: 14px; padding: 10px 14px;
+    background: #FFF0F0; border-radius: 8px;
+    border: 1px solid #FCA5A5;
+  }
+  .form-note {
+    font-size: 11px; color: var(--muted);
+    text-align: center; margin-top: 12px; line-height: 1.6;
+  }
+
+  /* ── SUCCESS ── */
+  .form-success {
+    display: none; text-align: center; padding: 40px 20px;
+  }
+  .success-icon { font-size: 52px; margin-bottom: 18px; }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.04em;
+    color: var(--dark); margin-bottom: 10px;
+  }
+  .success-sub {
+    font-size: 15px; color: var(--muted); line-height: 1.7;
+    max-width: 360px; margin: 0 auto 24px;
+  }
+  .success-back {
+    display: inline-block;
+    background: var(--purple-bg); color: var(--purple-deep);
+    padding: 12px 24px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 14px;
+  }
 
   footer {
     background: var(--dark);
@@ -262,117 +421,140 @@
   <a href="/quote" class="nav-cta">Start a Project →</a>
 </nav>
 
-<div class="page-hero">
-  <div class="page-hero-eyebrow">Get in Touch</div>
-  <h1>We'd Love to<br><em>Hear From You</em></h1>
-  <p>Whether you have a question about a project, want to discuss scope, or just want to say hello — we're here.</p>
-</div>
+<div class="contact-wrap">
 
-<div class="page-body-wide">
-  <div class="contact-grid">
+  <!-- LEFT -->
+  <div class="contact-left">
+    <div class="contact-eyebrow">Let's Talk</div>
+    <h1>See Floortype<br>in <em>Action</em></h1>
+    <p>Book a live walkthrough with our team. We'll review your project, walk through our process, and leave you with a clear plan from brief to final delivery — no pressure, no commitment.</p>
 
-    <div class="contact-form-wrap reveal">
-      <div id="contactForm">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Send Us a Message</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">First Name</label>
-            <input class="form-input" id="cfFirstName" type="text" placeholder="Jane">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Last Name</label>
-            <input class="form-input" id="cfLastName" type="text" placeholder="Smith">
-          </div>
+    <div class="benefit-list">
+      <div class="benefit-item">
+        <div class="benefit-dot">🎯</div>
+        <div class="benefit-text">
+          <strong>A goal-focused conversation</strong>
+          We'll learn about your project, your timeline, and what success looks like for you.
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-dot">🖥️</div>
+        <div class="benefit-text">
+          <strong>A live walkthrough of our process</strong>
+          See exactly how we move from drawings to photorealistic output — and what your client portal experience looks like.
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-dot">📐</div>
+        <div class="benefit-text">
+          <strong>Tailored scope & pricing guidance</strong>
+          Walk away with a real sense of what your project will cost and how long it'll take.
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-dot">💬</div>
+        <div class="benefit-text">
+          <strong>Plenty of time for your questions</strong>
+          No hard sell. Just a straight conversation about whether we're the right fit.
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-proof">
+      <div class="proof-stat">
+        <div class="proof-num purple">24H</div>
+        <div class="proof-label">Quote turnaround</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num mint">500+</div>
+        <div class="proof-label">Projects delivered</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num" style="color:white;">4–8W</div>
+        <div class="proof-label">Standard delivery</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="contact-right">
+    <div id="contactForm">
+      <div class="form-heading">Book Your Walkthrough</div>
+      <div class="form-sub">Fill in your details and we'll reach out within one business day to schedule a time that works for you.</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" id="cfFirst" type="text" placeholder="Jane">
         </div>
         <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input class="form-input" id="cfEmail" type="email" placeholder="jane@company.com">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" id="cfLast" type="text" placeholder="Smith">
         </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Business Email</label>
+        <input class="form-input" id="cfEmail" type="email" placeholder="jane@company.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number <span class="opt">(optional)</span></label>
+        <input class="form-input" id="cfPhone" type="tel" placeholder="+1 (555) 000-0000">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Company Name</label>
+        <input class="form-input" id="cfCompany" type="text" placeholder="Kessler Development Group">
+      </div>
+
+      <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Company <span style="font-weight:400;color:var(--muted);font-size:12px;">(optional)</span></label>
-          <input class="form-input" id="cfCompany" type="text" placeholder="Kessler Development Group">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Subject</label>
-          <select class="form-input" id="cfSubject">
-            <option value="">Select a topic…</option>
-            <option>Project Quote</option>
-            <option>Floor Plan Order</option>
-            <option>Existing Project</option>
-            <option>Billing / Invoicing</option>
-            <option>General Inquiry</option>
+          <label class="form-label">Project Type</label>
+          <select class="form-input" id="cfProjectType">
+            <option value="">Select type…</option>
+            <option>Multifamily Residential</option>
+            <option>Mixed-Use Development</option>
+            <option>Single Family Residential</option>
+            <option>Commercial / Office</option>
+            <option>Hospitality</option>
+            <option>Retail</option>
             <option>Other</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Message</label>
-          <textarea class="form-input" id="cfMessage" placeholder="Tell us what's on your mind…"></textarea>
+          <label class="form-label">Services Interested In</label>
+          <select class="form-input" id="cfService">
+            <option value="">Select service…</option>
+            <option>3D Floor Plans</option>
+            <option>3D Renderings</option>
+            <option>360° Virtual Tours</option>
+            <option>Fly-Through Animation</option>
+            <option>Multiple / Not Sure</option>
+          </select>
         </div>
-        <div id="cfError" style="display:none;font-size:13px;color:#DC2626;margin-bottom:14px;padding:10px 14px;background:#FFF0F0;border-radius:8px;border:1px solid #FCA5A5;"></div>
-        <button class="submit-btn" onclick="submitContact()">Send Message →</button>
       </div>
-      <div class="form-success" id="contactSuccess">
-        <div class="form-success-icon">✉️</div>
-        <h3>Message Sent</h3>
-        <p>Thanks for reaching out. We'll get back to you within one business day.</p>
+
+      <div class="form-group">
+        <label class="form-label">Tell us about your project <span class="opt">(optional)</span></label>
+        <textarea class="form-input" id="cfMessage" placeholder="Project name, location, timeline, number of units — anything that helps us prepare for the call…"></textarea>
       </div>
+
+      <div class="form-error" id="cfError"></div>
+
+      <button class="submit-btn" onclick="submitContact()">Book My Walkthrough →</button>
+      <p class="form-note">No commitment required. We'll confirm your time within one business day.</p>
     </div>
 
-    <div class="contact-info reveal">
-      <div class="contact-card">
-        <div class="contact-card-icon">⚡</div>
-        <div class="contact-card-title">Need a quote fast?</div>
-        <div class="contact-card-desc">Our quote form walks you through your project scope in detail and gets you a response within 24 hours.</div>
-        <a href="/quote" class="contact-card-link">Start a quote request →</a>
-      </div>
-      <div class="contact-card">
-        <div class="contact-card-icon">🗂️</div>
-        <div class="contact-card-title">Existing client?</div>
-        <div class="contact-card-desc">Log into your client portal to track project progress, review drafts, download files, and message our team directly on your order.</div>
-        <a href="/portal" class="contact-card-link">Go to client portal →</a>
-      </div>
-      <div class="contact-card">
-        <div class="contact-card-icon">🕐</div>
-        <div class="contact-card-title">Response time</div>
-        <div class="contact-card-desc">We respond to all inquiries within one business day. For urgent project needs, note it in your message and we'll prioritize accordingly.</div>
-      </div>
+    <div class="form-success" id="contactSuccess">
+      <div class="success-icon">📅</div>
+      <div class="success-title">You're Booked In</div>
+      <p class="success-sub">Thanks — we've received your details and will be in touch within one business day to confirm your walkthrough time.</p>
+      <a href="/home" class="success-back">← Back to Home</a>
     </div>
-
   </div>
+
 </div>
-
-<script>
-async function submitContact() {{
-  const first = document.getElementById('cfFirstName').value.trim();
-  const last  = document.getElementById('cfLastName').value.trim();
-  const email = document.getElementById('cfEmail').value.trim();
-  const subject = document.getElementById('cfSubject').value;
-  const message = document.getElementById('cfMessage').value.trim();
-  const company = document.getElementById('cfCompany').value.trim();
-  const errEl = document.getElementById('cfError');
-
-  if(!first || !email || !email.includes('@') || !message) {{
-    errEl.textContent = 'Please fill in your name, email, and message.';
-    errEl.style.display = 'block';
-    return;
-  }}
-  errEl.style.display = 'none';
-
-  try {{
-    const res = await fetch('/api/contact', {{
-      method: 'POST',
-      headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{ first, last, email, company, subject, message }})
-    }});
-    if(!res.ok) throw new Error('Send failed');
-    document.getElementById('contactForm').style.display = 'none';
-    document.getElementById('contactSuccess').style.display = 'block';
-  }} catch(e) {{
-    errEl.textContent = 'Something went wrong. Please try emailing us directly.';
-    errEl.style.display = 'block';
-  }}
-}}
-</script>
 
 <footer>
   <div class="footer-top">
@@ -417,20 +599,58 @@ async function submitContact() {{
     <p class="footer-copy">Privacy · Terms</p>
   </div>
 </footer>
+
 <script>
-// Mobile nav toggle
+async function submitContact() {
+  const first   = document.getElementById('cfFirst').value.trim();
+  const last    = document.getElementById('cfLast').value.trim();
+  const email   = document.getElementById('cfEmail').value.trim();
+  const phone   = document.getElementById('cfPhone').value.trim();
+  const company = document.getElementById('cfCompany').value.trim();
+  const projType = document.getElementById('cfProjectType').value;
+  const service  = document.getElementById('cfService').value;
+  const message  = document.getElementById('cfMessage').value.trim();
+  const errEl    = document.getElementById('cfError');
+
+  if (!first || !email || !email.includes('@') || !company) {
+    errEl.textContent = 'Please fill in your name, business email, and company.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first, last, email, company,
+        subject: `Walkthrough Request — ${service || 'General'} — ${first} ${last}`,
+        message: `Phone: ${phone || 'Not provided'}\nProject Type: ${projType || 'Not specified'}\nService: ${service || 'Not specified'}\n\n${message}`
+      })
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contactSuccess').style.display = 'block';
+  } catch(e) {
+    errEl.textContent = 'Something went wrong — please try again or email us directly.';
+    errEl.style.display = 'block';
+    btn.textContent = 'Book My Walkthrough →';
+    btn.disabled = false;
+  }
+}
+
+// Mobile nav
 const burger = document.getElementById('burger');
 const mobileMenu = document.getElementById('mobileMenu');
 if(burger) burger.addEventListener('click', () => {
   mobileMenu.classList.toggle('open');
   burger.classList.toggle('open');
 });
-// Reveal animations
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-reveals.forEach(r => observer.observe(r));
 </script>
 </body>
 </html>
