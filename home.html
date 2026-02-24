@@ -82,26 +82,29 @@
   }
   .logo-mark svg { width: 16px; height: 16px; }
 
-  .nav-links { display: flex; gap: 36px; list-style: none; }
-  .nav-links a {
-    color: var(--muted);
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-btn {
+    color: var(--dark);
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    transition: color 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    background: white;
   }
-  .nav-links a:hover { color: var(--dark); }
-
+  .nav-btn:hover { border-color: var(--purple-mid); color: var(--purple-deep); }
   .nav-cta {
     background: var(--dark);
     color: white;
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
-    padding: 10px 24px;
+    padding: 10px 20px;
     border-radius: 100px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     transition: background 0.25s, transform 0.15s;
   }
   .nav-cta:hover { background: var(--purple-deep); transform: translateY(-1px); }
@@ -963,17 +966,14 @@
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="#" class="logo">
+  <a href="/home" class="logo">
     <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
     FLOORTYPE
   </a>
-  <ul class="nav-links">
-    <li><a href="#">Services</a></li>
-    <li><a href="#">Portfolio</a></li>
-    <li><a href="#">Process</a></li>
-    <li><a href="#">Pricing</a></li>
-  </ul>
-  <a href="/quote" class="nav-cta">Start a Project →</a>
+  <div class="nav-right">
+    <a href="/order" class="nav-btn">Floor Plans</a>
+    <a href="/quote" class="nav-cta">3D Rendering Quote →</a>
+  </div>
 </nav>
 
 <!-- ── HERO ── -->
