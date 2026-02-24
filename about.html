@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Floortype — About Us</title>
+<meta name="description" content="Floortype is an architectural visualization studio built on a simple ideology — understand the project deeply, then render it precisely. A studio for premium development firms.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -35,7 +36,9 @@
     font-weight: 300;
     overflow-x: hidden;
   }
-  /* ── NAV ── */
+
+  
+/* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0;
     z-index: 100;
@@ -89,64 +92,389 @@
 
   
 
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  html {{ scroll-behavior: smooth; }}
-  body {{ background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }}
-  .page-hero {{ background: var(--dark); padding: 80px 64px; position: relative; overflow: hidden; }}
-  .page-hero::before {{ content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
-    top: -200px; right: -100px; pointer-events: none; }}
-  .page-hero-eyebrow {{ font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }}
-  .page-hero-eyebrow::before {{ content: ''; width: 20px; height: 2px;
-    background: linear-gradient(90deg, var(--purple), var(--mint)); border-radius: 2px; }}
-  .page-hero h1 {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px);
-    letter-spacing: 0.02em; color: white; margin-bottom: 16px; line-height: 0.95; }}
-  .page-hero h1 em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple); }}
-  .page-hero p {{ font-size: 16px; color: rgba(255,255,255,0.5); max-width: 560px; line-height: 1.7; font-weight: 300; }}
-  .page-body {{ max-width: 900px; margin: 0 auto; padding: 64px 32px; }}
-  .page-body-wide {{ max-width: 1100px; margin: 0 auto; padding: 64px 32px; }}
-  .reveal {{ opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }}
-  .reveal.visible {{ opacity: 1; transform: none; }}
-  .section-label {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 12px; }}
-  .section-title {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 52px);
-    letter-spacing: 0.04em; color: var(--dark); margin-bottom: 16px; }}
-  .section-title em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple-deep); }}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
 
-  .about-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 64px; align-items: start; }}
-  @media(max-width:700px) {{ .about-grid {{ grid-template-columns: 1fr; }} }}
-  .about-lead {{ font-size: 22px; font-weight: 300; color: var(--dark); line-height: 1.6; margin-bottom: 24px; }}
-  .about-body {{ font-size: 15px; color: var(--mid); line-height: 1.8; }}
-  .about-body p {{ margin-bottom: 18px; }}
-  .about-stat-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
-  .about-stat {{ background: white; border: 1.5px solid var(--border); border-radius: 16px;
-    padding: 28px 24px; }}
-  .about-stat-num {{ font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.04em;
-    line-height: 1; color: var(--purple-deep); margin-bottom: 6px; }}
-  .about-stat-num.mint {{ color: var(--mint-deep); }}
-  .about-stat-label {{ font-size: 13px; color: var(--muted); font-weight: 500; }}
-  .about-values {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }}
-  @media(max-width:700px) {{ .about-values {{ grid-template-columns: 1fr; }} }}
-  .value-card {{ background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 28px; }}
-  .value-icon {{ font-size: 28px; margin-bottom: 14px; }}
-  .value-title {{ font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }}
-  .value-desc {{ font-size: 13px; color: var(--muted); line-height: 1.65; }}
-  .cta-band {{ background: var(--dark); border-radius: 20px; padding: 56px 48px;
-    margin-top: 64px; text-align: center; position: relative; overflow: hidden; }}
-  .cta-band::before {{ content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-left.visible { opacity: 1; transform: none; }
+  .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-right.visible { opacity: 1; transform: none; }
+
+  /* ── HERO ── */
+  .about-hero {
+    background: var(--dark);
+    min-height: 70vh;
+    display: flex; align-items: center;
+    padding: 120px 80px 80px;
+    position: relative; overflow: hidden;
+  }
+  .about-hero::before {
+    content: ''; position: absolute;
+    width: 800px; height: 800px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.08), transparent 65%);
+    top: -300px; right: -200px; pointer-events: none;
+  }
+  .about-hero::after {
+    content: ''; position: absolute;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,232,218,0.06), transparent 65%);
+    bottom: -100px; left: 10%; pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1100px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--purple);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 20px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+    border-radius: 2px; flex-shrink: 0;
+  }
+  .about-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 6vw, 88px);
+    letter-spacing: 0.02em; line-height: 0.9;
+    color: white; margin-bottom: 24px;
+  }
+  .about-hero h1 em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic; color: var(--purple);
+  }
+  .hero-body {
+    font-size: 17px; color: rgba(255,255,255,0.5);
+    line-height: 1.8; font-weight: 300;
+    margin-bottom: 32px;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
+    color: white; text-decoration: none;
+    padding: 14px 28px; border-radius: 12px;
+    font-weight: 600; font-size: 14px; transition: all 0.2s;
+  }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(107,86,200,0.3); }
+  .hero-right {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .hero-stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 24px 20px;
+    backdrop-filter: blur(10px);
+  }
+  .hero-stat-card:first-child {
+    grid-column: 1 / -1;
+    background: rgba(196,181,244,0.08);
+    border-color: rgba(196,181,244,0.2);
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; letter-spacing: 0.04em;
+    line-height: 1; margin-bottom: 6px;
+  }
+  .stat-num.purple { color: var(--purple); }
+  .stat-num.mint { color: var(--mint); }
+  .stat-num.white { color: white; }
+  .stat-label { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400; }
+  .stat-desc { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 8px; line-height: 1.5; }
+
+  /* ── IDEOLOGY SECTION ── */
+  .ideology-section {
+    max-width: 1100px; margin: 0 auto;
+    padding: 100px 80px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .ideology-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--purple-deep);
+    margin-bottom: 16px;
+  }
+  .ideology-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    letter-spacing: 0.03em; line-height: 0.95;
+    color: var(--dark); margin-bottom: 24px;
+  }
+  .ideology-heading em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic; color: var(--purple-deep);
+  }
+  .ideology-body {
+    font-size: 15px; color: var(--mid);
+    line-height: 1.85; font-weight: 300;
+  }
+  .ideology-body p { margin-bottom: 16px; }
+  .ideology-body p:last-child { margin-bottom: 0; }
+  .ideology-visual {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 24px; padding: 36px;
+    box-shadow: 0 8px 40px rgba(107,86,200,0.08);
+    position: relative; overflow: hidden;
+  }
+  .ideology-visual::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+  }
+  .ideo-quote {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 22px; line-height: 1.5;
+    color: var(--dark); margin-bottom: 24px;
+  }
+  .ideo-quote-mark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 80px; line-height: 0.5;
+    color: var(--purple-bg); display: block;
+    margin-bottom: 16px;
+  }
+  .ideo-divider {
+    height: 1px; background: var(--border);
+    margin: 24px 0;
+  }
+  .ideo-pillars { display: flex; flex-direction: column; gap: 12px; }
+  .ideo-pillar {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px; color: var(--mid); font-weight: 400;
+  }
+  .ideo-pillar-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ideo-pillar-dot.purple { background: var(--purple-deep); }
+  .ideo-pillar-dot.mint { background: var(--mint-deep); }
+
+  /* ── VISION SECTION ── */
+  .vision-section {
+    background: white;
+    padding: 100px 80px;
+  }
+  .vision-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .vision-visual {
+    background: var(--dark);
+    border-radius: 24px; padding: 48px;
+    position: relative; overflow: hidden;
+    min-height: 340px; display: flex;
+    flex-direction: column; justify-content: center;
+  }
+  .vision-visual::before {
+    content: ''; position: absolute;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.12), transparent 70%);
+    top: -150px; right: -100px;
+  }
+  .vision-big-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px; letter-spacing: 0.04em;
+    line-height: 0.85; color: rgba(255,255,255,0.07);
+    position: absolute; bottom: 24px; right: 24px;
+    pointer-events: none;
+  }
+  .vision-items { display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 1; }
+  .vision-item {
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .vision-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .vision-item-title {
+    font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px;
+  }
+  .vision-item-desc {
+    font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.6;
+  }
+  .vision-content { }
+  .vision-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mint-deep);
+    margin-bottom: 16px;
+  }
+  .vision-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 52px);
+    letter-spacing: 0.03em; line-height: 0.95;
+    color: var(--dark); margin-bottom: 20px;
+  }
+  .vision-body {
+    font-size: 15px; color: var(--mid);
+    line-height: 1.85; font-weight: 300;
+  }
+  .vision-body p { margin-bottom: 16px; }
+
+  /* ── MANIFESTO ── */
+  .manifesto-section {
+    background: var(--dark);
+    padding: 100px 80px;
+    position: relative; overflow: hidden;
+  }
+  .manifesto-section::before {
+    content: ''; position: absolute;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,232,218,0.06), transparent 70%);
+    top: -200px; left: -200px; pointer-events: none;
+  }
+  .manifesto-section::after {
+    content: ''; position: absolute;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.08), transparent 70%);
+    bottom: -150px; right: -100px; pointer-events: none;
+  }
+  .manifesto-inner {
+    max-width: 1100px; margin: 0 auto;
+    position: relative; z-index: 1;
+  }
+  .manifesto-header {
+    text-align: center; margin-bottom: 64px;
+  }
+  .manifesto-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--mint);
+    margin-bottom: 16px; display: flex; align-items: center;
+    justify-content: center; gap: 10px;
+  }
+  .manifesto-eyebrow::before, .manifesto-eyebrow::after {
+    content: ''; width: 24px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+    border-radius: 2px;
+  }
+  .manifesto-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 72px);
+    letter-spacing: 0.04em; line-height: 0.9;
+    color: white; margin-bottom: 14px;
+  }
+  .manifesto-header h2 em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic; color: var(--purple);
+  }
+  .manifesto-header p {
+    font-size: 15px; color: rgba(255,255,255,0.4);
+    max-width: 520px; margin: 0 auto; line-height: 1.7;
+  }
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .manifesto-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px; padding: 32px 28px;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .manifesto-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .manifesto-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(196,181,244,0.2);
+    transform: translateY(-4px);
+  }
+  .manifesto-card:hover::before { opacity: 1; }
+  .m-card-icon {
+    font-size: 28px; margin-bottom: 16px; display: block;
+  }
+  .m-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.06em;
+    color: white; margin-bottom: 10px;
+  }
+  .m-card-desc {
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    line-height: 1.7; font-weight: 300;
+  }
+
+  /* ── STATS BAND ── */
+  .stats-band {
+    background: white;
+    padding: 64px 80px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stats-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 32px; align-items: center;
+  }
+  .stat-band-item { text-align: center; }
+  .stat-band-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px; letter-spacing: 0.04em; line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-band-label {
+    font-size: 13px; color: var(--muted); font-weight: 500;
+  }
+
+  /* ── CTA ── */
+  .about-cta {
+    background: var(--off-white);
+    padding: 80px;
+  }
+  .about-cta-inner {
+    max-width: 1100px; margin: 0 auto;
+    background: var(--dark); border-radius: 24px;
+    padding: 64px 56px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .about-cta-inner::before {
+    content: ''; position: absolute;
+    width: 500px; height: 500px; border-radius: 50%;
     background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
-    top: -150px; right: -100px; pointer-events: none; }}
-  .cta-band h2 {{ font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.04em;
-    color: white; margin-bottom: 12px; }}
-  .cta-band p {{ font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }}
-  .cta-btns {{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }}
-  .btn-primary {{ background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
-    color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none;
-    font-weight: 600; font-size: 15px; transition: all 0.2s; }}
-  .btn-primary:hover {{ transform: translateY(-2px); }}
-  .btn-ghost {{ border: 1.5px solid rgba(255,255,255,0.2); color: white; padding: 14px 28px;
-    border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 15px; }}
+    top: -200px; right: -100px; pointer-events: none;
+  }
+  .about-cta-inner h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px; letter-spacing: 0.04em;
+    color: white; margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .about-cta-inner p {
+    font-size: 15px; color: rgba(255,255,255,0.45);
+    margin-bottom: 28px; line-height: 1.7;
+    position: relative; z-index: 1;
+  }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
+    color: white; padding: 14px 28px; border-radius: 12px;
+    text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(107,86,200,0.3); }
+  .btn-ghost {
+    border: 1.5px solid rgba(255,255,255,0.2); color: white;
+    padding: 14px 28px; border-radius: 12px;
+    text-decoration: none; font-weight: 500; font-size: 15px; transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.5); }
+
+  @media(max-width: 860px) {
+    .hero-inner, .ideology-section, .vision-inner { grid-template-columns: 1fr; gap: 40px; }
+    .manifesto-grid { grid-template-columns: 1fr; }
+    .stats-inner { grid-template-columns: 1fr 1fr; }
+    .about-hero, .ideology-section, .vision-section, .manifesto-section, .stats-band, .about-cta { padding: 64px 32px; }
+  }
 
   footer {
     background: var(--dark);
@@ -268,70 +596,175 @@
   <a href="/quote" class="nav-cta">Start a Project →</a>
 </nav>
 
-<div class="page-hero">
-  <div class="page-hero-eyebrow">Who We Are</div>
-  <h1>Built for the<br><em>People Who Build</em></h1>
-  <p>We exist to close the gap between what's drawn and what's imagined — giving architects, developers, and real estate professionals the visual tools to communicate their vision clearly.</p>
-</div>
-
-<div class="page-body">
-
-  <div class="about-grid reveal">
-    <div>
-      <p class="about-lead">Floortype is an architectural visualization studio focused on one thing: making your project unmistakably clear before it's built.</p>
-      <div class="about-body">
-        <p>We work with developers, architects, interior designers, and real estate professionals across every project type — from single-family homes to large-scale multifamily and mixed-use developments.</p>
-        <p>Our output is always photorealistic, always on time, and always 100% license-free. You own everything we make for you, with no strings attached.</p>
-        <p>The studio operates remotely and works with clients globally. We've built our process around a simple idea: clear communication at every step produces better work, faster. That's why we use structured draft review, a dedicated client portal, and fixed timelines — so nothing falls through the cracks.</p>
-      </div>
+<!-- ── HERO ── -->
+<section class="about-hero">
+  <div class="hero-inner">
+    <div class="reveal-left">
+      <div class="hero-eyebrow">Who We Are</div>
+      <h1>We Build What<br>Others Can<br>Only <em>Imagine</em></h1>
+      <p class="hero-body">Floortype is an architectural visualization studio built on a single, simple idea — the more deeply we understand a project, the more precisely we can render it. We don't just make things look good. We make them feel true.</p>
+      <a href="/contact" class="hero-cta">Work With Us →</a>
     </div>
-    <div class="about-stat-grid">
-      <div class="about-stat">
-        <div class="about-stat-num">500<span style="font-size:32px;">+</span></div>
-        <div class="about-stat-label">Projects delivered</div>
+    <div class="hero-right reveal-right">
+      <div class="hero-stat-card">
+        <div class="stat-num purple">500+</div>
+        <div class="stat-label">Projects delivered globally</div>
+        <div class="stat-desc">From single-family homes to large-scale multifamily and mixed-use developments across North America and beyond.</div>
       </div>
-      <div class="about-stat">
-        <div class="about-stat-num mint">24<span style="font-size:32px;">h</span></div>
-        <div class="about-stat-label">Quote turnaround</div>
+      <div class="hero-stat-card">
+        <div class="stat-num mint">24H</div>
+        <div class="stat-label">Quote turnaround</div>
       </div>
-      <div class="about-stat">
-        <div class="about-stat-num">4–8</div>
-        <div class="about-stat-label">Week delivery window</div>
-      </div>
-      <div class="about-stat">
-        <div class="about-stat-num mint">100<span style="font-size:32px;">%</span></div>
-        <div class="about-stat-label">License-free output</div>
+      <div class="hero-stat-card">
+        <div class="stat-num white">100%</div>
+        <div class="stat-label">License-free output</div>
       </div>
     </div>
   </div>
+</section>
 
-  <div class="about-values reveal">
-    <div class="value-card">
-      <div class="value-icon">🎯</div>
-      <div class="value-title">Precision Over Volume</div>
-      <div class="value-desc">We take on projects we can deliver well. Every brief gets a real review, every quote is specific, and every draft is checked before it leaves our studio.</div>
+<!-- ── IDEOLOGY ── -->
+<section>
+  <div class="ideology-section">
+    <div class="ideology-visual reveal-left">
+      <span class="ideo-quote-mark">"</span>
+      <div class="ideo-quote">Great visualization isn't about making something beautiful. It's about making something believable.</div>
+      <div class="ideo-divider"></div>
+      <div class="ideo-pillars">
+        <div class="ideo-pillar"><div class="ideo-pillar-dot purple"></div>We study the brief before we open a single file</div>
+        <div class="ideo-pillar"><div class="ideo-pillar-dot purple"></div>We ask the questions other studios skip</div>
+        <div class="ideo-pillar"><div class="ideo-pillar-dot mint"></div>We understand what the project needs to accomplish</div>
+        <div class="ideo-pillar"><div class="ideo-pillar-dot mint"></div>Then we build the images that make that happen</div>
+      </div>
     </div>
-    <div class="value-card">
-      <div class="value-icon">🔄</div>
-      <div class="value-title">Process-First</div>
-      <div class="value-desc">Great output comes from a clear process. We've structured every step — from quote to delivery — so you always know where your project stands and what happens next.</div>
-    </div>
-    <div class="value-card">
-      <div class="value-icon">📦</div>
-      <div class="value-title">Fully Yours</div>
-      <div class="value-desc">Every file we deliver is 100% license-free. No usage restrictions, no royalties, no fine print. Use our work however your project demands.</div>
+    <div class="reveal-right">
+      <div class="ideology-label">Our Ideology</div>
+      <div class="ideology-heading">Crafters of<br><em>Fine Things</em></div>
+      <div class="ideology-body">
+        <p>There's a version of this business that takes the drawings, renders them quickly, and delivers. We chose a different path.</p>
+        <p>Before any production begins, we invest time understanding what the project is for. Who is the target tenant? What does the investor need to feel confident? What story does this building need to tell at a planning board hearing?</p>
+        <p>That understanding changes everything — the camera angles we choose, the time of day we render, the furniture we select, the mood we set. The output looks better because the thinking behind it is better.</p>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="cta-band reveal">
-    <h2>Let's Work Together</h2>
+<!-- ── VISION ── -->
+<section class="vision-section">
+  <div class="vision-inner">
+    <div class="reveal-left">
+      <div class="vision-label">Our Vision</div>
+      <div class="vision-heading">We See The<br>Whole Picture</div>
+      <div class="vision-body">
+        <p>A rendering is never just a rendering. It's a leasing tool. An investor deck asset. A planning board submission. A social media post. A sales launch centerpiece.</p>
+        <p>We think about all of it. The best visualization studios understand that their output lives inside a larger strategy — and that the image needs to work hard in every context it appears in.</p>
+        <p>That's what separates work that looks polished from work that actually performs.</p>
+      </div>
+    </div>
+    <div class="vision-visual reveal-right">
+      <div class="vision-items">
+        <div class="vision-item">
+          <div class="vision-icon">🏗️</div>
+          <div>
+            <div class="vision-item-title">We understand development</div>
+            <div class="vision-item-desc">We know the difference between a pre-leasing campaign and a planning board submission — and we produce accordingly.</div>
+          </div>
+        </div>
+        <div class="vision-item">
+          <div class="vision-icon">🎯</div>
+          <div>
+            <div class="vision-item-title">We work to the brief, not the template</div>
+            <div class="vision-item-desc">No two projects get the same treatment. We tailor camera angles, lighting, and mood to what each project needs to achieve.</div>
+          </div>
+        </div>
+        <div class="vision-item">
+          <div class="vision-icon">🔄</div>
+          <div>
+            <div class="vision-item-title">We're built for repeat work</div>
+            <div class="vision-item-desc">Our process, portal, and communication are all designed to make working with us on project after project completely frictionless.</div>
+          </div>
+        </div>
+      </div>
+      <div class="vision-big-text">VISION</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MANIFESTO ── -->
+<section class="manifesto-section">
+  <div class="manifesto-inner">
+    <div class="manifesto-header reveal">
+      <div class="manifesto-eyebrow">The Floortype Standard</div>
+      <h2>What Premium<br>Firms <em>Expect</em></h2>
+      <p>The developers and architects we work with are building at the highest level. Here's what we bring to every engagement.</p>
+    </div>
+    <div class="manifesto-grid">
+      <div class="manifesto-card reveal">
+        <span class="m-card-icon">🧠</span>
+        <div class="m-card-title">We Understand the Big Picture</div>
+        <div class="m-card-desc">We learn the project's purpose before producing a single frame. What market is it targeting? Who needs to be convinced? What does success look like? The answers shape everything.</div>
+      </div>
+      <div class="manifesto-card reveal">
+        <span class="m-card-icon">🎯</span>
+        <div class="m-card-title">We Tailor, We Don't Template</div>
+        <div class="m-card-desc">Premium projects deserve premium thinking. We don't apply the same formula to every job. Each brief gets a considered response — from scoping through to the final frame.</div>
+      </div>
+      <div class="manifesto-card reveal">
+        <span class="m-card-icon">⏱️</span>
+        <div class="m-card-title">We Respect Your Timeline</div>
+        <div class="m-card-desc">Investor decks have deadlines. Planning board submissions have dates. Sales launches have windows. We understand that our output lives inside a real schedule, and we take that seriously.</div>
+      </div>
+      <div class="manifesto-card reveal">
+        <span class="m-card-icon">💬</span>
+        <div class="m-card-title">We Communicate Clearly</div>
+        <div class="m-card-desc">No chasing. No guessing. Your project status is visible in your portal at all times. Drafts are annotatable. Feedback is structured. Nothing falls through the cracks.</div>
+      </div>
+      <div class="manifesto-card reveal">
+        <span class="m-card-icon">🔍</span>
+        <div class="m-card-title">We Sweat the Details</div>
+        <div class="m-card-desc">The quality of a rendering lives in the details — the light hitting a countertop, the grain of a floor, the shadow under a chair. We don't move on until it's right.</div>
+      </div>
+      <div class="manifesto-card reveal">
+        <span class="m-card-icon">🤝</span>
+        <div class="m-card-title">Your Success Is Ours</div>
+        <div class="m-card-desc">We measure ourselves by what happens after delivery — how fast the units lease, how the investor responded, whether the planning board approved. That's the work we're actually doing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS BAND ── -->
+<section class="stats-band">
+  <div class="stats-inner">
+    <div class="stat-band-item reveal">
+      <div class="stat-band-num" style="color:var(--purple-deep);">500+</div>
+      <div class="stat-band-label">Projects Delivered</div>
+    </div>
+    <div class="stat-band-item reveal">
+      <div class="stat-band-num" style="color:var(--mint-deep);">24H</div>
+      <div class="stat-band-label">Quote Turnaround</div>
+    </div>
+    <div class="stat-band-item reveal">
+      <div class="stat-band-num" style="color:var(--purple-deep);">4–8W</div>
+      <div class="stat-band-label">Standard Delivery</div>
+    </div>
+    <div class="stat-band-item reveal">
+      <div class="stat-band-num" style="color:var(--mint-deep);">100%</div>
+      <div class="stat-band-label">License-Free Output</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<div class="about-cta">
+  <div class="about-cta-inner reveal">
+    <h2>Let's Build Something Together</h2>
     <p>Tell us about your project and we'll take it from there.</p>
     <div class="cta-btns">
       <a href="/quote" class="btn-primary">Start a Project →</a>
-      <a href="/contact" class="btn-ghost">Get in Touch</a>
+      <a href="/contact" class="btn-ghost">Book a Walkthrough</a>
     </div>
   </div>
-
 </div>
 
 <footer>
@@ -376,20 +809,24 @@
     <p class="footer-copy">Privacy · Terms</p>
   </div>
 </footer>
+
 <script>
-// Mobile nav toggle
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
 const burger = document.getElementById('burger');
 const mobileMenu = document.getElementById('mobileMenu');
 if(burger) burger.addEventListener('click', () => {
   mobileMenu.classList.toggle('open');
   burger.classList.toggle('open');
 });
-// Reveal animations
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-reveals.forEach(r => observer.observe(r));
 </script>
 </body>
 </html>
