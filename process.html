@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Floortype — Our Process</title>
+<meta name="description" content="See how Floortype takes your project from brief to final delivery — a clear, structured process from quote to approval.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -35,7 +36,9 @@
     font-weight: 300;
     overflow-x: hidden;
   }
-  /* ── NAV ── */
+
+  
+/* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0;
     z-index: 100;
@@ -89,64 +92,244 @@
 
   
 
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  html {{ scroll-behavior: smooth; }}
-  body {{ background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }}
-  .page-hero {{ background: var(--dark); padding: 80px 64px; position: relative; overflow: hidden; }}
-  .page-hero::before {{ content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
-    top: -200px; right: -100px; pointer-events: none; }}
-  .page-hero-eyebrow {{ font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }}
-  .page-hero-eyebrow::before {{ content: ''; width: 20px; height: 2px;
-    background: linear-gradient(90deg, var(--purple), var(--mint)); border-radius: 2px; }}
-  .page-hero h1 {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px);
-    letter-spacing: 0.02em; color: white; margin-bottom: 16px; line-height: 0.95; }}
-  .page-hero h1 em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple); }}
-  .page-hero p {{ font-size: 16px; color: rgba(255,255,255,0.5); max-width: 560px; line-height: 1.7; font-weight: 300; }}
-  .page-body {{ max-width: 900px; margin: 0 auto; padding: 64px 32px; }}
-  .page-body-wide {{ max-width: 1100px; margin: 0 auto; padding: 64px 32px; }}
-  .reveal {{ opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }}
-  .reveal.visible {{ opacity: 1; transform: none; }}
-  .section-label {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 12px; }}
-  .section-title {{ font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 52px);
-    letter-spacing: 0.04em; color: var(--dark); margin-bottom: 16px; }}
-  .section-title em {{ font-family: 'DM Serif Display', serif; font-style: italic; color: var(--purple-deep); }}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--off-white); color: var(--dark); font-family: 'DM Sans', sans-serif; }
 
-  .process-steps {{ display: flex; flex-direction: column; gap: 0; }}
-  .process-step {{ display: grid; grid-template-columns: 80px 1fr; gap: 32px; padding: 40px 0;
-    border-bottom: 1px solid var(--border); position: relative; }}
-  .process-step:last-child {{ border-bottom: none; }}
-  .ps-num {{ font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1;
-    color: var(--border); letter-spacing: 0.04em; padding-top: 4px; }}
-  .ps-content {{ padding-top: 4px; }}
-  .ps-label {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--purple-deep); margin-bottom: 8px; }}
-  .ps-title {{ font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.04em;
-    color: var(--dark); margin-bottom: 12px; }}
-  .ps-desc {{ font-size: 15px; color: var(--mid); line-height: 1.75; margin-bottom: 14px; }}
-  .ps-detail {{ font-size: 13px; color: var(--muted); line-height: 1.7; }}
-  .ps-tag {{ display: inline-flex; align-items: center; gap: 6px; background: var(--purple-bg);
-    color: var(--purple-deep); font-size: 12px; font-weight: 600; padding: 4px 12px;
-    border-radius: 100px; margin-top: 12px; }}
-  .ps-tag.mint {{ background: var(--mint-bg); color: var(--mint-deep); }}
-  .cta-band {{ background: var(--dark); border-radius: 20px; padding: 56px 48px;
-    margin-top: 64px; text-align: center; position: relative; overflow: hidden; }}
-  .cta-band::before {{ content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  /* ── NAV BTN ── */
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-btn {
+    color: var(--dark); text-decoration: none; font-size: 13px; font-weight: 500;
+    padding: 10px 20px; border-radius: 100px; border: 1.5px solid var(--border);
+    letter-spacing: 0.02em; transition: all 0.2s; background: white;
+  }
+  .nav-btn:hover { border-color: var(--purple-mid); color: var(--purple-deep); }
+
+  /* ── HERO ── */
+  .process-hero {
+    background: var(--dark);
+    padding: 80px 64px 88px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .process-hero::before {
+    content: ''; position: absolute;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 65%);
+    top: -300px; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--purple);
+    margin-bottom: 20px; position: relative; z-index: 1;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; width: 24px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+    border-radius: 2px;
+  }
+  .process-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 96px);
+    letter-spacing: 0.02em; line-height: 0.9;
+    color: white; margin-bottom: 18px;
+    position: relative; z-index: 1;
+  }
+  .process-hero h1 em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic; color: var(--purple);
+  }
+  .process-hero p {
+    font-size: 16px; color: rgba(255,255,255,0.45);
+    max-width: 500px; margin: 0 auto;
+    line-height: 1.75; font-weight: 300;
+    position: relative; z-index: 1;
+  }
+
+  /* ── TIMELINE WRAP ── */
+  .timeline-wrap {
+    max-width: 1080px; margin: 0 auto;
+    padding: 80px 32px 80px;
+    position: relative;
+  }
+
+  /* Center spine */
+  .timeline-wrap::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--border) 5%, var(--border) 95%, transparent);
+    transform: translateX(-50%);
+  }
+
+  /* ── TIMELINE STEP ── */
+  .tl-step {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    margin-bottom: 64px;
+    align-items: start;
+    position: relative;
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .tl-step.visible { opacity: 1; transform: none; }
+  .tl-step:last-child { margin-bottom: 0; }
+
+  /* odd steps: content left, card right */
+  .tl-step .tl-content { grid-column: 1; padding-right: 48px; padding-top: 8px; text-align: right; }
+  .tl-step .tl-node   { grid-column: 2; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .tl-step .tl-card   { grid-column: 3; padding-left: 48px; }
+
+  /* even steps: card left, content right */
+  .tl-step.even .tl-content { grid-column: 3; grid-row: 1; padding-left: 48px; padding-right: 0; text-align: left; }
+  .tl-step.even .tl-node   { grid-column: 2; grid-row: 1; }
+  .tl-step.even .tl-card   { grid-column: 1; grid-row: 1; padding-left: 0; padding-right: 48px; }
+
+  /* ── NODE ── */
+  .tl-dot {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: white;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 2; position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 0 0 6px var(--off-white);
+  }
+  .tl-step.visible .tl-dot {
+    border-color: var(--purple-deep);
+    background: var(--purple-bg);
+    box-shadow: 0 0 0 6px var(--off-white), 0 0 0 8px rgba(107,86,200,0.15);
+  }
+  .tl-dot-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.06em;
+    color: var(--purple-deep);
+  }
+
+  /* ── CONTENT ── */
+  .tl-step-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--purple-deep);
+    margin-bottom: 8px;
+  }
+  .tl-step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px; letter-spacing: 0.04em;
+    color: var(--dark); margin-bottom: 12px; line-height: 1;
+  }
+  .tl-step-desc {
+    font-size: 14px; color: var(--mid);
+    line-height: 1.75; font-weight: 300;
+  }
+  .tl-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--purple-bg); color: var(--purple-deep);
+    font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 100px;
+    margin-top: 14px;
+  }
+  .tl-tag.mint { background: var(--mint-bg); color: var(--mint-deep); }
+
+  /* ── VISUAL CARDS ── */
+  .tl-card-inner {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 4px 24px rgba(107,86,200,0.07);
+    position: relative; overflow: hidden;
+  }
+  .tl-card-inner::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--mint));
+    border-radius: 20px 20px 0 0;
+  }
+  .card-icon-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--purple-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .card-icon.mint { background: var(--mint-bg); }
+  .card-title {
+    font-size: 14px; font-weight: 700; color: var(--dark);
+  }
+  .card-sub {
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+  }
+  .card-items { display: flex; flex-direction: column; gap: 8px; }
+  .card-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--mid);
+    padding: 8px 12px; background: var(--off-white);
+    border-radius: 8px; border: 1px solid var(--border);
+  }
+  .card-item-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple-deep); flex-shrink: 0;
+  }
+  .card-item-dot.mint { background: var(--mint-deep); }
+  .card-stat-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
+  }
+  .card-stat {
+    background: var(--off-white); border-radius: 10px;
+    padding: 14px 12px; border: 1px solid var(--border);
+    text-align: center;
+  }
+  .card-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.04em;
+    color: var(--purple-deep); line-height: 1;
+  }
+  .card-stat-num.mint { color: var(--mint-deep); }
+  .card-stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ── CTA ── */
+  .process-cta {
+    background: var(--dark); border-radius: 24px;
+    padding: 64px 48px; text-align: center;
+    position: relative; overflow: hidden;
+    max-width: 1080px; margin: 0 auto 80px;
+  }
+  .process-cta::before {
+    content: ''; position: absolute;
+    width: 500px; height: 500px; border-radius: 50%;
     background: radial-gradient(circle, rgba(196,181,244,0.1), transparent 70%);
-    top: -150px; right: -100px; pointer-events: none; }}
-  .cta-band h2 {{ font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.04em;
-    color: white; margin-bottom: 12px; }}
-  .cta-band p {{ font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }}
-  .cta-btns {{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }}
-  .btn-primary {{ background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
-    color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none;
-    font-weight: 600; font-size: 15px; transition: all 0.2s; }}
-  .btn-primary:hover {{ transform: translateY(-2px); box-shadow: 0 8px 24px rgba(107,86,200,0.3); }}
-  .btn-ghost {{ border: 1.5px solid rgba(255,255,255,0.2); color: white; padding: 14px 28px;
-    border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 15px; transition: all 0.2s; }}
-  .btn-ghost:hover {{ border-color: rgba(255,255,255,0.5); }}
+    top: -200px; right: -100px; pointer-events: none;
+  }
+  .process-cta h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px; letter-spacing: 0.04em;
+    color: white; margin-bottom: 12px;
+  }
+  .process-cta p {
+    font-size: 15px; color: rgba(255,255,255,0.45);
+    margin-bottom: 28px; line-height: 1.7;
+  }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple-mid), var(--mint-mid));
+    color: white; padding: 14px 28px; border-radius: 12px;
+    text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(107,86,200,0.3); }
+  .btn-ghost {
+    border: 1.5px solid rgba(255,255,255,0.2); color: white;
+    padding: 14px 28px; border-radius: 12px;
+    text-decoration: none; font-weight: 500; font-size: 15px; transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.5); }
 
   footer {
     background: var(--dark);
@@ -268,74 +451,159 @@
   <a href="/quote" class="nav-cta">Start a Project →</a>
 </nav>
 
-<div class="page-hero">
-  <div class="page-hero-eyebrow">How It Works</div>
+<!-- HERO -->
+<div class="process-hero">
+  <div class="hero-eyebrow">How It Works</div>
   <h1>From Brief to<br><em>Final Delivery</em></h1>
-  <p>A clear, structured process designed to keep your project on time and your team informed at every stage.</p>
+  <p>A clear, structured process designed to keep your project on time and your team in control at every stage.</p>
 </div>
 
-<div class="page-body">
+<!-- TIMELINE -->
+<div class="timeline-wrap" id="timeline">
 
-  <div class="process-steps">
-
-    <div class="process-step reveal">
-      <div class="ps-num">01</div>
-      <div class="ps-content">
-        <div class="ps-label">Step One</div>
-        <div class="ps-title">Submit Your Quote Request</div>
-        <div class="ps-desc">Tell us about your project using our quote request form. Describe the scope, select the rendering types you need, and upload whatever reference materials you have — architectural drawings, FF&E specs, inspiration imagery, or anything that helps communicate your vision.</div>
-        <div class="ps-detail">Don't worry if your drawing set isn't complete. We work with projects at every stage of design and will identify exactly what we need during scoping. The more you share, the more accurate our output — but we can always start a conversation first.</div>
-        <span class="ps-tag">24hr quote turnaround</span>
+  <!-- STEP 1 — odd: content left, card right -->
+  <div class="tl-step">
+    <div class="tl-content">
+      <div class="tl-step-label">Step 01</div>
+      <div class="tl-step-title">Submit Your Quote Request</div>
+      <div class="tl-step-desc">Tell us about your project using our quote request form. Select the rendering types you need, describe the scope, and upload whatever reference materials you have — drawings, inspiration, or FF&E specs.</div>
+      <span class="tl-tag">Takes 5 minutes</span>
+    </div>
+    <div class="tl-node"><div class="tl-dot"><span class="tl-dot-num">01</span></div></div>
+    <div class="tl-card">
+      <div class="tl-card-inner">
+        <div class="card-icon-row">
+          <div class="card-icon">📋</div>
+          <div><div class="card-title">What to include</div><div class="card-sub">The more detail, the better our quote</div></div>
+        </div>
+        <div class="card-items">
+          <div class="card-item"><div class="card-item-dot"></div>Project name, type & location</div>
+          <div class="card-item"><div class="card-item-dot"></div>Rendering types needed</div>
+          <div class="card-item"><div class="card-item-dot"></div>Architectural drawings (if available)</div>
+          <div class="card-item"><div class="card-item-dot mint"></div>Timeline or deadline</div>
+          <div class="card-item"><div class="card-item-dot mint"></div>Inspiration imagery or references</div>
+        </div>
       </div>
     </div>
-
-    <div class="process-step reveal">
-      <div class="ps-num">02</div>
-      <div class="ps-content">
-        <div class="ps-label">Step Two</div>
-        <div class="ps-title">Review & Approve Your Quote</div>
-        <div class="ps-desc">Within 24 hours, we'll send you a detailed quote covering scope, pricing, deliverables, and timeline. This is the point to ask questions, clarify scope, or adjust the brief before anything begins.</div>
-        <div class="ps-detail">Once you approve the quote, your client portal account is created and your project is officially in the queue. A 50% deposit is collected to begin production on floor plan orders; rendering project payment terms are outlined in your quote.</div>
-        <span class="ps-tag">No payment until you approve</span>
-      </div>
-    </div>
-
-    <div class="process-step reveal">
-      <div class="ps-num">03</div>
-      <div class="ps-content">
-        <div class="ps-label">Step Three</div>
-        <div class="ps-title">Production Begins</div>
-        <div class="ps-desc">Your project moves into production. Our team models, lights, and renders your project to spec. You'll be able to track the stage of your project in real time through your client portal — from pre-production through to first draft.</div>
-        <div class="ps-detail">For larger or more complex projects, we may reach out during production with clarifying questions. We'd rather pause and confirm than deliver something off-spec.</div>
-        <span class="ps-tag">4–8 weeks standard · 2–4 weeks expedited</span>
-      </div>
-    </div>
-
-    <div class="process-step reveal">
-      <div class="ps-num">04</div>
-      <div class="ps-content">
-        <div class="ps-label">Step Four</div>
-        <div class="ps-title">Draft Review via ReviewStudio</div>
-        <div class="ps-desc">When your first draft is ready, you'll receive a notification in your client portal. A ReviewStudio link lets you view, annotate, and leave pinned comments directly on the renderings — no email threads, no confusion about which image you mean.</div>
-        <div class="ps-detail">All projects include 2 full draft rounds plus a final round. For each round, review the draft, leave your comments, then click "Confirm Review Complete" in your portal when done. This signals our team to begin the next round of revisions immediately.</div>
-        <span class="ps-tag mint">2 rounds of revision + final round</span>
-      </div>
-    </div>
-
-    <div class="process-step reveal">
-      <div class="ps-num">05</div>
-      <div class="ps-content">
-        <div class="ps-label">Step Five</div>
-        <div class="ps-title">Final Delivery</div>
-        <div class="ps-desc">Once the final round is approved, your files are delivered directly to your client portal. High-resolution stills, web-optimised versions, 360° embed links, or video files — everything is organised and ready to download at any time.</div>
-        <div class="ps-detail">Your files remain accessible in your portal indefinitely. All deliverables are 100% license-free — use them anywhere, for anything, without restriction.</div>
-        <span class="ps-tag mint">100% license-free · yours to keep</span>
-      </div>
-    </div>
-
   </div>
 
-  <div class="cta-band reveal">
+  <!-- STEP 2 — even: card left, content right -->
+  <div class="tl-step even">
+    <div class="tl-content">
+      <div class="tl-step-label">Step 02</div>
+      <div class="tl-step-title">Review & Approve Your Quote</div>
+      <div class="tl-step-desc">Within 24 hours we'll send a detailed quote covering scope, pricing, deliverables, and timeline. Ask questions, adjust scope, and approve when you're ready. No payment required until you say go.</div>
+      <span class="tl-tag mint">24hr turnaround</span>
+    </div>
+    <div class="tl-node"><div class="tl-dot"><span class="tl-dot-num">02</span></div></div>
+    <div class="tl-card">
+      <div class="tl-card-inner">
+        <div class="card-icon-row">
+          <div class="card-icon mint">⚡</div>
+          <div><div class="card-title">Quote includes</div><div class="card-sub">Everything confirmed before work begins</div></div>
+        </div>
+        <div class="card-items">
+          <div class="card-item"><div class="card-item-dot"></div>Fixed scope & deliverables</div>
+          <div class="card-item"><div class="card-item-dot"></div>Confirmed price — no surprises</div>
+          <div class="card-item"><div class="card-item-dot"></div>Delivery timeline</div>
+          <div class="card-item"><div class="card-item-dot mint"></div>Client portal account created</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 — odd -->
+  <div class="tl-step">
+    <div class="tl-content">
+      <div class="tl-step-label">Step 03</div>
+      <div class="tl-step-title">Production Begins</div>
+      <div class="tl-step-desc">Your project enters production. Our team models, lights, and renders your project to spec. Track your project's stage in real time through your client portal — from pre-production through to first draft.</div>
+      <span class="tl-tag">4–8 weeks standard</span>
+    </div>
+    <div class="tl-node"><div class="tl-dot"><span class="tl-dot-num">03</span></div></div>
+    <div class="tl-card">
+      <div class="tl-card-inner">
+        <div class="card-icon-row">
+          <div class="card-icon">🔨</div>
+          <div><div class="card-title">Production stages</div><div class="card-sub">Track every step in your portal</div></div>
+        </div>
+        <div class="card-items">
+          <div class="card-item"><div class="card-item-dot"></div>Awaiting assets</div>
+          <div class="card-item"><div class="card-item-dot"></div>Pre-production</div>
+          <div class="card-item"><div class="card-item-dot"></div>In production</div>
+          <div class="card-item"><div class="card-item-dot mint"></div>Draft ready for review</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 — even -->
+  <div class="tl-step even">
+    <div class="tl-content">
+      <div class="tl-step-label">Step 04</div>
+      <div class="tl-step-title">Draft Review via ReviewStudio</div>
+      <div class="tl-step-desc">When your draft is ready you'll be notified in your portal. A ReviewStudio link lets you annotate and leave pinned comments directly on the renderings. Confirm when done and we begin the next round immediately.</div>
+      <span class="tl-tag mint">2 rounds + final</span>
+    </div>
+    <div class="tl-node"><div class="tl-dot"><span class="tl-dot-num">04</span></div></div>
+    <div class="tl-card">
+      <div class="tl-card-inner">
+        <div class="card-icon-row">
+          <div class="card-icon mint">💬</div>
+          <div><div class="card-title">The revision process</div><div class="card-sub">Structured feedback, no email chains</div></div>
+        </div>
+        <div class="card-items">
+          <div class="card-item"><div class="card-item-dot"></div>Draft delivered to your portal</div>
+          <div class="card-item"><div class="card-item-dot"></div>Review & annotate in ReviewStudio</div>
+          <div class="card-item"><div class="card-item-dot"></div>Confirm review complete</div>
+          <div class="card-item"><div class="card-item-dot mint"></div>Revisions begin immediately</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 — odd -->
+  <div class="tl-step">
+    <div class="tl-content">
+      <div class="tl-step-label">Step 05</div>
+      <div class="tl-step-title">Final Delivery</div>
+      <div class="tl-step-desc">Once the final round is approved, your files are delivered directly to your client portal. Download at any time. All files are 100% license-free — use them anywhere, for anything, with no restrictions.</div>
+      <span class="tl-tag mint">100% license-free</span>
+    </div>
+    <div class="tl-node"><div class="tl-dot"><span class="tl-dot-num">05</span></div></div>
+    <div class="tl-card">
+      <div class="tl-card-inner">
+        <div class="card-icon-row">
+          <div class="card-icon mint">📦</div>
+          <div><div class="card-title">What you receive</div><div class="card-sub">Everything delivered to your portal</div></div>
+        </div>
+        <div class="card-stat-row">
+          <div class="card-stat">
+            <div class="card-stat-num">500+</div>
+            <div class="card-stat-label">Projects delivered</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-num mint">4–8W</div>
+            <div class="card-stat-label">Standard timeline</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-num">24H</div>
+            <div class="card-stat-label">Quote turnaround</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-num mint">100%</div>
+            <div class="card-stat-label">License-free</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA -->
+<div style="padding: 0 32px;">
+  <div class="process-cta">
     <h2>Ready to Get Started?</h2>
     <p>Submit a quote request or place a floor plan order — we'll take it from there.</p>
     <div class="cta-btns">
@@ -343,7 +611,6 @@
       <a href="/order" class="btn-ghost">Order Floor Plans</a>
     </div>
   </div>
-
 </div>
 
 <footer>
@@ -367,6 +634,7 @@
     </div>
     <div class="footer-col">
       <h4>Company</h4>
+      <a href="/portfolio">Portfolio</a>
       <a href="/about">About Us</a>
       <a href="/process">Process</a>
       <a href="/faq">FAQ</a>
@@ -388,20 +656,27 @@
     <p class="footer-copy">Privacy · Terms</p>
   </div>
 </footer>
+
 <script>
-// Mobile nav toggle
+// Scroll reveal for timeline steps
+const steps = document.querySelectorAll('.tl-step');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if(e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), 100);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.2 });
+steps.forEach(s => observer.observe(s));
+
+// Mobile nav
 const burger = document.getElementById('burger');
 const mobileMenu = document.getElementById('mobileMenu');
 if(burger) burger.addEventListener('click', () => {
   mobileMenu.classList.toggle('open');
   burger.classList.toggle('open');
 });
-// Reveal animations
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-reveals.forEach(r => observer.observe(r));
 </script>
 </body>
 </html>
