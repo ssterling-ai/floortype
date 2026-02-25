@@ -570,6 +570,46 @@
   .reveal-delay-2 { transition-delay: 0.2s; }
   .reveal-delay-3 { transition-delay: 0.3s; }
 
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; height: 60px; }
+    .logo img { height: 26px; }
+    .nav-btn { display: none; }
+    .nav-cta { padding: 8px 14px; font-size: 12px; }
+
+    .about-hero { padding: 80px 24px 52px; min-height: auto; }
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .about-hero h1 { font-size: clamp(44px, 12vw, 72px); }
+    .hero-body { font-size: 15px; }
+    .hero-right { grid-template-columns: 1fr 1fr; }
+
+    .ideology-section { padding: 64px 24px; grid-template-columns: 1fr; gap: 40px; }
+    .ideology-heading { font-size: clamp(32px, 10vw, 48px); }
+
+    .vision-section { padding: 64px 24px; }
+    .vision-inner { grid-template-columns: 1fr; gap: 40px; }
+    .vision-visual { padding: 32px 24px; min-height: auto; }
+    .vision-heading { font-size: clamp(32px, 10vw, 48px); }
+
+    .manifesto-section { padding: 64px 24px; }
+    .manifesto-grid { grid-template-columns: 1fr; gap: 12px; }
+    .manifesto-card { padding: 24px 20px; }
+    .manifesto-header h2 { font-size: clamp(36px, 10vw, 56px); }
+
+    .stats-band { padding: 48px 24px; }
+    .stats-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+
+    .about-cta { padding: 48px 24px; }
+    .about-cta-inner { padding: 40px 24px; border-radius: 16px; }
+    .about-cta-inner h2 { font-size: 40px; }
+    .cta-btns { flex-direction: column; }
+    .btn-primary, .btn-ghost { text-align: center; }
+
+    .footer-top { grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; }
+    .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+    .footer-socials { justify-content: center; }
+  }
+
 </style>
 </head>
 <body>

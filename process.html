@@ -425,6 +425,54 @@
   .reveal-delay-2 { transition-delay: 0.2s; }
   .reveal-delay-3 { transition-delay: 0.3s; }
 
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; height: 60px; }
+    .logo img { height: 26px; }
+    .nav-btn { display: none; }
+    .nav-cta { padding: 8px 14px; font-size: 12px; }
+
+    .process-hero { padding: 52px 24px 48px; }
+    .process-hero h1 { font-size: clamp(44px, 12vw, 72px); }
+
+    .timeline-wrap { padding: 48px 20px 48px; }
+    .timeline-wrap::before { display: none; }
+
+    .tl-step,
+    .tl-step.even {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .tl-step .tl-content,
+    .tl-step.even .tl-content {
+      grid-column: 1; grid-row: 2;
+      padding: 0; text-align: left;
+    }
+    .tl-step .tl-node,
+    .tl-step.even .tl-node {
+      grid-column: 1; grid-row: 1;
+      flex-direction: row; justify-content: flex-start;
+    }
+    .tl-step .tl-card,
+    .tl-step.even .tl-card {
+      grid-column: 1; grid-row: 3;
+      padding: 0;
+    }
+    .tl-step-title { font-size: 24px; }
+    .tl-card-inner { padding: 20px; }
+
+    .process-cta { padding: 40px 24px; border-radius: 16px; margin-bottom: 48px; }
+    .process-cta h2 { font-size: 40px; }
+    .cta-btns { flex-direction: column; }
+    .btn-primary, .btn-ghost { text-align: center; }
+
+    .footer-top { grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; }
+    .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+    .footer-socials { justify-content: center; }
+  }
+
 </style>
 </head>
 <body>

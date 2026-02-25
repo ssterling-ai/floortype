@@ -354,6 +354,32 @@
   .reveal-delay-2 { transition-delay: 0.2s; }
   .reveal-delay-3 { transition-delay: 0.3s; }
 
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; height: 60px; }
+    .logo img { height: 26px; }
+    .nav-btn { display: none; }
+    .nav-cta { padding: 8px 14px; font-size: 12px; }
+
+    .faq-hero { padding: 52px 24px 48px; }
+    .faq-hero h1 { font-size: clamp(40px, 12vw, 64px); }
+    .faq-cats { gap: 8px; }
+    .faq-cat { padding: 7px 14px; font-size: 12px; }
+
+    .faq-body { padding: 40px 20px 60px; }
+    .faq-q { font-size: 14px; padding: 18px 0; }
+    .faq-a { font-size: 13px; }
+
+    .faq-cta { padding: 40px 24px; margin: 16px 0 0; border-radius: 16px; }
+    .faq-cta h2 { font-size: 36px; }
+    .cta-btns { flex-direction: column; }
+    .btn-primary, .btn-ghost { text-align: center; }
+
+    .footer-top { grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; }
+    .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+    .footer-socials { justify-content: center; }
+  }
+
 </style>
 </head>
 <body>
