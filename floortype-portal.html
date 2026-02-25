@@ -481,10 +481,82 @@
 
   /* ── RESPONSIVE ── */
   @media(max-width:900px){
+    /* Sidebar — hidden on mobile, replaced by top bar */
     .sidebar{display:none;}
     .main{margin-left:0;}
-    .detail-layout{grid-template-columns:1fr;}
-    .overview-grid{grid-template-columns:1fr 1fr;}
+
+    /* Mobile top nav bar */
+    .mobile-topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      height:56px;
+      background:var(--dark);
+      position:fixed;top:0;left:0;right:0;z-index:20;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+    }
+    .mobile-topbar-logo{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:18px;letter-spacing:0.1em;color:white;
+      display:flex;align-items:center;gap:8px;
+    }
+    .mobile-topbar-logo img{height:24px;width:auto;mix-blend-mode:multiply;}
+    .mobile-nav-toggle{
+      background:none;border:1.5px solid rgba(255,255,255,0.15);
+      border-radius:8px;padding:6px 10px;color:white;
+      font-size:12px;font-weight:600;letter-spacing:0.06em;cursor:pointer;
+    }
+    .mobile-nav-drawer{
+      display:none;position:fixed;top:56px;left:0;right:0;bottom:0;
+      background:var(--dark);z-index:19;padding:24px 20px;
+      flex-direction:column;gap:4px;overflow-y:auto;
+    }
+    .mobile-nav-drawer.open{display:flex;}
+    .mobile-nav-item{
+      padding:14px 16px;border-radius:10px;color:rgba(255,255,255,0.6);
+      font-size:14px;font-weight:500;cursor:pointer;
+      border:1px solid transparent;transition:all 0.2s;
+    }
+    .mobile-nav-item:hover,.mobile-nav-item.active{
+      background:rgba(196,181,244,0.08);
+      border-color:rgba(196,181,244,0.15);color:white;
+    }
+    .mobile-nav-section{
+      font-size:10px;font-weight:700;letter-spacing:0.12em;
+      text-transform:uppercase;color:rgba(255,255,255,0.25);
+      padding:16px 16px 6px;
+    }
+
+    /* Main content offset for fixed topbar */
+    .main{padding-top:72px;}
+    .main-inner{padding:16px;}
+
+    /* Overview grid */
+    .overview-grid{grid-template-columns:1fr 1fr;gap:12px;}
+    .ov-stat{padding:16px;}
+    .ov-stat-num{font-size:32px;}
+
+    /* Project list */
+    .project-list-header{flex-direction:column;gap:12px;align-items:flex-start;}
+    .project-filters{flex-wrap:wrap;gap:8px;}
+    .project-card{padding:16px;}
+    .project-card-header{flex-direction:column;gap:8px;align-items:flex-start;}
+
+    /* Detail layout */
+    .detail-layout{grid-template-columns:1fr;gap:16px;}
+    .detail-main,.detail-side{padding:16px;}
+
+    /* Progress bar */
+    .progress-stages{overflow-x:auto;padding-bottom:8px;}
+    .stage-item{min-width:80px;}
+    .stage-label{font-size:9px;}
+
+    /* Profile */
+    .profile-grid{grid-template-columns:1fr;}
+
+    /* Login box */
+    .login-box{padding:32px 20px;margin:80px 16px 0;}
   }
 </style>
 </head>
@@ -553,6 +625,26 @@
       </div>
       <button class="logout-btn" onclick="event.stopPropagation();doLogout()" title="Sign out">↩</button>
     </div>
+  </div>
+</div>
+
+<!-- MOBILE TOPBAR -->
+<div class="mobile-topbar" id="mobileTopbar" style="display:none;">
+  <div class="mobile-topbar-logo">
+    <img src="/logo.png" alt="Floortype">
+    FLOORTYPE
+  </div>
+  <button class="mobile-nav-toggle" onclick="toggleMobileNav()">MENU</button>
+</div>
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <div class="mobile-nav-section">Navigation</div>
+  <div class="mobile-nav-item" onclick="showView('overview');toggleMobileNav()">Dashboard</div>
+  <div class="mobile-nav-item" onclick="showView('projects');toggleMobileNav()">My Projects</div>
+  <div class="mobile-nav-section">Account</div>
+  <div class="mobile-nav-item" onclick="showView('profile');toggleMobileNav()">Profile</div>
+  <div class="mobile-nav-item" onclick="showView('newQuote');toggleMobileNav()">Request a Quote</div>
+  <div style="margin-top:32px;">
+    <div class="mobile-nav-item" onclick="doLogout()" style="color:rgba(255,100,100,0.7);">Sign Out</div>
   </div>
 </div>
 
@@ -1773,6 +1865,23 @@ function showToast(msg, type){
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
+
+function toggleMobileNav() {
+  const drawer = document.getElementById('mobileNavDrawer');
+  drawer.classList.toggle('open');
+}
+// Show mobile topbar when logged in
+function showMobileTopbar() {
+  if(window.innerWidth <= 900) {
+    const tb = document.getElementById('mobileTopbar');
+    if(tb) tb.style.display = 'flex';
+  }
+}
+window.addEventListener('resize', () => {
+  const tb = document.getElementById('mobileTopbar');
+  if(!tb) return;
+  tb.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+});
 </script>
 </body>
 </html>

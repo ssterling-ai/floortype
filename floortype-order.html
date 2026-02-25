@@ -572,15 +572,47 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 860px) {
-    .order-layout { grid-template-columns: 1fr; }
+    /* Nav */
+    nav { padding: 0 20px; height: 56px; }
+    .nav-back { font-size: 12px; }
+    .nav-secure span { display: none; }
+
+    /* Layout */
+    .order-layout { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
     .summary-card { position: static; }
-    nav { padding: 0 20px; }
-    .order-layout { padding: 24px 16px; }
-    .order-card { padding: 24px 20px; }
-    .form-row { grid-template-columns: 1fr; }
-    .style-grid { grid-template-columns: 1fr 1fr; }
-    .progress-bar { gap: 0; }
+
+    /* Progress bar */
+    .progress-bar { gap: 0; padding: 0 16px; }
     .step-label { display: none; }
+    .step-dot { width: 28px; height: 28px; font-size: 11px; }
+
+    /* Cards */
+    .order-card { padding: 20px 16px; }
+    .order-card-title { font-size: 18px; }
+
+    /* Form elements */
+    .form-row { grid-template-columns: 1fr; gap: 12px; }
+    .style-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .style-option { padding: 14px 10px; }
+    .style-name { font-size: 12px; }
+    .style-icon { font-size: 18px; }
+
+    /* Addons */
+    .addon-item { padding: 14px; flex-wrap: wrap; gap: 10px; }
+
+    /* Upload zones */
+    .upload-zone { padding: 20px 16px !important; }
+
+    /* Floor count */
+    .floor-counter { gap: 16px; }
+
+    /* Checkout */
+    .checkout-section { margin-bottom: 20px; }
+    .place-order-btn { font-size: 14px; padding: 14px; }
+
+    /* Step nav */
+    .step-nav { padding: 16px; flex-direction: column; gap: 10px; }
+    .step-nav-btn { width: 100%; text-align: center; justify-content: center; }
   }
 </style>
 </head>

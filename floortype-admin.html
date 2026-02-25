@@ -185,6 +185,90 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 .empty-state p{font-size:13px;color:var(--muted);line-height:1.65;}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 28px rgba(18,15,42,0.2);transform:translateY(70px);opacity:0;transition:all 0.3s ease;z-index:300;}
 .toast.show{transform:translateY(0);opacity:1;} .toast.success{background:var(--mint-deep);} .toast.warn{background:var(--amber-c);}
+
+  @media(max-width:900px){
+    /* Hide sidebar, collapse main */
+    .sidebar{display:none;}
+    .main{margin-left:0;}
+
+    /* Mobile topbar */
+    .mobile-topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 16px;height:56px;background:var(--dark);
+      position:fixed;top:0;left:0;right:0;z-index:20;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+    }
+    .mobile-topbar-logo{
+      font-family:'Bebas Neue',sans-serif;font-size:18px;
+      letter-spacing:0.1em;color:white;
+      display:flex;align-items:center;gap:8px;
+    }
+    .mobile-topbar-logo img{height:24px;width:auto;mix-blend-mode:multiply;}
+    .mobile-nav-toggle{
+      background:none;border:1.5px solid rgba(255,255,255,0.15);
+      border-radius:8px;padding:6px 12px;color:white;
+      font-size:12px;font-weight:600;letter-spacing:0.06em;cursor:pointer;
+    }
+    .mobile-nav-drawer{
+      display:none;position:fixed;top:56px;left:0;right:0;bottom:0;
+      background:var(--dark);z-index:19;padding:20px 16px;
+      flex-direction:column;gap:4px;overflow-y:auto;
+    }
+    .mobile-nav-drawer.open{display:flex;}
+    .mobile-nav-item{
+      padding:12px 14px;border-radius:10px;color:rgba(255,255,255,0.6);
+      font-size:14px;font-weight:500;cursor:pointer;
+      border:1px solid transparent;transition:all 0.2s;
+    }
+    .mobile-nav-item:hover,.mobile-nav-item.active{
+      background:rgba(196,181,244,0.08);
+      border-color:rgba(196,181,244,0.15);color:white;
+    }
+    .mobile-nav-section{
+      font-size:10px;font-weight:700;letter-spacing:0.12em;
+      text-transform:uppercase;color:rgba(255,255,255,0.25);
+      padding:14px 14px 4px;
+    }
+
+    /* Offset for fixed topbar */
+    .main{padding-top:56px;}
+    .topbar{position:relative;top:auto;padding:0 16px;height:52px;}
+    .topbar-title{font-size:16px;}
+    .topbar-right{gap:8px;}
+    .main-content{padding:16px;}
+
+    /* Stats row */
+    .stats-row{grid-template-columns:1fr 1fr;gap:10px;}
+    .stat-card{padding:14px;}
+    .stat-num{font-size:28px;}
+
+    /* Overview grid */
+    .ov-grid{grid-template-columns:1fr;gap:14px;}
+
+    /* Clients grid */
+    .clients-grid{grid-template-columns:1fr;}
+
+    /* Client card stats */
+    .cc-stats{grid-template-columns:1fr 1fr 1fr;}
+
+    /* Settings */
+    .settings-layout{grid-template-columns:1fr;}
+    .settings-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+    .settings-nav-item{padding:8px 14px;border-radius:8px;}
+
+    /* Detail grid */
+    .d-grid{grid-template-columns:1fr;}
+
+    /* Quote editor row */
+    .qe-row{grid-template-columns:1fr;gap:10px;}
+
+    /* Tables — horizontal scroll */
+    .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    table{min-width:600px;}
+
+    /* Modals */
+    .modal-box{width:calc(100vw - 32px);max-width:100%;padding:24px 16px;}
+  }
 </style>
 </head>
 <body>
@@ -275,6 +359,23 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
   </button>
   <div class="s-bottom"><div class="s-avatar">A</div><div><div class="s-name">Admin</div><div class="s-role">floortype.com</div></div></div>
 </div>
+<!-- MOBILE TOPBAR -->
+<div class="mobile-topbar">
+  <div class="mobile-topbar-logo">
+    <img src="/logo.png" alt="Floortype">
+    FLOORTYPE
+  </div>
+  <button class="mobile-nav-toggle" onclick="toggleAdminMobileNav()">MENU</button>
+</div>
+<div class="mobile-nav-drawer" id="adminMobileNav">
+  <div class="mobile-nav-section">Admin</div>
+  <div class="mobile-nav-item" onclick="showSection('overview');toggleAdminMobileNav()">Overview</div>
+  <div class="mobile-nav-item" onclick="showSection('projects');toggleAdminMobileNav()">Projects</div>
+  <div class="mobile-nav-item" onclick="showSection('clients');toggleAdminMobileNav()">Clients</div>
+  <div class="mobile-nav-item" onclick="showSection('quotes');toggleAdminMobileNav()">Quotes</div>
+  <div class="mobile-nav-item" onclick="showSection('settings');toggleAdminMobileNav()">Settings & Pricing</div>
+</div>
+
 <div class="main">
   <div class="topbar">
     <div><div class="tb-title" id="tb-title">Overview</div><div class="tb-sub" id="tb-sub">Welcome back</div></div>
@@ -815,6 +916,10 @@ async function deleteDeliverable(fileId, filePath, orderRef) {
 
 loadData();
 setInterval(loadData,30000);
+
+function toggleAdminMobileNav() {
+  document.getElementById('adminMobileNav').classList.toggle('open');
+}
 </script>
 </body>
 </html>

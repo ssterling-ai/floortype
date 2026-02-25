@@ -423,17 +423,65 @@
   .info-box.mint .info-box-text{color:#1A6B5A;}
 
   @media(max-width:860px){
-    .quote-layout{grid-template-columns:1fr;}
-    .summary-card{position:static;}
-    nav{padding:0 20px;}
-    .hero-band{padding:36px 24px;grid-template-columns:1fr;}
+    /* Nav */
+    nav{padding:0 16px;height:56px;}
+    .nav-link{display:none;}
+    .nav-secure span{display:none;}
+
+    /* Hero */
+    .hero-band{padding:72px 20px 32px;grid-template-columns:1fr;}
+    .hero-band h1{font-size:clamp(36px,11vw,56px);}
     .hero-stats{display:none;}
-    .type-grid{grid-template-columns:1fr 1fr;}
+
+    /* Layout */
+    .quote-layout{grid-template-columns:1fr;padding:20px 16px;gap:16px;}
+    .summary-card{position:static;}
+
+    /* Step progress */
+    .step-bar{padding:0 16px;gap:4px;}
+    .step-bar-label{display:none;}
+    .step-bar-dot{width:28px;height:28px;font-size:10px;}
+    .step-bar-line{flex:1;}
+
+    /* Cards */
+    .quote-card{padding:20px 16px;}
+    .quote-card-title{font-size:18px;}
+
+    /* Type grid */
+    .type-grid{grid-template-columns:1fr 1fr;gap:10px;}
+    .type-card{padding:16px 12px;}
+    .type-name{font-size:13px;}
+
+    /* Render grid */
     .render-grid{grid-template-columns:1fr;}
-    .form-row,.form-row-3{grid-template-columns:1fr;}
-    .review-grid{grid-template-columns:1fr;}
+    .render-card{padding:14px;}
+    .render-icon{width:36px;height:36px;font-size:14px;}
+
+    /* Form rows */
+    .form-row,.form-row-3{grid-template-columns:1fr;gap:12px;}
+
+    /* Complexity / quality */
+    .complexity-grid{grid-template-columns:1fr;gap:10px;}
+    .quality-grid{grid-template-columns:1fr;gap:10px;}
+
+    /* Upload sections */
+    .upload-section{padding:14px;}
+    .mini-upload-zone{padding:12px;}
+
+    /* Deliverables */
     .deliverable-grid{grid-template-columns:1fr;}
-    .complexity-grid{grid-template-columns:1fr;}
+    .info-card{padding:16px;}
+
+    /* Review */
+    .review-grid{grid-template-columns:1fr;}
+
+    /* Estimator sidebar */
+    .est-card{padding:20px 16px;}
+
+    /* Step nav */
+    .quote-step-nav{padding:16px;flex-direction:column;gap:10px;}
+    .quote-step-nav .nav-btn-back,
+    .quote-step-nav .nav-btn-next{width:100%;text-align:center;justify-content:center;}
   }
 </style>
 </head>
