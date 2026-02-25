@@ -18,7 +18,7 @@
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
-  body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;display:flex;}
+  body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;display:flex;overflow-x:hidden;}
 
   /* ── LOGIN SCREEN ── */
   .login-screen{
@@ -481,40 +481,39 @@
 
   /* ── RESPONSIVE ── */
   @media(max-width:900px){
-    /* Sidebar — hidden on mobile, replaced by top bar */
-    .sidebar{display:none;}
-    .main{margin-left:0;}
+    /* ── Kill horizontal scroll ── */
+    body{overflow-x:hidden;}
+    .main{margin-left:0 !important; width:100%; max-width:100vw; overflow-x:hidden;}
 
-    /* Mobile top nav bar */
+    /* ── Sidebar completely hidden ── */
+    .sidebar{display:none !important;}
+
+    /* ── Mobile topbar ── */
     .mobile-topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 16px;
-      height:56px;
-      background:var(--dark);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 16px;height:56px;background:var(--dark);
       position:fixed;top:0;left:0;right:0;z-index:20;
       border-bottom:1px solid rgba(255,255,255,0.07);
     }
     .mobile-topbar-logo{
-      font-family:'Bebas Neue',sans-serif;
-      font-size:18px;letter-spacing:0.1em;color:white;
+      font-family:'Bebas Neue',sans-serif;font-size:18px;
+      letter-spacing:0.1em;color:white;
       display:flex;align-items:center;gap:8px;
     }
     .mobile-topbar-logo img{height:24px;width:auto;mix-blend-mode:multiply;}
     .mobile-nav-toggle{
       background:none;border:1.5px solid rgba(255,255,255,0.15);
-      border-radius:8px;padding:6px 10px;color:white;
+      border-radius:8px;padding:6px 12px;color:white;
       font-size:12px;font-weight:600;letter-spacing:0.06em;cursor:pointer;
     }
     .mobile-nav-drawer{
       display:none;position:fixed;top:56px;left:0;right:0;bottom:0;
-      background:var(--dark);z-index:19;padding:24px 20px;
+      background:var(--dark);z-index:19;padding:20px 16px;
       flex-direction:column;gap:4px;overflow-y:auto;
     }
     .mobile-nav-drawer.open{display:flex;}
     .mobile-nav-item{
-      padding:14px 16px;border-radius:10px;color:rgba(255,255,255,0.6);
+      padding:13px 14px;border-radius:10px;color:rgba(255,255,255,0.6);
       font-size:14px;font-weight:500;cursor:pointer;
       border:1px solid transparent;transition:all 0.2s;
     }
@@ -525,38 +524,45 @@
     .mobile-nav-section{
       font-size:10px;font-weight:700;letter-spacing:0.12em;
       text-transform:uppercase;color:rgba(255,255,255,0.25);
-      padding:16px 16px 6px;
+      padding:14px 14px 4px;
     }
 
-    /* Main content offset for fixed topbar */
-    .main{padding-top:72px;}
-    .main-inner{padding:16px;}
+    /* ── Main offset for fixed topbar ── */
+    .main{padding-top:56px;}
+    .topbar{display:none;}
+    .main-inner{padding:14px;}
 
-    /* Overview grid */
-    .overview-grid{grid-template-columns:1fr 1fr;gap:12px;}
-    .ov-stat{padding:16px;}
-    .ov-stat-num{font-size:32px;}
+    /* ── Overview grid ── */
+    .overview-grid{grid-template-columns:1fr 1fr;gap:10px;}
+    .ov-stat{padding:14px;}
+    .ov-stat-num{font-size:28px;}
+    .ov-stat-icon{display:none;}
 
-    /* Project list */
-    .project-list-header{flex-direction:column;gap:12px;align-items:flex-start;}
-    .project-filters{flex-wrap:wrap;gap:8px;}
-    .project-card{padding:16px;}
-    .project-card-header{flex-direction:column;gap:8px;align-items:flex-start;}
+    /* ── Project list ── */
+    .project-list-header{flex-direction:column;gap:10px;align-items:flex-start;}
+    .project-filters{flex-wrap:wrap;gap:6px;}
+    .filter-btn{padding:6px 12px;font-size:12px;}
+    .project-card{padding:14px;}
+    .project-card-row{flex-direction:column;gap:8px;align-items:flex-start;}
+    .project-card-actions{width:100%;}
+    .project-card-actions a, .project-card-actions button{flex:1;text-align:center;justify-content:center;}
 
-    /* Detail layout */
-    .detail-layout{grid-template-columns:1fr;gap:16px;}
-    .detail-main,.detail-side{padding:16px;}
+    /* ── Detail layout ── */
+    .detail-layout{grid-template-columns:1fr;gap:14px;}
+    .detail-main{padding:14px;}
+    .detail-sidebar{display:none;}
 
-    /* Progress bar */
-    .progress-stages{overflow-x:auto;padding-bottom:8px;}
-    .stage-item{min-width:80px;}
-    .stage-label{font-size:9px;}
+    /* ── Progress stages ── */
+    .progress-stages{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;}
+    .stage-pill{white-space:nowrap;font-size:11px;padding:6px 10px;}
 
-    /* Profile */
+    /* ── Profile ── */
     .profile-grid{grid-template-columns:1fr;}
+    .profile-form-row{grid-template-columns:1fr;}
 
-    /* Login box */
-    .login-box{padding:32px 20px;margin:80px 16px 0;}
+    /* ── Login ── */
+    .login-box{padding:28px 20px;margin:72px 16px 0;width:auto;}
+    .login-title{font-size:24px;}
   }
 </style>
 </head>
