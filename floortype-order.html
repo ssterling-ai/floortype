@@ -667,32 +667,32 @@
           <label class="form-label">Visual Style</label>
           <div class="style-grid">
             <div class="style-option selected" data-style="vibrant-modern" onclick="selectStyle(this)">
-              <div class="style-icon">🏙️</div>
+              <div class="style-icon">VM</div>
               <div class="style-name">Vibrant Modern</div>
               <div class="style-desc">Bold color, sharp lines, high contrast</div>
             </div>
             <div class="style-option" data-style="industrial-luxe" onclick="selectStyle(this)">
-              <div class="style-icon">🏗️</div>
+              <div class="style-icon">IL</div>
               <div class="style-name">Industrial Luxe</div>
               <div class="style-desc">Raw materials, dark tones, refined detail</div>
             </div>
             <div class="style-option" data-style="warm-minimalism" onclick="selectStyle(this)">
-              <div class="style-icon">🌿</div>
+              <div class="style-icon">WM</div>
               <div class="style-name">Warm Minimalism</div>
               <div class="style-desc">Soft neutrals, natural textures, calm spaces</div>
             </div>
             <div class="style-option" data-style="japandi" onclick="selectStyle(this)">
-              <div class="style-icon">🎋</div>
+              <div class="style-icon">JP</div>
               <div class="style-name">Japandi</div>
               <div class="style-desc">Japanese-Scandinavian blend — serene, functional</div>
             </div>
             <div class="style-option" data-style="contemporary" onclick="selectStyle(this)">
-              <div class="style-icon">✦</div>
+              <div class="style-icon">CT</div>
               <div class="style-name">Contemporary</div>
               <div class="style-desc">Current, clean, broadly appealing</div>
             </div>
             <div class="style-option" data-style="art-deco" onclick="selectStyle(this)">
-              <div class="style-icon">🔷</div>
+              <div class="style-icon">AD</div>
               <div class="style-name">Art Deco</div>
               <div class="style-desc">Geometric patterns, gold accents, glamour</div>
             </div>
@@ -1289,9 +1289,9 @@
     html += `<div class="cs-row total"><span>50% deposit due now</span><span>$${deposit}</span></div>`;
     const pname = document.getElementById('projectName')?.value;
   if(pname) document.getElementById('checkoutSummary').insertAdjacentHTML('afterbegin',
-    `<div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">📋 ${pname}</div>`
+    `<div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">${pname}</div>`
   );
-  document.getElementById('checkoutSummary').innerHTML = (pname ? `<div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">📋 ${pname}</div>` : '') + html;
+  document.getElementById('checkoutSummary').innerHTML = (pname ? `<div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">${pname}</div>` : '') + html;
     document.getElementById('depositAmount').textContent = deposit;
   }
 
@@ -1373,7 +1373,7 @@
     const success = document.getElementById('successScreen');
     success.innerHTML = `
       <div style="text-align:center; padding: 40px 20px;">
-        <div style="font-size:48px; margin-bottom:16px;">📋</div>
+        <div style="font-size:48px; margin-bottom:16px; color:var(--purple-deep); font-family:'Bebas Neue',sans-serif; letter-spacing:0.06em;">DONE</div>
         <h2 style="font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:0.06em; color:var(--dark); margin-bottom:8px;">Application Submitted</h2>
         <p style="font-size:14px; color:var(--muted); line-height:1.7; max-width:420px; margin:0 auto 24px;">
           Your Net 30 invoice application is under review. We'll confirm within <strong>1 business day</strong> and issue your 50% deposit invoice before work begins.

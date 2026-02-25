@@ -591,25 +591,25 @@
 
       <div class="overview-grid">
         <div class="ov-stat action-required" id="statActionCard" style="display:none;" onclick="selectStatCard('action')">
-          <div class="ov-stat-icon">⚡</div>
+          
           <div class="ov-stat-label">Action Required</div>
           <div class="ov-stat-num amber" id="ovAction">0</div>
           <div class="ov-stat-sub">Draft ready for your review</div>
         </div>
         <div class="ov-stat" id="statActionEmpty" style="display:none;" onclick="selectStatCard('action')">
-          <div class="ov-stat-icon">✅</div>
+          
           <div class="ov-stat-label">Action Required</div>
           <div class="ov-stat-num mint">0</div>
           <div class="ov-stat-sub">You're all caught up</div>
         </div>
         <div class="ov-stat" id="statProductionCard" onclick="selectStatCard('production')">
-          <div class="ov-stat-icon">🔨</div>
+          
           <div class="ov-stat-label">In Production</div>
           <div class="ov-stat-num purple" id="ovProgress">0</div>
           <div class="ov-stat-sub">Actively being worked on</div>
         </div>
         <div class="ov-stat" id="statFinalCard" onclick="selectStatCard('final')">
-          <div class="ov-stat-icon">📦</div>
+          
           <div class="ov-stat-label">Final Ready</div>
           <div class="ov-stat-num mint" id="ovComplete">0</div>
           <div class="ov-stat-sub">Ready to download</div>
@@ -1170,15 +1170,15 @@ function openOrderDetail(ref){
   // Timeline
   // ── 9-STAGE PROGRESS BAR ──
   const STAGES = [
-    { key: 'awaiting-assets',    label: 'Awaiting Assets',     icon: '📁' },
-    { key: 'pre-production',     label: 'Pre-Production',      icon: '📐' },
-    { key: 'in-production',      label: 'In Production',       icon: '🎨' },
-    { key: 'draft-1-ready',      label: 'Draft 1 Ready',       icon: '👁️' },
-    { key: 'draft-1-revisions',  label: 'Draft 1 Revisions',   icon: '✏️' },
-    { key: 'draft-2-ready',      label: 'Draft 2 Ready',       icon: '👁️' },
-    { key: 'draft-2-revisions',  label: 'Draft 2 Revisions',   icon: '✏️' },
+    { key: 'awaiting-assets',    label: 'Awaiting Assets',     icon: '01' },
+    { key: 'pre-production',     label: 'Pre-Production',      icon: '02' },
+    { key: 'in-production',      label: 'In Production',       icon: '03' },
+    { key: 'draft-1-ready',      label: 'Draft 1 Ready',       icon: '04' },
+    { key: 'draft-1-revisions',  label: 'Draft 1 Revisions',   icon: '05' },
+    { key: 'draft-2-ready',      label: 'Draft 2 Ready',       icon: '06' },
+    { key: 'draft-2-revisions',  label: 'Draft 2 Revisions',   icon: '07' },
     { key: 'final-draft-ready',  label: 'Final Draft Ready',   icon: '⭐' },
-    { key: 'delivered',          label: 'Delivered',           icon: '✅' },
+    { key: 'delivered',          label: 'Delivered',           icon: '08' },
   ];
 
   // Get stage from order — stored in addons._stage
@@ -1218,7 +1218,7 @@ function openOrderDetail(ref){
         </div>
       </div>
       <div style="margin-top:28px;padding:14px 20px;background:var(--purple-bg);border-radius:14px;display:inline-flex;align-items:center;gap:12px;border:1px solid rgba(107,86,200,0.15);">
-        <span style="font-size:22px;">${currentIdx >= 0 ? STAGES[currentIdx].icon : '📋'}</span>
+        <span style="font-size:22px;">${currentIdx >= 0 ? STAGES[currentIdx].icon : '—'}</span>
         <div>
           <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--purple-mid);margin-bottom:2px;">Current Stage</div>
           <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">${currentIdx >= 0 ? STAGES[currentIdx].label : 'Getting started'}</div>
@@ -1313,7 +1313,7 @@ function renderRounds(o){
   const container = document.getElementById('roundsContainer');
   if(!o.rounds||!o.rounds.length){
     container.innerHTML=`<div style="text-align:center;padding:32px;color:var(--muted);">
-      <div style="font-size:32px;margin-bottom:12px;">🎨</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--border);letter-spacing:0.08em;margin-bottom:12px;">NO PROJECTS</div>
       <div style="font-size:14px;font-weight:500;color:var(--dark);margin-bottom:6px;">Production in progress</div>
       <div style="font-size:13px;line-height:1.6;">Your first draft will appear here when it's ready for review. We'll notify you by email.</div>
     </div>`;
