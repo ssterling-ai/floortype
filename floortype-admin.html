@@ -891,7 +891,10 @@ async function sendConfirmedQuote(confirmed = false) {
   if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = 'Sending…'; }
 
   const cc = document.getElementById('qm-cc').value;
-  const toEmail = document.getElementById('qm-to').value || q.email; {
+  const toEmail = document.getElementById('qm-to').value || q.email;
+
+  try {
+    const res = await fetch('/api/send-quote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
