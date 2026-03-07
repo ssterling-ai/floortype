@@ -1047,9 +1047,11 @@ async function doLogin(){
     // Get user name from metadata
     const userName = authData.user?.user_metadata?.full_name || 
                      email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    const userFirstName = authData.user?.user_metadata?.first_name || userName.split(' ')[0] || '';
+    const userLastName  = authData.user?.user_metadata?.last_name  || userName.split(' ').slice(1).join(' ') || '';
     const initials = userName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     const userCompany = authData.user?.user_metadata?.company || '';
-  currentUser = { email, name: userName, initials, token: userToken, company: userCompany };
+  currentUser = { email, name: userName, firstName: userFirstName, lastName: userLastName, initials, token: userToken, company: userCompany };
 
     // Save session to localStorage for persistent login
     try {
@@ -1585,7 +1587,7 @@ async function saveProfile(){
 
   try {
     const body = {
-      data: { full_name: fullName, company: company }
+      data: { full_name: fullName, first_name: firstName, last_name: lastName, company: company }
     };
     if(emailChanged) body.email = email;
 
@@ -1599,7 +1601,7 @@ async function saveProfile(){
 
     // Update local state
     const initials = fullName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    currentUser = { ...currentUser, name: fullName, initials, email: emailChanged ? email : currentUser.email, company };
+    currentUser = { ...currentUser, name: fullName, firstName, lastName, initials, email: emailChanged ? email : currentUser.email, company };
     document.getElementById('userAvatar').textContent = initials;
     document.getElementById('userName').textContent = fullName;
     document.getElementById('userEmail').textContent = currentUser.email;
@@ -1677,12 +1679,11 @@ function openNewOrder() {
 
 function openNewQuote() {
   if(!currentUser) { window.open('/quote','_blank'); return; }
-  const parts = (currentUser.name || '').split(' ');
   const params = new URLSearchParams({
-    firstName: parts[0] || '',
-    lastName:  parts.slice(1).join(' ') || '',
-    email:     currentUser.email || '',
-    company:   currentUser.company || ''
+    firstName: currentUser.firstName || '',
+    lastName:  currentUser.lastName  || '',
+    email:     currentUser.email     || '',
+    company:   currentUser.company   || ''
   });
   window.open(`/quote?${params.toString()}`, '_blank');
 }
@@ -1783,12 +1784,11 @@ function openNewOrder() {
 
 function openNewQuote() {
   if(!currentUser) { window.open('/quote','_blank'); return; }
-  const parts = (currentUser.name || '').split(' ');
   const params = new URLSearchParams({
-    firstName: parts[0] || '',
-    lastName:  parts.slice(1).join(' ') || '',
-    email:     currentUser.email || '',
-    company:   currentUser.company || ''
+    firstName: currentUser.firstName || '',
+    lastName:  currentUser.lastName  || '',
+    email:     currentUser.email     || '',
+    company:   currentUser.company   || ''
   });
   window.open(`/quote?${params.toString()}`, '_blank');
 }
