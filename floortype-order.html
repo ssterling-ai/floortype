@@ -1426,21 +1426,28 @@
   }
 
   // ── STRIPE INIT ──
-  let stripe, cardElement, stripePublishableKey;
+  let stripe, cardElement;
 
-  // Load publishable key from server — never hardcode in frontend
-  fetch('/api/config')
-    .then(r => r.json())
-    .then(d => { stripePublishableKey = d.stripePublishableKey; })
-    .catch(e => console.error('Could not load Stripe config:', e));
+  // Load publishable key from server — stored as a promise so initStripe always waits for it
+  const stripeKeyPromise = fetch('/api/config')
+    .then(r => {
+      if (!r.ok) throw new Error('Config endpoint returned ' + r.status);
+      return r.json();
+    })
+    .then(d => {
+      if (!d.stripePublishableKey) throw new Error('No publishable key in config response');
+      return d.stripePublishableKey;
+    })
+    .catch(e => { console.error('Could not load Stripe config:', e); return null; });
 
-  function initStripe() {
+  async function initStripe() {
     if (stripe) return; // already mounted
-    if (!stripePublishableKey) {
-      console.error('Stripe publishable key not loaded yet');
+    const publishableKey = await stripeKeyPromise;
+    if (!publishableKey) {
+      document.getElementById('stripe-card-errors').textContent = 'Payment system unavailable. Please refresh and try again.';
       return;
     }
-    stripe = Stripe(stripePublishableKey);
+    stripe = Stripe(publishableKey);
     const elements = stripe.elements({
       fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap' }]
     });
@@ -1573,6 +1580,10 @@
 
     try {
       btnText.textContent = 'Creating payment…';
+
+      // Ensure Stripe is initialised (awaits key if not yet loaded)
+      await initStripe();
+      if (!stripe) throw new Error('Payment system unavailable. Please refresh and try again.');
 
       // 1. Create PaymentIntent on the server
       const intentRes = await fetch('/api/create-payment-intent', {
