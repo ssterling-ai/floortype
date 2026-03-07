@@ -926,6 +926,9 @@ function restoreSession() {
 
     console.log('Session restored for:', currentUser.email);
 
+    // Proactively refresh token to avoid expiry errors
+    refreshSession();
+
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appSidebar').style.display = 'flex';
     document.getElementById('appMain').style.display = 'flex';
@@ -1573,6 +1576,32 @@ function showProfileMsg(id, msg, success){
   el.style.border = `1px solid ${success ? '#86EFAC' : '#FCA5A5'}`;
 }
 
+async function refreshSession() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('ft_session') || '{}');
+    const refreshToken = stored.refresh_token;
+    if(!refreshToken) return false;
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    if(!res.ok) return false;
+    const data = await res.json();
+    if(!data.access_token) return false;
+    // Update currentUser token and save back to localStorage
+    currentUser.token = data.access_token;
+    stored.token = data.access_token;
+    stored.refresh_token = data.refresh_token || refreshToken;
+    stored.user = { ...stored.user, token: data.access_token };
+    localStorage.setItem('ft_session', JSON.stringify(stored));
+    return true;
+  } catch(e) {
+    console.warn('Token refresh failed:', e);
+    return false;
+  }
+}
+
 async function saveProfile(){
   const firstName = document.getElementById('profileFirstName').value.trim();
   const lastName = document.getElementById('profileLastName').value.trim();
@@ -1581,6 +1610,9 @@ async function saveProfile(){
 
   if(!firstName){ showProfileMsg('profileInfoMsg','Please enter your first name.',false); return; }
   if(!email || !email.includes('@')){ showProfileMsg('profileInfoMsg','Please enter a valid email.',false); return; }
+
+  // Refresh token before making authenticated request
+  await refreshSession();
 
   const fullName = [firstName, lastName].filter(Boolean).join(' ');
   const emailChanged = email !== currentUser.email;
