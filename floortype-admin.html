@@ -544,6 +544,12 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
           </div>
           <div class="qe-row" style="margin-top:10px;">
             <div class="qe-field" style="flex:1;">
+              <label>Sending To</label>
+              <input class="qe-input" type="email" id="qm-to" placeholder="client@company.com">
+            </div>
+          </div>
+          <div class="qe-row" style="margin-top:10px;">
+            <div class="qe-field" style="flex:1;">
               <label>CC Additional Emails <span style="font-weight:400;color:var(--muted);">(comma separated, optional)</span></label>
               <input class="qe-input" type="text" id="qm-cc" placeholder="investor@firm.com, partner@company.com">
             </div>
@@ -778,6 +784,8 @@ function openQuoteModal(ref){
   document.getElementById('qm-link').innerHTML=q.sharedLink?`<a href="${q.sharedLink}" target="_blank" style="color:var(--purple-deep)">Open folder ↗</a>`:'None';
   set('qm-notes',q.notes||'No notes.');
   document.getElementById('qm-status').value=q.status;
+  document.getElementById('qm-to').value=q.email||'';
+  document.getElementById('qm-cc').value='';
   if(q.confirmedPrice)document.getElementById('qm-price').value=q.confirmedPrice;
   else if(q.estimateLow)document.getElementById('qm-price').value=q.estimateLow;
   showOverlay('quote-modal');
@@ -815,6 +823,7 @@ function previewQuote() {
   const complexityLabel = { standard:'Standard', premium:'Premium', luxury:'Luxury' }[q.complexity] || q.complexity || 'Standard';
   const formattedPrice = parseInt(price).toLocaleString('en-US');
   const cc = document.getElementById('qm-cc').value;
+  const toEmail = document.getElementById('qm-to').value || q.email;
 
   const renderRows = q.renders && Object.keys(q.renders).length
     ? Object.entries(q.renders).map(([type, val]) => {
@@ -829,7 +838,7 @@ function previewQuote() {
     <div style="background:linear-gradient(135deg,#120F2A,#3D3660);border-radius:10px;padding:20px 24px;margin-bottom:16px;">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(196,181,244,0.7);margin-bottom:4px;">Project Quote · ${q.ref}</div>
       <div style="font-size:20px;font-weight:700;color:white;">${q.project}</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:3px;">To: ${q.email}${cc ? ' · CC: ' + cc : ''}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:3px;">To: ${toEmail}${cc ? ' · CC: ' + cc : ''}</div>
     </div>
     <div style="background:linear-gradient(135deg,#EDE9FF,#DFF6F1);border-radius:10px;padding:18px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
       <div>
@@ -882,15 +891,13 @@ async function sendConfirmedQuote(confirmed = false) {
   if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = 'Sending…'; }
 
   const cc = document.getElementById('qm-cc').value;
-
-  try {
-    const res = await fetch('/api/send-quote', {
+  const toEmail = document.getElementById('qm-to').value || q.email; {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ref:            q.ref,
         clientName:     q.name,
-        clientEmail:    q.email,
+        clientEmail:    toEmail,
         ccEmails:       cc || '',
         company:        q.company || '',
         projectName:    q.project,
@@ -1054,7 +1061,7 @@ function toggleAdminMobileNav() {
 </script>
 <!-- QUOTE PREVIEW MODAL -->
 <div class="overlay" id="quote-preview-modal" onclick="closeOverlay('quote-preview-modal',event)" style="z-index:1001;">
-  <div class="modal-box" style="max-width:660px;width:calc(100vw - 40px);max-height:85vh;overflow-y:auto;">
+  <div class="modal-box" style="max-width:660px;width:calc(100vw - 40px);max-height:85vh;overflow-y:auto;background:white;">
     <div class="m-header" style="position:sticky;top:0;background:white;z-index:2;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:20px;">
       <div><div class="m-ref">Quote Preview</div><div class="m-tag" id="preview-ref-label">—</div></div>
       <button class="m-close" onclick="closeOverlayDirect('quote-preview-modal')">×</button>
