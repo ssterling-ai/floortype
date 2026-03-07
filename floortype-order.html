@@ -1426,11 +1426,21 @@
   }
 
   // ── STRIPE INIT ──
-  let stripe, cardElement;
+  let stripe, cardElement, stripePublishableKey;
+
+  // Load publishable key from server — never hardcode in frontend
+  fetch('/api/config')
+    .then(r => r.json())
+    .then(d => { stripePublishableKey = d.stripePublishableKey; })
+    .catch(e => console.error('Could not load Stripe config:', e));
 
   function initStripe() {
     if (stripe) return; // already mounted
-    stripe = Stripe('pk_test_51T2m732NFEU8Y5C1Cltya0d8F3fNwW4pNOdAiWLm0BOaVA7c5VFhdgBHL4F61RZM9mKxpH3CE2f5lxFNyTjdiXbO00kR8SZAgV');
+    if (!stripePublishableKey) {
+      console.error('Stripe publishable key not loaded yet');
+      return;
+    }
+    stripe = Stripe(stripePublishableKey);
     const elements = stripe.elements({
       fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap' }]
     });
@@ -1547,35 +1557,61 @@
 
     const btn = document.querySelector('.btn-pay');
     const btnText = document.getElementById('payBtnText');
+    const errEl = document.getElementById('stripe-card-errors');
     btn.disabled = true;
-    btnText.textContent = 'Processing payment…';
+    errEl.textContent = '';
+
+    const deposit = parseFloat((getTotal() * 0.5).toFixed(2));
+    const name = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
+    const email = document.getElementById('email').value;
+    const ref = 'FT-' + Math.floor(100000 + Math.random() * 900000);
+
+    const resetBtn = () => {
+      btn.disabled = false;
+      btnText.innerHTML = 'Pay 50% Deposit — $<span id="depositAmount">' + deposit.toFixed(2) + '</span>';
+    };
 
     try {
-      const deposit = parseFloat((getTotal() * 0.5).toFixed(2));
-      const name = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
-      const email = document.getElementById('email').value;
+      btnText.textContent = 'Creating payment…';
 
-      // Create a PaymentMethod with Stripe Elements
-      const { paymentMethod, error } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
-        billing_details: { name, email }
+      // 1. Create PaymentIntent on the server
+      const intentRes = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: deposit, name, email, ref })
+      });
+      const intentData = await intentRes.json();
+      if (!intentRes.ok) throw new Error(intentData.error || 'Could not initiate payment');
+
+      btnText.textContent = 'Processing payment…';
+
+      // 2. Confirm the card payment — this is what actually charges the card
+      const { paymentIntent, error } = await stripe.confirmCardPayment(intentData.clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: { name, email }
+        },
+        receipt_email: email
       });
 
       if (error) {
-        document.getElementById('stripe-card-errors').textContent = error.message;
-        btn.disabled = false;
-        btnText.innerHTML = 'Pay 50% Deposit — $<span id="depositAmount">' + deposit + '</span>';
+        errEl.textContent = error.message;
+        resetBtn();
         return;
       }
 
-      // Payment method created successfully — save order
-      const ref = 'FT-' + Math.floor(100000 + Math.random() * 900000);
+      if (paymentIntent.status !== 'succeeded') {
+        errEl.textContent = 'Payment was not completed. Please try again.';
+        resetBtn();
+        return;
+      }
+
+      // 3. Payment succeeded — save order to Supabase with real payment intent ID
+      btnText.textContent = 'Saving order…';
       document.getElementById('orderRef').textContent = ref;
+      await saveOrderToSupabase(ref, paymentIntent.id, 'card', null);
 
-      await saveOrderToSupabase(ref, paymentMethod.id, 'card', null);
-
-      // Show success
+      // 4. Show success screen
       document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('successScreen').classList.add('show');
       document.querySelector('.progress-bar').style.display = 'none';
@@ -1583,9 +1619,8 @@
 
     } catch(e) {
       console.error('Payment error:', e);
-      document.getElementById('stripe-card-errors').textContent = 'Payment failed. Please try again.';
-      btn.disabled = false;
-      btnText.innerHTML = 'Pay 50% Deposit — $<span id="depositAmount">' + parseFloat((getTotal()*0.5).toFixed(2)) + '</span>';
+      errEl.textContent = e.message || 'Payment failed. Please try again.';
+      resetBtn();
     }
   }
 
