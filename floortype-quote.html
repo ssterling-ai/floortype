@@ -1300,6 +1300,20 @@
 </div><!-- /quote-layout -->
 
 <script>
+  // ── PRE-FILL FROM PORTAL URL PARAMS ──
+  (function prefillFromPortal() {
+    const params = new URLSearchParams(window.location.search);
+    const fields = {
+      firstName: params.get('firstName'),
+      lastName:  params.get('lastName'),
+      email:     params.get('email'),
+      company:   params.get('company')
+    };
+    // Store so they're applied when the contact step renders
+    window._portalPrefill = fields;
+  })();
+
+
 // ── STATE ──
 const state = {
   step: 1,
@@ -1615,6 +1629,15 @@ function goToStep(n){
   document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
   if(n===5) buildReview();
+  // Pre-fill contact fields from portal if available
+  if(n===4 && window._portalPrefill) {
+    const p = window._portalPrefill;
+    ['firstName','lastName','email','company'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el && p[id]) el.value = p[id];
+    });
+    window._portalPrefill = null;
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function jumpStep(n){ if(n<=state.step||state.done.has(n)) goToStep(n); }

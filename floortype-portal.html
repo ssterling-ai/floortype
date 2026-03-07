@@ -1677,10 +1677,12 @@ function openNewOrder() {
 
 function openNewQuote() {
   if(!currentUser) { window.open('/quote','_blank'); return; }
+  const parts = (currentUser.name || '').split(' ');
   const params = new URLSearchParams({
-    email: currentUser.email || '',
-    name: currentUser.name || '',
-    company: currentUser.company || ''
+    firstName: parts[0] || '',
+    lastName:  parts.slice(1).join(' ') || '',
+    email:     currentUser.email || '',
+    company:   currentUser.company || ''
   });
   window.open(`/quote?${params.toString()}`, '_blank');
 }
@@ -1781,10 +1783,12 @@ function openNewOrder() {
 
 function openNewQuote() {
   if(!currentUser) { window.open('/quote','_blank'); return; }
+  const parts = (currentUser.name || '').split(' ');
   const params = new URLSearchParams({
-    email: currentUser.email || '',
-    name: currentUser.name || '',
-    company: currentUser.company || ''
+    firstName: parts[0] || '',
+    lastName:  parts.slice(1).join(' ') || '',
+    email:     currentUser.email || '',
+    company:   currentUser.company || ''
   });
   window.open(`/quote?${params.toString()}`, '_blank');
 }
