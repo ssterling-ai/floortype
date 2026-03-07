@@ -847,67 +847,6 @@
 
 <script>
 // ── DATA ──
-const DEMO_ORDERS = [
-  {
-    ref:'FT-841022', date:'2025-02-10T09:23:00Z',
-    address:'220 Riverside Drive, New York, NY 10025',
-    floors:2, style:'Modern',
-    addons:{'Furnished Version':79,'Rush Delivery':99},
-    total:476, deposit:'238.00', status:'In Review',
-    notes:'Light oak flooring throughout. Minimal furniture placement preferred.',
-    rounds:[
-      {
-        num:1, name:'Draft 1 — Initial Floor Plan',
-        date:'2025-02-12', status:'revised',
-        files:['FT-841022_Draft1_Level1.png','FT-841022_Draft1_Level2.png'],
-        thread:[
-          {role:'team',text:'Hi Sarah, here\'s your first draft for both levels. Please review and let us know if you\'d like any changes.',time:'Feb 12, 10:30am'},
-          {role:'client',text:'Looking good! A few things: can we widen the hallway on level 1, and the kitchen island on level 2 should be slightly larger.',time:'Feb 12, 2:14pm'},
-          {role:'team',text:'Got it — we\'ll update the hallway width and scale up the kitchen island. New draft incoming.',time:'Feb 12, 3:45pm'}
-        ]
-      },
-      {
-        num:2, name:'Draft 2 — Revised',
-        date:'2025-02-14', status:'pending',
-        files:['FT-841022_Draft2_Level1.png','FT-841022_Draft2_Level2.png'],
-        thread:[
-          {role:'team',text:'Here\'s the revised draft — hallway widened and kitchen island updated as requested. Please review!',time:'Feb 14, 11:00am'}
-        ]
-      }
-    ],
-    finalFiles:[]
-  },
-  {
-    ref:'FT-392874', date:'2025-01-28T14:10:00Z',
-    address:'14 Kings Road, London, SW3 4PX',
-    floors:1, style:'Luxury',
-    addons:{'Black & White Version':39},
-    total:188, deposit:'94.00', status:'Complete',
-    notes:'',
-    rounds:[
-      {
-        num:1, name:'Draft 1 — Floor Plan',
-        date:'2025-01-30', status:'approved',
-        files:['FT-392874_Draft1_Ground.png'],
-        thread:[
-          {role:'team',text:'First draft ready for your review!',time:'Jan 30, 9:00am'},
-          {role:'client',text:'Perfect on the first try — no changes needed. Approved!',time:'Jan 30, 11:30am'}
-        ]
-      }
-    ],
-    finalFiles:['FT-392874_Final_Colour.png','FT-392874_Final_BW.png','FT-392874_Final.pdf']
-  },
-  {
-    ref:'FT-203984', date:'2025-01-15T16:45:00Z',
-    address:'7 Orchard Lane, Chicago, IL 60601',
-    floors:1, style:'Traditional',
-    addons:{'Extra View Angle':49},
-    total:198, deposit:'99.00', status:'In Progress',
-    notes:'',
-    rounds:[], finalFiles:[]
-  }
-];
-
 let orders = [];
 let currentUser = null;
 let currentOrderRef = null;
