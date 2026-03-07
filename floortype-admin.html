@@ -534,7 +534,25 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       <div class="m-sec"><div class="m-sec-title">Reference Materials</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Files Uploaded</div><div class="d-val" id="qm-files">—</div></div><div class="d-item"><div class="d-lbl">Shared Folder</div><div class="d-val" id="qm-link">—</div></div></div></div>
       <div class="m-sec"><div class="m-sec-title">Client Notes</div><div class="m-notes" id="qm-notes">—</div></div>
       <div class="m-sec"><div class="m-sec-title">Your Quote</div>
-        <div class="q-editor"><div class="qe-lbl">Send Confirmed Quote to Client</div><div class="qe-row"><div class="qe-field" style="flex:1;"><label>Confirmed Price ($)</label><input class="qe-input" type="number" id="qm-price" placeholder="e.g. 5200"></div><button class="qe-send" onclick="sendConfirmedQuote()">Send →</button></div></div>
+        <div class="q-editor">
+          <div class="qe-lbl">Send Confirmed Quote to Client</div>
+          <div class="qe-row">
+            <div class="qe-field" style="flex:1;">
+              <label>Confirmed Price ($)</label>
+              <input class="qe-input" type="number" id="qm-price" placeholder="e.g. 5200">
+            </div>
+          </div>
+          <div class="qe-row" style="margin-top:10px;">
+            <div class="qe-field" style="flex:1;">
+              <label>CC Additional Emails <span style="font-weight:400;color:var(--muted);">(comma separated, optional)</span></label>
+              <input class="qe-input" type="text" id="qm-cc" placeholder="investor@firm.com, partner@company.com">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px;">
+            <button class="qe-preview" onclick="previewQuote()" style="flex:1;padding:10px;border:1.5px solid var(--purple-deep);background:white;color:var(--purple-deep);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--purple-bg)'" onmouseout="this.style.background='white'">Preview Email</button>
+            <button class="qe-send" onclick="sendConfirmedQuote()" style="flex:2;">Send Quote to Client →</button>
+          </div>
+        </div>
       </div>
       <div class="m-sec"><div class="m-sec-title">Update Status</div><div style="display:flex;gap:10px;align-items:center"><select class="status-select" id="qm-status"><option>Received</option><option>Quoted</option><option>Approved</option><option>On Hold</option><option>Declined</option></select><button class="btn-convert" onclick="convertQuoteToOrder()">Convert to Order</button></div></div>
     </div>
@@ -786,14 +804,125 @@ async function saveOrderStatus(){
   closeOverlayDirect('order-modal');
   showToast('Order updated ✓','success');
 }
-function saveQuoteStatus(){const q=quotes.find(x=>x.ref===curQuoteRef);if(q){q.status=document.getElementById('qm-status').value;saveData();renderAll();}closeOverlayDirect('quote-modal');showToast('Quote updated ✓','success');}
-function sendConfirmedQuote(){
-  const price=document.getElementById('qm-price').value;
-  if(!price){showToast('Enter a confirmed price','warn');return;}
-  const q=quotes.find(x=>x.ref===curQuoteRef);
-  if(q){q.status='Quoted';q.confirmedPrice=parseInt(price);saveData();renderAll();}
-  // TODO: send email to client with confirmed price
-  closeOverlayDirect('quote-modal');showToast(`Quote $${parseInt(price).toLocaleString()} sent to client ✓`,'success');
+function previewQuote() {
+  const price = document.getElementById('qm-price').value;
+  if(!price){ showToast('Enter a confirmed price first','warn'); return; }
+  const q = quotes.find(x => x.ref === curQuoteRef);
+  if(!q) return;
+
+  const renderLabels = { interior:'Interior Rendering', exterior:'Exterior Rendering', aerial:'Aerial Rendering', '360':'360° Virtual Tour', flythrough:'Fly-Through Animation' };
+  const timelineLabel = { standard:'Standard (4–8 weeks)', expedited:'Expedited (2–4 weeks)', urgent:'Urgent (under 2 weeks)' }[q.timeline] || q.timeline || 'Standard (4–8 weeks)';
+  const complexityLabel = { standard:'Standard', premium:'Premium', luxury:'Luxury' }[q.complexity] || q.complexity || 'Standard';
+  const formattedPrice = parseInt(price).toLocaleString('en-US');
+  const cc = document.getElementById('qm-cc').value;
+
+  const renderRows = q.renders && Object.keys(q.renders).length
+    ? Object.entries(q.renders).map(([type, val]) => {
+        const label = renderLabels[type] || type;
+        const views = val?.views || 1;
+        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;"><span style="color:#333;">${label}</span><span style="color:#666;">${views} view${views>1?'s':''}</span></div>`;
+      }).join('')
+    : '<div style="font-size:13px;color:#999;padding:8px 0;">See project scope</div>';
+
+  document.getElementById('preview-ref-label').textContent = q.ref;
+  document.getElementById('quotePreviewBody').innerHTML = `
+    <div style="background:linear-gradient(135deg,#120F2A,#3D3660);border-radius:10px;padding:20px 24px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(196,181,244,0.7);margin-bottom:4px;">Project Quote · ${q.ref}</div>
+      <div style="font-size:20px;font-weight:700;color:white;">${q.project}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:3px;">To: ${q.email}${cc ? ' · CC: ' + cc : ''}</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#EDE9FF,#DFF6F1);border-radius:10px;padding:18px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B56C8;margin-bottom:4px;">Confirmed Price</div>
+        <div style="font-size:28px;font-weight:700;color:#120F2A;">$${formattedPrice}</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:#555;">
+        <div style="margin-bottom:4px;"><strong>Delivery:</strong> ${timelineLabel}</div>
+        <div><strong>Revisions:</strong> 2 rounds included</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9B87E8;margin-bottom:10px;">Scope</div>
+      ${renderRows}
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9B87E8;margin-bottom:10px;">Project Details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;">
+        ${q.type ? `<div><span style="color:#888;">Type:</span> ${q.type}</div>` : ''}
+        ${q.city ? `<div><span style="color:#888;">Location:</span> ${q.city}</div>` : ''}
+        <div><span style="color:#888;">Quality:</span> ${complexityLabel}</div>
+        <div><span style="color:#888;">Timeline:</span> ${timelineLabel}</div>
+      </div>
+    </div>
+    <div style="background:#F7F5FF;border-radius:8px;padding:14px;font-size:12px;color:#666;line-height:1.6;">
+      <strong style="display:block;margin-bottom:6px;color:#333;">What's Included</strong>
+      ✓ High-resolution files (JPEG + PNG)<br>
+      ✓ 2 rounds of draft review via ReviewStudio<br>
+      ✓ Client portal access for project tracking<br>
+      ✓ 100% license-free deliverables<br>
+      ✓ Direct communication throughout
+    </div>
+    ${q.notes ? `<div style="margin-top:12px;background:#FFF8EC;border-radius:8px;padding:12px;font-size:12px;color:#666;"><strong style="color:#333;">Notes:</strong> ${q.notes}</div>` : ''}
+  `;
+  showOverlay('quote-preview-modal');
+}
+
+async function sendConfirmedQuote(confirmed = false) {
+  const price = document.getElementById('qm-price').value;
+  if(!price){ showToast('Enter a confirmed price','warn'); return; }
+  const q = quotes.find(x => x.ref === curQuoteRef);
+  if(!q) return;
+
+  if(!confirmed) {
+    previewQuote();
+    return;
+  }
+
+  const sendBtn = document.querySelector('#quote-preview-modal button:last-child');
+  if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = 'Sending…'; }
+
+  const cc = document.getElementById('qm-cc').value;
+
+  try {
+    const res = await fetch('/api/send-quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref:            q.ref,
+        clientName:     q.name,
+        clientEmail:    q.email,
+        ccEmails:       cc || '',
+        company:        q.company || '',
+        projectName:    q.project,
+        projectType:    q.type || '',
+        city:           q.city || '',
+        phases:         q.phases || 1,
+        renders:        q.renders || {},
+        complexity:     q.complexity || 'standard',
+        timeline:       q.timeline || 'standard',
+        confirmedPrice: parseInt(price),
+        notes:          q.notes || ''
+      })
+    });
+
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Send failed');
+
+    // Update local state
+    q.status = 'Quoted';
+    q.confirmedPrice = parseInt(price);
+    saveData();
+    renderAll();
+
+    closeOverlayDirect('quote-preview-modal');
+    closeOverlayDirect('quote-modal');
+    showToast(`Quote $${parseInt(price).toLocaleString()} sent to ${q.email} ✓`, 'success');
+
+  } catch(e) {
+    console.error('Send quote failed:', e);
+    showToast('Failed to send — check console for details', 'error');
+    if(sendBtn){ sendBtn.disabled = false; sendBtn.textContent = 'Confirm & Send →'; }
+  }
 }
 function convertQuoteToOrder(){const q=quotes.find(x=>x.ref===curQuoteRef);if(!q)return;q.status='Approved';saveData();renderAll();closeOverlayDirect('quote-modal');showToast('Quote approved — client notified ✓','success');}
 
@@ -923,5 +1052,20 @@ function toggleAdminMobileNav() {
   document.getElementById('adminMobileNav').classList.toggle('open');
 }
 </script>
+<!-- QUOTE PREVIEW MODAL -->
+<div class="overlay" id="quote-preview-modal" onclick="closeOverlay('quote-preview-modal',event)" style="z-index:1001;">
+  <div class="modal-box" style="max-width:660px;width:calc(100vw - 40px);max-height:85vh;overflow-y:auto;">
+    <div class="m-header" style="position:sticky;top:0;background:white;z-index:2;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:20px;">
+      <div><div class="m-ref">Quote Preview</div><div class="m-tag" id="preview-ref-label">—</div></div>
+      <button class="m-close" onclick="closeOverlayDirect('quote-preview-modal')">×</button>
+    </div>
+    <div id="quotePreviewBody" style="font-size:13px;line-height:1.7;"></div>
+    <div style="display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);position:sticky;bottom:0;background:white;">
+      <button onclick="closeOverlayDirect('quote-preview-modal')" style="flex:1;padding:11px;border:1.5px solid var(--border);background:white;color:var(--mid);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Edit</button>
+      <button onclick="closeOverlayDirect('quote-preview-modal');sendConfirmedQuote(true)" style="flex:2;padding:11px;background:linear-gradient(135deg,var(--purple-deep),var(--mint-deep));color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Confirm & Send →</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
