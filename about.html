@@ -857,7 +857,7 @@ if(burger) burger.addEventListener('click', () => {
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 48px);
+  width: calc(100vw - 48px);
   max-width: 620px;
   background: #120F2A;
   border: 1px solid rgba(107,86,200,0.3);
@@ -945,9 +945,13 @@ if(burger) burger.addEventListener('click', () => {
   #cookie-banner {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
-    bottom: 16px;
-    padding: 18px 18px;
+    gap: 12px;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    padding: 16px;
   }
   .cookie-icon { display: none; }
   .cookie-actions { width: 100%; }

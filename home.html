@@ -26,6 +26,7 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-x: hidden; }
   html { scroll-behavior: smooth; }
 
   body {
@@ -964,12 +965,12 @@
   @media (max-width: 768px) {
 
     /* ── NAV ── */
-    nav { padding: 0 20px; height: 60px; }
+    nav { padding: 0 16px; height: 60px; }
     .logo { font-size: 14px; }
     .logo img { height: 26px; }
-    .nav-right { gap: 8px; }
-    .nav-btn { padding: 8px 14px; font-size: 12px; display: none; }
-    .nav-cta { padding: 8px 14px; font-size: 12px; }
+    .nav-right { gap: 6px; }
+    .nav-btn { display: none; }
+    .nav-cta { padding: 8px 12px; font-size: 11px; white-space: nowrap; }
 
     /* ── HERO ── */
     .hero {
@@ -1700,7 +1701,7 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 48px);
+  width: calc(100vw - 48px);
   max-width: 620px;
   background: #120F2A;
   border: 1px solid rgba(107,86,200,0.3);
@@ -1788,9 +1789,13 @@
   #cookie-banner {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
-    bottom: 16px;
-    padding: 18px 18px;
+    gap: 12px;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    padding: 16px;
   }
   .cookie-icon { display: none; }
   .cookie-actions { width: 100%; }
