@@ -670,5 +670,161 @@ if(burger) burger.addEventListener('click', () => {
   burger.classList.toggle('open');
 });
 </script>
+
+<!-- ── COOKIE CONSENT BANNER ── -->
+<div id="cookie-banner" style="display:none;" aria-live="polite" role="dialog" aria-label="Cookie consent">
+</div>
+<style>
+#cookie-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 620px;
+  background: #120F2A;
+  border: 1px solid rgba(107,86,200,0.3);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(107,86,200,0.1);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  animation: cookieSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+  font-family: 'DM Sans', Arial, sans-serif;
+}
+@keyframes cookieSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+#cookie-banner.hiding {
+  animation: cookieSlideDown 0.3s cubic-bezier(0.4,0,1,1) forwards;
+}
+@keyframes cookieSlideDown {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(16px); }
+}
+.cookie-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.cookie-text {
+  flex: 1;
+  min-width: 0;
+}
+.cookie-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+.cookie-text p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+  line-height: 1.5;
+}
+.cookie-text a {
+  color: rgba(155,135,232,0.9);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cookie-btn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'DM Sans', Arial, sans-serif;
+  letter-spacing: 0.02em;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.cookie-btn-accept {
+  background: linear-gradient(135deg, #6B56C8, #2AB5A0);
+  color: white;
+}
+.cookie-btn-accept:hover { opacity: 0.9; transform: translateY(-1px); }
+.cookie-btn-decline {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.cookie-btn-decline:hover {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+}
+@media (max-width: 580px) {
+  #cookie-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    bottom: 16px;
+    padding: 18px 18px;
+  }
+  .cookie-icon { display: none; }
+  .cookie-actions { width: 100%; }
+  .cookie-btn { flex: 1; text-align: center; padding: 10px 12px; }
+}
+</style>
+<script>
+(function() {
+  var COOKIE_KEY = 'ft_cookie_consent';
+  var banner = document.getElementById('cookie-banner');
+
+  function getConsent() {
+    try { return localStorage.getItem(COOKIE_KEY); } catch(e) { return null; }
+  }
+
+  function setConsent(val) {
+    try { localStorage.setItem(COOKIE_KEY, val); } catch(e) {}
+  }
+
+  function dismiss(accepted) {
+    setConsent(accepted ? 'accepted' : 'declined');
+    banner.classList.add('hiding');
+    setTimeout(function() { banner.style.display = 'none'; }, 300);
+    // If accepted, fire any deferred analytics here
+    if (accepted) loadAnalytics();
+  }
+
+  function loadAnalytics() {
+    // Placeholder — add Google Analytics or other tracking scripts here
+    // e.g. window.dataLayer = []; ... gtag('js', ...) etc.
+  }
+
+  // Show banner if no prior choice
+  if (!getConsent()) {
+    banner.innerHTML = `
+      <div class="cookie-icon">🍪</div>
+      <div class="cookie-text">
+        <strong>We use cookies</strong>
+        <p>We use essential cookies to keep the site running and optional analytics to improve your experience. <a href="/privacy" target="_blank">Privacy Policy</a></p>
+      </div>
+      <div class="cookie-actions">
+        <button class="cookie-btn cookie-btn-decline" onclick="ftCookieDecline()">Decline</button>
+        <button class="cookie-btn cookie-btn-accept" onclick="ftCookieAccept()">Accept</button>
+      </div>
+    `;
+    // Small delay so it doesn't flash on page load
+    setTimeout(function() { banner.style.display = 'flex'; }, 800);
+  } else if (getConsent() === 'accepted') {
+    loadAnalytics();
+  }
+
+  window.ftCookieAccept  = function() { dismiss(true); };
+  window.ftCookieDecline = function() { dismiss(false); };
+})();
+</script>
 </body>
 </html>
