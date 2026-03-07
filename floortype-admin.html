@@ -567,6 +567,12 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="data-error-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#FEF2F2;border-bottom:1px solid #FECACA;padding:10px 24px;display:none;align-items:center;gap:10px;font-size:13px;color:#991B1B;">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" width="16" style="flex-shrink:0;color:#DC2626;"><circle cx="8" cy="8" r="7"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="11" r="0.7" fill="currentColor" stroke="none"/></svg>
+  <span>Unable to reach database — showing cached data. Retrying…</span>
+  <button onclick="loadData()" style="margin-left:auto;background:none;border:1px solid #FECACA;border-radius:6px;padding:4px 10px;font-size:12px;color:#991B1B;cursor:pointer;font-family:inherit;">Retry now</button>
+  <button onclick="hideDataError()" style="background:none;border:none;font-size:18px;line-height:1;color:#991B1B;cursor:pointer;padding:0 4px;">×</button>
+</div>
 
 <script>
 // ── SUPABASE SWAP-IN GUIDE ──────────────────────────────
@@ -582,17 +588,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 //          p => { orders.unshift(p.new); renderAll(); showToast('New order! ✓','success'); }).subscribe()
 // ────────────────────────────────────────────────────────
 
-const DEMO_ORDERS=[
-  {ref:'FT-841022',date:'2025-02-10T09:23:00Z',floors:2,style:'Modern',addons:{'Furnished Version':79,'Rush Delivery':99},total:476,deposit:'238.00',address:'220 Riverside Drive, New York, NY 10025',notes:'Light oak flooring. Minimal furniture.',name:'Sarah Mitchell',email:'sarah.m@meridianre.com',company:'Meridian Real Estate',status:'In Review',files:['level1.pdf','level2.dwg']},
-  {ref:'FT-392874',date:'2025-02-08T14:10:00Z',floors:1,style:'Luxury',addons:{'B&W Version':39},total:188,deposit:'94.00',address:'14 Kings Road, London, SW3 4PX',notes:'',name:'James Thornton',email:'j.thornton@studiov.co.uk',company:'Studio Volta',status:'Complete',files:['groundfloor.pdf']},
-  {ref:'FT-774531',date:'2025-02-05T11:05:00Z',floors:3,style:'Scandinavian',addons:{},total:447,deposit:'223.50',address:'48 Elm Street, Austin, TX 78701',notes:'Three units — label each clearly.',name:'Priya Kessler',email:'priya@kesslergroup.com',company:'Kessler Group',status:'In Progress',files:['unitA.pdf','unitB.pdf','unitC.dwg']},
-  {ref:'FT-203984',date:'2025-02-03T16:45:00Z',floors:1,style:'Traditional',addons:{'Extra View':49},total:198,deposit:'99.00',address:'7 Orchard Lane, Chicago, IL 60601',notes:'',name:"Michael O'Brien",email:'mobrien@obarchitects.com',company:"O'Brien Architects",status:'Received',files:['floorplan.pdf']},
-];
-const DEMO_QUOTES=[
-  {ref:'QT-293847',date:'2025-02-14T10:30:00Z',project:'The Meridian Tower',type:'Multifamily Residential',city:'Austin, TX',phases:2,renders:{interior:{views:6},exterior:{views:3},aerial:{views:2}},complexity:'premium',timeline:'standard',estimateLow:7200,estimateHigh:11000,name:'Priya Kessler',email:'priya@kesslergroup.com',company:'Kessler Development',role:'Developer / Owner',totalFiles:8,sharedLink:'https://drive.google.com/...',notes:'Renders needed for Q2 sales launch.',status:'Received'},
-  {ref:'QT-847291',date:'2025-02-12T15:20:00Z',project:'Harbor Walk Phase 2',type:'Mixed-Use Development',city:'Miami, FL',phases:3,renders:{exterior:{views:4},aerial:{views:2},flythrough:{views:1}},complexity:'luxury',timeline:'expedited',estimateLow:14000,estimateHigh:20000,name:'Elena Vasquez',email:'evasquez@pacificprops.com',company:'Pacific Properties',role:'Project Manager',totalFiles:12,sharedLink:'',notes:'Investor presentation in 6 weeks.',status:'Quoted'},
-  {ref:'QT-556128',date:'2025-02-09T09:00:00Z',project:'Elm Street Residences',type:'Single Family Residential',city:'Chicago, IL',phases:1,renders:{interior:{views:4},exterior:{views:2}},complexity:'standard',timeline:'standard',estimateLow:2400,estimateHigh:3600,name:"Michael O'Brien",email:'mobrien@obarchitects.com',company:"O'Brien Architects",role:'Architect',totalFiles:5,sharedLink:'',notes:'',status:'Approved'},
-];
+// No demo data — production only
 
 let orders=[],quotes=[],curOrderRef=null,curQuoteRef=null,ordersF='all',quotesF='all';
 
@@ -614,8 +610,8 @@ async function loadData(){
     const sbOrders = await oRes.json();
     const sbQuotes = await qRes.json();
 
-    // Map Supabase column names to what the dashboard expects
-    orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
+    // Map Supabase rows to dashboard schema
+    orders = Array.isArray(sbOrders) ? sbOrders.map(o => ({
       ref: o.ref,
       project_name: o.project_name || '',
       review_link: o.review_link || '',
@@ -633,9 +629,9 @@ async function loadData(){
       status: o.status,
       stage: o.project_stage || '',
       files: []
-    })) : DEMO_ORDERS;
+    })) : [];
 
-    quotes = Array.isArray(sbQuotes) && sbQuotes.length ? sbQuotes.map(q => ({
+    quotes = Array.isArray(sbQuotes) ? sbQuotes.map(q => ({
       ref: q.ref,
       date: q.created_at,
       name: q.client_name,
@@ -655,12 +651,21 @@ async function loadData(){
       sharedLink: q.shared_link || '',
       notes: q.notes || '',
       status: q.status
-    })) : DEMO_QUOTES;
+    })) : [];
+
+    // Cache last known good data in localStorage
+    if(orders.length) localStorage.setItem('ft_orders', JSON.stringify(orders));
+    if(quotes.length) localStorage.setItem('ft_quotes', JSON.stringify(quotes));
+    hideDataError();
 
   } catch(e) {
-    console.warn('Supabase load failed, using localStorage fallback:', e);
-    orders = JSON.parse(localStorage.getItem('ft_orders')||'null') || DEMO_ORDERS;
-    quotes = JSON.parse(localStorage.getItem('ft_quotes')||'null') || DEMO_QUOTES;
+    console.warn('Supabase load failed:', e);
+    // Use last known good data from localStorage if available
+    const cachedOrders = localStorage.getItem('ft_orders');
+    const cachedQuotes = localStorage.getItem('ft_quotes');
+    if(cachedOrders) orders = JSON.parse(cachedOrders);
+    if(cachedQuotes) quotes = JSON.parse(cachedQuotes);
+    showDataError();
   }
   renderAll();
 }
@@ -936,6 +941,8 @@ async function sendConfirmedQuote(confirmed = false) {
 }
 function convertQuoteToOrder(){const q=quotes.find(x=>x.ref===curQuoteRef);if(!q)return;q.status='Approved';saveData();renderAll();closeOverlayDirect('quote-modal');showToast('Quote approved — client notified ✓','success');}
 
+function showDataError(){const b=document.getElementById('data-error-banner');if(b)b.style.display='flex';}
+function hideDataError(){const b=document.getElementById('data-error-banner');if(b)b.style.display='none';}
 function showOverlay(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden';}
 function closeOverlay(id,e){if(e.target===document.getElementById(id))closeOverlayDirect(id);}
 function closeOverlayDirect(id){document.getElementById(id).classList.remove('show');document.body.style.overflow='';}
