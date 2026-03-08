@@ -670,7 +670,7 @@
 <!-- MOBILE TOPBAR -->
 <div class="mobile-topbar" id="mobileTopbar" style="display:none;">
   <div class="mobile-topbar-logo">
-    <img src="/logo.png" alt="Floortype">
+    <img src="/logo.png" alt="Floortype" style="height:22px;width:auto;mix-blend-mode:multiply;">
     FLOORTYPE
   </div>
   <button class="mobile-nav-toggle" onclick="toggleMobileNav()">MENU</button>
@@ -900,7 +900,7 @@ function restoreSession() {
     refreshSession();
 
     document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('appSidebar').style.display = 'flex';
+    document.getElementById('appSidebar').style.display = window.innerWidth > 900 ? 'flex' : 'none';
     document.getElementById('appMain').style.display = 'flex';
     initApp();
   } catch(e) { 
@@ -1050,7 +1050,7 @@ async function doLogin(){
   btn.disabled = false;
 
   document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('appSidebar').style.display = 'flex';
+  document.getElementById('appSidebar').style.display = window.innerWidth > 900 ? 'flex' : 'none';
   document.getElementById('appMain').style.display = 'flex';
   initApp();
 }
@@ -1904,8 +1904,12 @@ function showMobileTopbar() {
 }
 window.addEventListener('resize', () => {
   const tb = document.getElementById('mobileTopbar');
-  if(!tb) return;
-  tb.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+  if(tb) tb.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+  const sb = document.getElementById('appSidebar');
+  const main = document.getElementById('appMain');
+  if(sb && main && main.style.display !== 'none') {
+    sb.style.display = window.innerWidth > 900 ? 'flex' : 'none';
+  }
 });
 </script>
 </body>
