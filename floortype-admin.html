@@ -893,7 +893,20 @@ function previewQuote() {
   const q = quotes.find(x => x.ref === curQuoteRef);
   if(!q) return;
 
-  const renderLabels = { interior:'Interior Rendering', exterior:'Exterior Rendering', aerial:'Aerial Rendering', '360':'360° Virtual Tour', flythrough:'Fly-Through Animation' };
+  const renderLabels = {
+    'interior':'Interior Rendering',
+    'exterior':'Exterior Rendering',
+    'aerial':'Aerial Rendering',
+    '360':'360° Virtual Tour',
+    'flythrough':'Fly-Through Animation',
+    'static-interior':'Static Interior',
+    'static-exterior':'Static Exterior',
+    'static-aerial':'Static Aerial',
+    '360-interior':'360° Interior Tour',
+    '360-exterior':'360° Exterior Tour',
+    'flythrough-exterior':'Fly-Through (Exterior)',
+    'flythrough-interior':'Fly-Through (Interior)',
+  };
   const timelineLabel = { standard:'Standard (4–8 weeks)', expedited:'Expedited (2–4 weeks)', urgent:'Urgent (under 2 weeks)' }[q.timeline] || q.timeline || 'Standard (4–8 weeks)';
   const complexityLabel = { standard:'Standard', premium:'Premium', luxury:'Luxury' }[q.complexity] || q.complexity || 'Standard';
   const formattedPrice = parseInt(price).toLocaleString('en-US');
@@ -902,9 +915,9 @@ function previewQuote() {
 
   const renderRows = q.renders && Object.keys(q.renders).length
     ? Object.entries(q.renders).map(([type, val]) => {
-        const label = renderLabels[type] || type;
-        const views = val?.views || 1;
-        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;"><span style="color:#333;">${label}</span><span style="color:#666;">${views} view${views>1?'s':''}</span></div>`;
+        const label = renderLabels[type] || type.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+        const views = val?.views || val || 1;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;gap:12px;"><span style="color:#333;flex:1;">${label}</span><span style="color:#666;white-space:nowrap;flex-shrink:0;">${views} view${views>1?'s':''}</span></div>`;
       }).join('')
     : '<div style="font-size:13px;color:#999;padding:8px 0;">See project scope</div>';
 
