@@ -902,6 +902,7 @@ function restoreSession() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appSidebar').style.display = window.innerWidth > 900 ? 'flex' : 'none';
     document.getElementById('appMain').style.display = 'flex';
+    showMobileTopbar();
     initApp();
   } catch(e) { 
     console.warn('Session restore failed:', e);
@@ -1052,6 +1053,7 @@ async function doLogin(){
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('appSidebar').style.display = window.innerWidth > 900 ? 'flex' : 'none';
   document.getElementById('appMain').style.display = 'flex';
+  showMobileTopbar();
   initApp();
 }
 
@@ -1271,7 +1273,7 @@ function openOrderDetail(ref){
     <div style="padding:24px 0 12px;">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:${isMobile?'16px':'28px'};">Project Progress</div>
       <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;padding-right:16px;max-width:100%;">
-      <div style="position:relative;min-width:${minW}px;">
+      <div style="position:relative;padding-bottom:4px;">
         <!-- Progress track -->
         <div style="position:absolute;top:${dotSize/2}px;left:${dotSize/2}px;right:${dotSize/2}px;height:4px;background:var(--border);border-radius:2px;z-index:0;"></div>
         <div style="position:absolute;top:${dotSize/2}px;left:${dotSize/2}px;height:4px;background:linear-gradient(90deg,var(--purple-deep),var(--mint-deep));border-radius:2px;z-index:1;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);width:${currentIdx < 0 ? 0 : Math.min(100, (currentIdx / (STAGES.length-1)) * 100)}%;"></div>
