@@ -35,6 +35,11 @@ export default async function handler(req, res) {
   const revisionRounds = 2;
   const formattedPrice = parseInt(confirmedPrice).toLocaleString('en-US');
 
+  // Generate acceptance token and URL
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
+  const acceptToken = Buffer.from(`${ref}:${SUPABASE_KEY.slice(-16)}`).toString('base64url');
+  const acceptUrl = `https://floortype.com/accept-quote?ref=${encodeURIComponent(ref)}&token=${encodeURIComponent(acceptToken)}`;
+
   const renderRows = renders && Object.keys(renders).length
     ? Object.entries(renders).map(([type, val]) => {
         const label = renderLabels[type] || type;
@@ -146,11 +151,12 @@ export default async function handler(req, res) {
 
     <!-- CTA -->
     <div style="padding:32px 40px;text-align:center;">
-      <p style="font-size:13px;color:#888;margin:0 0 20px;">To accept this quote and get started, reply to this email or reach us at s.sterling@floortype.com</p>
-      <a href="mailto:s.sterling@floortype.com?subject=Quote Acceptance — ${ref}" 
+      <p style="font-size:13px;color:#888;margin:0 0 20px;">Ready to move forward? Click below to accept this quote and we'll get started right away.</p>
+      <a href="${acceptUrl}" 
          style="display:inline-block;background:linear-gradient(135deg,#6B56C8,#2BA892);color:white;text-decoration:none;padding:14px 36px;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.02em;">
         Accept This Quote →
       </a>
+      <p style="font-size:11px;color:#BBB;margin:14px 0 0;">Or reply to this email with any questions before accepting.</p>
     </div>
 
     <!-- Footer -->

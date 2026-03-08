@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accept Your Quote — Floortype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100vh; overflow-x: hidden; }
+
+  :root {
+    --dark: #120F2A;
+    --purple-deep: #6B56C8;
+    --purple-mid: #9B87E8;
+    --purple: #C4B5F4;
+    --purple-bg: #EDE9FF;
+    --mint-deep: #2BA892;
+    --mint-mid: #5DCFB8;
+    --mint: #A8E8DA;
+    --mint-bg: #DFF6F1;
+    --muted: #8880AA;
+    --border: #E8E4FF;
+    --off-white: #F7F5FF;
+  }
+
+  body {
+    background: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* Background glow */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(107,86,200,0.18) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(43,168,146,0.14) 0%, transparent 70%);
+    bottom: -80px; right: -80px;
+    pointer-events: none;
+  }
+
+  .card {
+    background: white;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(196,181,244,0.1);
+    position: relative;
+    z-index: 1;
+    animation: cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  @keyframes cardUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #120F2A 0%, #3D3660 100%);
+    padding: 32px 36px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header::after {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,181,244,0.12), transparent 70%);
+    top: -80px; right: -60px;
+    pointer-events: none;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .logo-row img { height: 28px; width: auto; mix-blend-mode: multiply; filter: brightness(10); }
+  .logo-row span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    color: white;
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(196,181,244,0.6);
+    margin-bottom: 6px;
+  }
+  .header-ref {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.06em;
+    color: white;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .header-project {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+  }
+
+  .card-body { padding: 28px 36px; }
+
+  /* States */
+  .state { display: none; }
+  .state.active { display: block; }
+
+  /* Loading state */
+  .loading-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--purple-deep);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--muted); }
+
+  /* Success state */
+  .success-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--purple-deep), var(--mint-deep));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(107,86,200,0.3);
+  }
+  .success-icon svg { width: 28px; height: 28px; }
+
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    color: var(--dark);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .success-sub {
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.65;
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+
+  .order-badge {
+    background: var(--off-white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .order-badge-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .order-badge-ref {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: var(--purple-deep);
+  }
+  .order-badge-icon {
+    width: 40px; height: 40px;
+    background: var(--purple-bg);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .next-steps {
+    background: linear-gradient(135deg, var(--purple-bg), var(--mint-bg));
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .next-steps-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple-deep);
+    margin-bottom: 12px;
+  }
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .step-row:last-child { margin-bottom: 0; }
+  .step-num {
+    width: 22px; height: 22px;
+    background: var(--purple-deep);
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text { font-size: 13px; color: var(--dark); line-height: 1.5; }
+  .step-text strong { color: var(--dark); }
+
+  .portal-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--purple-deep), var(--mint-deep));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .portal-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* Already accepted state */
+  .already-icon {
+    width: 64px; height: 64px;
+    background: var(--mint-bg);
+    border: 2px solid var(--mint);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  /* Error state */
+  .error-icon {
+    width: 64px; height: 64px;
+    background: #FEF2F2;
+    border: 2px solid #FECACA;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .error-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--dark);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .error-sub {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.65;
+    margin-bottom: 24px;
+  }
+  .contact-link {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: var(--purple-deep);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .contact-link:hover { text-decoration: underline; }
+
+  .card-footer {
+    padding: 16px 36px 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 520px) {
+    .card-header { padding: 24px 24px 20px; }
+    .card-body { padding: 24px; }
+    .card-footer { padding: 14px 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <div class="logo-row">
+      <img src="/logo.png" alt="Floortype">
+      <span>FLOORTYPE</span>
+    </div>
+    <div class="header-eyebrow">Quote Acceptance</div>
+    <div class="header-ref" id="headerRef">—</div>
+    <div class="header-project" id="headerProject"></div>
+  </div>
+
+  <div class="card-body">
+
+    <!-- Loading -->
+    <div class="state active" id="stateLoading">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-text">Processing your acceptance…</div>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="state" id="stateSuccess">
+      <div class="success-icon">
+        <svg viewBox="0 0 28 28" fill="none"><polyline points="4,14 11,21 24,8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="success-title">Quote Accepted</div>
+      <div class="success-sub">Your project is confirmed. We've notified the Floortype team and created your order — production will begin shortly.</div>
+
+      <div class="order-badge">
+        <div>
+          <div class="order-badge-label">Your Order Reference</div>
+          <div class="order-badge-ref" id="orderRef">—</div>
+        </div>
+        <div class="order-badge-icon">
+          <svg viewBox="0 0 20 20" fill="none" width="20" height="20" stroke="#6B56C8" stroke-width="1.4"><rect x="3" y="2" width="14" height="16" rx="2"/><line x1="7" y1="7" x2="13" y2="7"/><line x1="7" y1="10" x2="13" y2="10"/><line x1="7" y1="13" x2="10" y2="13"/></svg>
+        </div>
+      </div>
+
+      <div class="next-steps">
+        <div class="next-steps-title">What Happens Next</div>
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Send us your files</strong> — floor plans, references, and any style guides. Reply to your quote email or upload via the client portal.</div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>Production begins</strong> — we'll review your assets and kick off production within 1 business day.</div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>Track progress</strong> — follow your project through every stage in your client portal.</div>
+        </div>
+      </div>
+
+      <a href="/portal" class="portal-btn">Go to Client Portal →</a>
+    </div>
+
+    <!-- Already Accepted -->
+    <div class="state" id="stateAlready">
+      <div class="already-icon">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><polyline points="4,14 11,21 24,8" stroke="#2BA892" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="success-title">Already Accepted</div>
+      <div class="success-sub">This quote has already been accepted and an order is in progress. Check your client portal to track your project.</div>
+      <a href="/portal" class="portal-btn">Go to Client Portal →</a>
+    </div>
+
+    <!-- Error -->
+    <div class="state" id="stateError">
+      <div class="error-icon">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><line x1="8" y1="8" x2="20" y2="20" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round"/><line x1="20" y1="8" x2="8" y2="20" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="error-title">Something Went Wrong</div>
+      <div class="error-sub" id="errorMsg">This acceptance link may be invalid or expired. Please contact us and we'll get you sorted.</div>
+      <a href="mailto:s.sterling@floortype.com" class="portal-btn" style="margin-bottom:16px;">Email Us →</a>
+      <a href="/home" class="contact-link">← Back to Floortype</a>
+    </div>
+
+  </div>
+
+  <div class="card-footer">
+    Questions? Reply to your quote email or reach us at<br>
+    <strong>s.sterling@floortype.com</strong>
+  </div>
+</div>
+
+<script>
+  function setState(id) {
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  async function processAcceptance() {
+    const params = new URLSearchParams(window.location.search);
+    const ref   = params.get('ref');
+    const token = params.get('token');
+
+    // Populate header
+    if (ref) {
+      document.getElementById('headerRef').textContent = ref;
+    }
+
+    if (!ref || !token) {
+      document.getElementById('errorMsg').textContent = 'This link is missing required information. Please use the link from your quote email.';
+      setState('stateError');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/accept-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref, token })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        document.getElementById('errorMsg').textContent = data.error || 'Something went wrong. Please contact us.';
+        setState('stateError');
+        return;
+      }
+
+      if (data.alreadyAccepted) {
+        setState('stateAlready');
+        return;
+      }
+
+      // Success
+      document.getElementById('orderRef').textContent = data.orderRef || '—';
+      setState('stateSuccess');
+
+    } catch (e) {
+      document.getElementById('errorMsg').textContent = 'Unable to process acceptance. Please try again or contact us directly.';
+      setState('stateError');
+    }
+  }
+
+  processAcceptance();
+</script>
+
+</body>
+</html>
