@@ -18,8 +18,8 @@
     --amber:#FFF3E0; --amber-c:#C07000;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;}
+  html{scroll-behavior:smooth;overflow-x:hidden;}
+  body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;overflow-x:hidden;}
 
   /* ── NAV ── */
   nav{
@@ -482,6 +482,23 @@
     .quote-step-nav{padding:16px;flex-direction:column;gap:10px;}
     .quote-step-nav .nav-btn-back,
     .quote-step-nav .nav-btn-next{width:100%;text-align:center;justify-content:center;}
+
+    /* Phase body grid */
+    .phase-body{grid-template-columns:1fr;}
+
+    /* Views counter + render controls */
+    .views-row{flex-wrap:wrap;gap:8px;}
+    .views-label{min-width:0;flex:1;}
+
+    /* Progress bar */
+    .progress-wrap{padding:0 16px;}
+
+    /* Constrain any inner scrollable content */
+    .quote-card,.summary-card,.est-card{max-width:100%;overflow-x:hidden;}
+
+    /* Nav logo shrink */
+    .logo{font-size:18px;}
+    .logo img{height:26px;}
   }
 </style>
 </head>
