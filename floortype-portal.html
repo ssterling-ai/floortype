@@ -1890,5 +1890,26 @@ window.addEventListener('resize', () => {
   tb.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
 });
 </script>
+<!-- TEMP DEBUG: remove before launch -->
+<script>
+(function debugOverflow(){
+  const w = document.documentElement.offsetWidth;
+  document.querySelectorAll('*').forEach(el => {
+    if(el.offsetWidth > w) {
+      el.style.outline = '2px solid red';
+      console.log('OVERFLOW:', el.tagName, el.className, el.id, 'width:', el.offsetWidth, 'style:', el.getAttribute('style'));
+    }
+  });
+  // Re-run after dynamic content loads
+  setTimeout(()=>{
+    document.querySelectorAll('*').forEach(el => {
+      if(el.offsetWidth > w) {
+        el.style.outline = '4px solid red';
+        console.log('OVERFLOW (delayed):', el.tagName, el.className, el.id, 'width:', el.offsetWidth);
+      }
+    });
+  }, 2000);
+})();
+</script>
 </body>
 </html>
