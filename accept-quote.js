@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     if (!q) return res.status(404).json({ error: 'Quote not found' });
 
     // 2. Validate token (HMAC of ref using SUPABASE_KEY as secret)
-    const expectedToken = Buffer.from(`${ref}:${SUPABASE_KEY.slice(-16)}`).toString('base64url');
+    const expectedToken = Buffer.from(`${ref}:${SUPABASE_KEY.slice(-16)}`).toString('base64').replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
     if (token !== expectedToken) {
       return res.status(403).json({ error: 'Invalid or expired acceptance link' });
     }

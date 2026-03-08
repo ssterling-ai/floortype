@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
   // Generate acceptance token and URL
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
-  const acceptToken = Buffer.from(`${ref}:${SUPABASE_KEY.slice(-16)}`).toString('base64url');
+  const acceptToken = Buffer.from(`${ref}:${SUPABASE_KEY.slice(-16)}`).toString('base64').replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
   const acceptUrl = `https://floortype.com/accept-quote?ref=${encodeURIComponent(ref)}&token=${encodeURIComponent(acceptToken)}`;
 
   const renderRows = renders && Object.keys(renders).length

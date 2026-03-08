@@ -1015,7 +1015,7 @@ async function sendConfirmedQuote(confirmed = false) {
 
   } catch(e) {
     console.error('Send quote failed:', e);
-    showToast('Failed to send — check console for details', 'error');
+    showToast('Failed: ' + (e.message || 'Unknown error — check console'), 'error');
     if(sendBtn){ sendBtn.disabled = false; sendBtn.textContent = 'Confirm & Send →'; }
   }
 }
