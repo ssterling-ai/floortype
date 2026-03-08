@@ -17,7 +17,7 @@
     --border:#E8E4FF; --sidebar-w:260px;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;overflow-x:hidden;}
+  html{scroll-behavior:smooth;}
   body{background:var(--off-white);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;display:flex;overflow-x:hidden;}
 
   /* ── LOGIN SCREEN ── */
@@ -123,7 +123,7 @@
   .logout-btn:hover{color:var(--dark);}
 
   /* ── MAIN ── */
-  .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+  .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;}
   .topbar{
     background:white;border-bottom:1px solid var(--border);
     padding:0 36px;height:68px;
@@ -813,7 +813,7 @@
 
         <div style="background:white;border-radius:20px;border:1px solid var(--border);padding:32px;box-shadow:0 2px 10px rgba(107,86,200,0.05);margin-bottom:20px;">
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Account Info</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div style="display:grid;grid-template-columns:${window.innerWidth < 900 ? '1fr' : '1fr 1fr'};gap:16px;margin-bottom:16px;">
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;">First Name</label>
               <input id="profileFirstName" type="text" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--purple-mid)'" onblur="this.style.borderColor='var(--border)'">
@@ -1242,16 +1242,17 @@ function openOrderDetail(ref){
   const currentIdx = STAGES.findIndex(s => s.key === currentStage);
 
   const isMobile = window.innerWidth <= 900;
-  const dotSize = isMobile ? 34 : 44;
-  const dotFont = isMobile ? '12px' : '16px';
-  const lblSize = isMobile ? '9px' : '10px';
-  const lblMax  = isMobile ? '48px' : '68px';
+  const dotSize = isMobile ? 28 : 44;
+  const dotFont = isMobile ? '10px' : '16px';
+  const lblSize = isMobile ? '8px' : '10px';
+  const lblMax  = isMobile ? '40px' : '68px';
+  const minW    = STAGES.length * (dotSize + (isMobile ? 10 : 16));
 
   const tlHtml = `
     <div style="padding:24px 0 12px;">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:${isMobile?'16px':'28px'};">Project Progress</div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;">
-      <div style="position:relative;min-width:${STAGES.length * (dotSize + 16)}px;">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;max-width:100%;">
+      <div style="position:relative;min-width:${minW}px;">
         <!-- Progress track -->
         <div style="position:absolute;top:${dotSize/2}px;left:${dotSize/2}px;right:${dotSize/2}px;height:4px;background:var(--border);border-radius:2px;z-index:0;"></div>
         <div style="position:absolute;top:${dotSize/2}px;left:${dotSize/2}px;height:4px;background:linear-gradient(90deg,var(--purple-deep),var(--mint-deep));border-radius:2px;z-index:1;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);width:${currentIdx < 0 ? 0 : Math.min(100, (currentIdx / (STAGES.length-1)) * 100)}%;"></div>
