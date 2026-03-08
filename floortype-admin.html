@@ -1152,12 +1152,12 @@ function toggleAdminMobileNav() {
 <!-- QUOTE PREVIEW MODAL -->
 <div class="overlay" id="quote-preview-modal" onclick="closeOverlay('quote-preview-modal',event)" style="z-index:1001;">
   <div class="modal-box" style="max-width:780px;width:calc(100vw - 32px);max-height:92vh;overflow-y:auto;background:white;">
-    <div class="m-header" style="position:sticky;top:0;background:white;z-index:2;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;">
+    <div class="m-header" style="position:sticky;top:0;background:white;z-index:2;padding:16px 20px 12px;border-bottom:1px solid var(--border);margin-bottom:14px;">
       <div><div class="m-ref">Quote Preview</div><div class="m-tag" id="preview-ref-label">—</div></div>
       <button class="m-close" onclick="closeOverlayDirect('quote-preview-modal')">×</button>
     </div>
-    <div id="quotePreviewBody" style="font-size:13px;line-height:1.7;"></div>
-    <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);position:sticky;bottom:0;background:white;">
+    <div id="quotePreviewBody" style="font-size:13px;line-height:1.7;padding:0 20px;"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;padding:12px 20px;border-top:1px solid var(--border);position:sticky;bottom:0;background:white;">
       <button onclick="closeOverlayDirect('quote-preview-modal')" style="flex:1;padding:11px;border:1.5px solid var(--border);background:white;color:var(--mid);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Edit</button>
       <button onclick="closeOverlayDirect('quote-preview-modal');sendConfirmedQuote(true)" style="flex:2;padding:11px;background:linear-gradient(135deg,var(--purple-deep),var(--mint-deep));color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Confirm & Send →</button>
     </div>
