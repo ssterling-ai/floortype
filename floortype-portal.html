@@ -427,8 +427,7 @@
     border:1.5px solid var(--purple);border-radius:12px;
     padding:16px 20px;display:flex;align-items:center;
     justify-content:space-between;gap:16px;margin-top:16px;
-  }
-  .approve-text{font-size:13px;color:var(--mid);font-weight:500;line-height:1.5;}
+  }  .approve-text{font-size:13px;color:var(--mid);font-weight:500;line-height:1.5;}
   .approve-text strong{color:var(--dark);}
   .approve-btn{
     background:var(--mint-deep);color:white;border:none;
@@ -534,6 +533,25 @@
     .topbar{display:none;}
     .content{padding:14px;max-width:100%;box-sizing:border-box;overflow-x:hidden;}
     .content > *{max-width:100%;box-sizing:border-box;}
+
+    /* Force ALL children of detail view to stay in bounds */
+    #view-detail, #view-detail *{max-width:100%;box-sizing:border-box;}
+
+    /* Approve banner — stack vertically */
+    .approve-banner{flex-direction:column;align-items:flex-start;}
+    .approve-btn{width:100%;text-align:center;white-space:normal;}
+
+    /* Round header — prevent overflow */
+    .round-header{flex-wrap:wrap;gap:8px;}
+    .round-badge{flex-shrink:0;}
+
+    /* Search bar */
+    .search-wrap{max-width:100%;}
+
+    /* Project list header */
+    .project-list-header{flex-direction:column;gap:10px;align-items:flex-start;}
+    .topbar-right{gap:6px;}
+    .topbar-cta{padding:8px 12px;font-size:12px;}
 
     /* ── Overview grid ── */
     .overview-grid{grid-template-columns:1fr 1fr;gap:10px;}
