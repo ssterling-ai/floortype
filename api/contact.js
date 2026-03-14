@@ -11,8 +11,8 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Floortype <s.sterling@floortype.com>',
-        to: ['s.sterling@floortype.com'],
+        from: 'Floortype <orders@floortype.com>',
+        to: ['orders@floortype.com'],
         reply_to: email,
         subject: `Contact Form — ${subject || 'General Inquiry'} — ${first} ${last}`,
         html: `
