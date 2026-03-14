@@ -343,7 +343,8 @@
         <svg viewBox="0 0 28 28" fill="none"><polyline points="4,14 11,21 24,8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="success-title">Quote Accepted</div>
-      <div class="success-sub">Your project is confirmed. We've notified the Floortype team and created your order — production will begin shortly.</div>
+      <div class="success-sub">Your project is confirmed. Check your email for portal access details and next steps.</div>
+      <div id="depositAmountLine" style="font-size:13px;font-weight:600;color:#E8A020;text-align:center;margin:-12px 0 16px;"></div>
 
       <div class="order-badge">
         <div>
@@ -391,7 +392,7 @@
       </div>
       <div class="error-title">Something Went Wrong</div>
       <div class="error-sub" id="errorMsg">This acceptance link may be invalid or expired. Please contact us and we'll get you sorted.</div>
-      <a href="mailto:s.sterling@floortype.com" class="portal-btn" style="margin-bottom:16px;">Email Us →</a>
+      <a href="/cdn-cgi/l/email-protection#cdbee3beb9a8bfa1a4a3aa8daba1a2a2bfb9b4bda8e3aea2a0" class="portal-btn" style="margin-bottom:16px;">Email Us →</a>
       <a href="/home" class="contact-link">← Back to Floortype</a>
     </div>
 
@@ -399,11 +400,11 @@
 
   <div class="card-footer">
     Questions? Reply to your quote email or reach us at<br>
-    <strong>s.sterling@floortype.com</strong>
+    <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6c316c6b7a6d737671785f797370706d6b666f7a317c7072">[email&#160;protected]</a></strong>
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   function setState(id) {
     document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -447,6 +448,10 @@
 
       // Success
       document.getElementById('orderRef').textContent = data.orderRef || '—';
+      if (data.depositAmount) {
+        const dep = document.getElementById('depositAmountLine');
+        if (dep) dep.textContent = '$' + parseInt(data.depositAmount).toLocaleString('en-US') + ' deposit due — check your email for portal access';
+      }
       setState('stateSuccess');
 
     } catch (e) {

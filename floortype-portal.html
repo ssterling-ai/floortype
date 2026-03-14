@@ -254,6 +254,7 @@
     transform:translateY(-2px);
   }
   .order-card.needs-review{border-color:var(--purple);background:var(--purple-bg);}
+  .order-card.needs-deposit{border-color:#E8A020;background:#FFFBEB;}
   .order-card-icon{
     width:48px;height:48px;border-radius:12px;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
@@ -272,6 +273,8 @@
     font-size:11px;font-weight:600;white-space:nowrap;
   }
   .status-badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .s-deposit{background:#FFFBEB;color:#B45309;}
+  .s-deposit::before{background:#E8A020;}
   .s-received{background:#E8F4FF;color:#1A6FAF;}
   .s-received::before{background:#1A6FAF;}
   .s-progress{background:#FFF3E0;color:#C07000;}
@@ -598,6 +601,7 @@
     .login-title{font-size:24px;}
   }
 </style>
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 
@@ -782,6 +786,9 @@
       <div class="detail-layout">
         <div>
           <!-- Status timeline -->
+          <!-- Deposit banner (shown when Awaiting Deposit) -->
+          <div id="depositBanner" style="display:none;"></div>
+
           <div class="detail-card" style="margin-bottom:20px;">
             <div id="detailRef" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.06em;color:var(--purple-deep);margin-bottom:4px;"></div>
             <div id="detailAddress" style="font-size:13px;color:var(--muted);margin-bottom:24px;"></div>
@@ -985,6 +992,7 @@ async function doLogin(){
       addons: o.addons || {},
       total: o.total,
       deposit: o.deposit,
+      deposit_amount: o.deposit_amount || Math.round((o.total||0) * 0.5),
       status: o.status,
       notes: o.notes || '',
       stage: o.project_stage || '',
@@ -1186,7 +1194,8 @@ function renderOverview(){
 // ── ORDER CARD HTML ──
 function orderCardHTML(o){
   const needsReview = o.status==='In Review';
-  return `<div class="order-card${needsReview?' needs-review':''}" onclick="openOrderDetail('${o.ref}')">
+  const needsDeposit = o.status==='Awaiting Deposit';
+  return `<div class="order-card${needsDeposit?' needs-deposit':needsReview?' needs-review':''}" onclick="openOrderDetail('${o.ref}')">
     <div class="order-card-icon ${o.style==='Luxury'?'icon-purple':'icon-mint'}">
       <svg viewBox="0 0 22 22" fill="none" stroke="${o.style==='Luxury'?'var(--purple-deep)':'var(--mint-deep)'}" stroke-width="1.3">
         <rect x="2" y="2" width="18" height="18" rx="2"/>
@@ -1247,6 +1256,7 @@ function openOrderDetail(ref){
   // Timeline
   // ── 9-STAGE PROGRESS BAR ──
   const STAGES = [
+    { key: 'awaiting-deposit',   label: 'Awaiting Deposit',    icon: '💳' },
     { key: 'awaiting-assets',    label: 'Awaiting Assets',     icon: '01' },
     { key: 'pre-production',     label: 'Pre-Production',      icon: '02' },
     { key: 'in-production',      label: 'In Production',       icon: '03' },
@@ -1314,19 +1324,68 @@ function openOrderDetail(ref){
 
   document.getElementById('detailTimeline').innerHTML = tlHtml;
 
+  // Deposit banner
+  const depositBanner = document.getElementById('depositBanner');
+  if (o.status === 'Awaiting Deposit') {
+    const depositAmt = o.deposit_amount || Math.round((o.total||0) * 0.5);
+    const formattedDeposit = parseInt(depositAmt).toLocaleString('en-US');
+    const formattedTotal = parseInt(o.total||0).toLocaleString('en-US');
+    depositBanner.style.display = 'block';
+    depositBanner.innerHTML = `
+      <div id="depositCard" style="background:linear-gradient(135deg,#120F2A,#3D3660);border-radius:20px;padding:28px 28px 24px;margin-bottom:20px;position:relative;overflow:hidden;">
+        <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(107,86,200,0.25),transparent 70%);top:-80px;right:-60px;pointer-events:none;"></div>
+        <div style="position:relative;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(196,181,244,0.6);margin-bottom:6px;">Action Required</div>
+          <div style="font-size:22px;font-weight:700;color:white;margin-bottom:4px;">Pay Your 50% Deposit</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px;">Production begins once your deposit is received</div>
+
+          <div style="display:flex;gap:20px;margin-bottom:24px;">
+            <div>
+              <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(196,181,244,0.5);margin-bottom:3px;">Deposit Due</div>
+              <div style="font-size:28px;font-weight:700;color:white;">$\${formattedDeposit}</div>
+            </div>
+            <div style="border-left:1px solid rgba(255,255,255,0.1);padding-left:20px;">
+              <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(196,181,244,0.5);margin-bottom:3px;">Project Total</div>
+              <div style="font-size:18px;font-weight:600;color:rgba(255,255,255,0.6);">$\${formattedTotal}</div>
+            </div>
+          </div>
+
+          <!-- Stripe card form -->
+          <div id="depositFormWrap">
+            <div id="depositCardElement" style="background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;padding:14px 16px;margin-bottom:12px;transition:border-color 0.2s;"></div>
+            <div id="depositCardError" style="font-size:12px;color:#F87171;margin-bottom:10px;min-height:16px;"></div>
+            <button id="depositPayBtn" onclick="submitDeposit('${o.ref}', ${depositAmt})"
+              style="width:100%;padding:14px;background:linear-gradient(135deg,#6B56C8,#2BA892);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.02em;">
+              Pay $\${formattedDeposit} Deposit →
+            </button>
+          </div>
+          <div id="depositSuccessMsg" style="display:none;text-align:center;padding:20px 0 8px;">
+            <div style="font-size:32px;margin-bottom:10px;">✓</div>
+            <div style="font-size:16px;font-weight:700;color:white;margin-bottom:4px;">Deposit Received</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);">Your project is now in production. We'll be in touch shortly.</div>
+          </div>
+        </div>
+      </div>`;
+    initDepositStripe(depositAmt);
+  } else {
+    depositBanner.style.display = 'none';
+  }
+
   // Order info sidebar
-  const addons = Object.keys(o.addons||{});
+  const depositDue = o.status === 'Awaiting Deposit';
+  const depositAmt2 = o.deposit_amount || Math.round((o.total||0) * 0.5);
   document.getElementById('detailInfo').innerHTML = `
     ${o.project_name?`<div class="info-row"><span class="info-label">Project</span><span class="info-val purple" style="font-weight:700;">${o.project_name}</span></div>`:''}
     <div class="info-row"><span class="info-label">Reference</span><span class="info-val purple">${o.ref}</span></div>
     <div class="info-row"><span class="info-label">Status</span><span class="info-val"><span class="status-badge ${statusClass(o.status)}">${o.status}</span></span></div>
-    <div class="info-row"><span class="info-label">Floors</span><span class="info-val">${o.floors} floor${o.floors>1?'s':''}</span></div>
-    <div class="info-row"><span class="info-label">Style</span><span class="info-val">${o.style}</span></div>
-    <div class="info-row"><span class="info-label">Add-ons</span><span class="info-val">${addons.length?addons.join(', '):'None'}</span></div>
-    <div class="info-row"><span class="info-label">Total</span><span class="info-val">$${o.total}</span></div>
-    <div class="info-row"><span class="info-label">Deposit paid</span><span class="info-val mint">$${o.deposit}</span></div>
+    <div class="info-row"><span class="info-label">Project Total</span><span class="info-val">$${parseInt(o.total||0).toLocaleString('en-US')}</span></div>
+    ${depositDue
+      ? `<div class="info-row"><span class="info-label" style="color:#E8A020;font-weight:600;">Deposit Due</span><span class="info-val" style="color:#E8A020;font-weight:700;">$${parseInt(depositAmt2).toLocaleString('en-US')}</span></div>`
+      : `<div class="info-row"><span class="info-label">Deposit Paid</span><span class="info-val mint">$${parseInt(o.deposit||0).toLocaleString('en-US')}</span></div>`
+    }
+    ${o.style?`<div class="info-row"><span class="info-label">Type</span><span class="info-val">${o.style}</span></div>`:''}
     <div class="info-row"><span class="info-label">Ordered</span><span class="info-val">${fmtDate(o.date)}</span></div>
-    ${o.notes?`<div class="info-row" style="flex-direction:column;gap:6px;"><span class="info-label">Your Notes</span><span style="font-size:13px;color:var(--mid);line-height:1.6;">${o.notes}</span></div>`:''}`;
+    ${o.notes?`<div class="info-row" style="flex-direction:column;gap:6px;"><span class="info-label">Notes</span><span style="font-size:13px;color:var(--mid);line-height:1.6;">${o.notes}</span></div>`:''}`;
 
   // Review buttons - show when review link exists and stage is a draft stage
   const draftStages = ['draft-1-ready','draft-2-ready','final-draft-ready'];
@@ -1667,8 +1726,123 @@ function checkReviewDot(){
 }
 
 // ── HELPERS ──
+
+// ── DEPOSIT PAYMENT ──────────────────────────────────────────────────────────
+let _stripeInstance = null;
+let _stripeCard = null;
+
+async function initDepositStripe(depositAmount) {
+  // Load publishable key from config endpoint
+  try {
+    const cfgRes = await fetch('/api/config');
+    const cfg = await cfgRes.json();
+    const pk = cfg.stripePublishableKey;
+    if (!pk) { console.warn('No Stripe key'); return; }
+
+    _stripeInstance = Stripe(pk);
+    const elements = _stripeInstance.elements({
+      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500' }]
+    });
+
+    _stripeCard = elements.create('card', {
+      style: {
+        base: {
+          fontFamily: 'DM Sans, Arial, sans-serif',
+          fontSize: '15px',
+          color: '#ffffff',
+          '::placeholder': { color: 'rgba(196,181,244,0.4)' },
+          iconColor: 'rgba(196,181,244,0.6)'
+        },
+        invalid: { color: '#F87171', iconColor: '#F87171' }
+      }
+    });
+
+    _stripeCard.mount('#depositCardElement');
+    _stripeCard.on('change', e => {
+      const err = document.getElementById('depositCardError');
+      if (err) err.textContent = e.error ? e.error.message : '';
+      const el = document.getElementById('depositCardElement');
+      if (el) el.style.borderColor = e.error ? '#F87171' : 'rgba(255,255,255,0.15)';
+    });
+  } catch(e) {
+    console.error('Stripe init error:', e);
+  }
+}
+
+async function submitDeposit(orderRef, amount) {
+  if (!_stripeInstance || !_stripeCard) {
+    alert('Payment form not ready. Please refresh and try again.');
+    return;
+  }
+  const btn = document.getElementById('depositPayBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
+
+  try {
+    // 1. Create PaymentIntent
+    const intentRes = await fetch('/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Math.round(amount * 100), currency: 'usd', description: 'Floortype deposit — ' + orderRef })
+    });
+    const { clientSecret, error: intentErr } = await intentRes.json();
+    if (intentErr || !clientSecret) throw new Error(intentErr || 'Could not create payment');
+
+    // 2. Confirm card payment
+    const order = orders.find(o => o.ref === orderRef);
+    const { paymentIntent, error } = await _stripeInstance.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: _stripeCard,
+        billing_details: {
+          name: currentUser?.name || '',
+          email: currentUser?.email || ''
+        }
+      }
+    });
+
+    if (error) throw new Error(error.message);
+    if (paymentIntent.status !== 'succeeded') throw new Error('Payment did not complete');
+
+    // 3. Notify backend — updates Supabase + sends admin email
+    await fetch('/api/notify-deposit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderRef,
+        amount,
+        clientName: currentUser?.name || '',
+        clientEmail: currentUser?.email || '',
+        projectName: order?.project_name || orderRef
+      })
+    });
+
+    // 4. Update local state
+    if (order) {
+      order.status = 'Awaiting Assets';
+      order.project_stage = 'awaiting-assets';
+      order.stage = 'awaiting-assets';
+      order.deposit = amount;
+    }
+
+    // 5. Show success in card
+    const formWrap = document.getElementById('depositFormWrap');
+    const successMsg = document.getElementById('depositSuccessMsg');
+    if (formWrap) formWrap.style.display = 'none';
+    if (successMsg) successMsg.style.display = 'block';
+
+    // Refresh detail view after short delay
+    setTimeout(() => openOrderDetail(orderRef), 1800);
+
+  } catch(e) {
+    console.error('Deposit error:', e);
+    const errEl = document.getElementById('depositCardError');
+    if (errEl) errEl.textContent = e.message || 'Payment failed. Please try again.';
+    if (btn) { btn.disabled = false; btn.textContent = 'Pay $' + parseInt(amount).toLocaleString('en-US') + ' Deposit →'; }
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function statusClass(s){
-  return {'Received':'s-received','In Progress':'s-progress','In Review':'s-review','Complete':'s-complete'}[s]||'s-received';
+  return {'Received':'s-received','In Progress':'s-progress','In Review':'s-review','Complete':'s-complete','Awaiting Deposit':'s-deposit','Awaiting Assets':'s-received'}[s]||'s-received';
 }
 function fmtDate(iso){
   return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
