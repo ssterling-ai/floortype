@@ -57,9 +57,9 @@ export default async function handler(req, res) {
         const views = val && val.views ? val.views : 1;
         const notes = val && val.notes ? val.notes : '';
         return '<tr>'
-          + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;">' + label + '</td>'
-          + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;text-align:center;">' + views + ' view' + (views > 1 ? 's' : '') + '</td>'
-          + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;text-align:right;">' + notes + '</td>'
+          + '<td style="padding:10px 4px 10px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#333;word-wrap:break-word;">' + label + '</td>'
+          + '<td style="padding:10px 4px;border-bottom:1px solid #F0EDF9;font-size:13px;color:#333;text-align:center;">' + views + ' view' + (views > 1 ? 's' : '') + '</td>'
+          + '<td style="padding:10px 0 10px 4px;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:right;word-wrap:break-word;">' + notes + '</td>'
           + '</tr>';
       }).join('')
     : '<tr><td colspan="3" style="padding:10px 0;font-size:14px;color:#999;">See project scope below</td></tr>';
@@ -112,13 +112,13 @@ export default async function handler(req, res) {
     + '</div>'
 
     // Scope
-    + '<div style="padding:28px 40px 0;">'
+    + '<div style="padding:28px 20px 0;">'
     + '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9B87E8;margin-bottom:16px;">Project Scope</div>'
-    + '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">'
+    + '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">'
     + '<thead><tr>'
-    + '<th style="padding:8px 0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AAA;text-align:left;border-bottom:2px solid #F0EDF9;">Item</th>'
-    + '<th style="padding:8px 0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AAA;text-align:center;border-bottom:2px solid #F0EDF9;">Qty</th>'
-    + '<th style="padding:8px 0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AAA;text-align:right;border-bottom:2px solid #F0EDF9;">Notes</th>'
+    + '<th style="padding:8px 4px 8px 0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AAA;text-align:left;border-bottom:2px solid #F0EDF9;width:50%;">Item</th>'
+    + '<th style="padding:8px 4px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AAA;text-align:center;border-bottom:2px solid #F0EDF9;width:20%;">Qty</th>'
+    + '<th style="padding:8px 0 8px 4px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AAA;text-align:right;border-bottom:2px solid #F0EDF9;width:30%;">Notes</th>'
     + '</tr></thead>'
     + '<tbody>' + renderRows + '</tbody>'
     + '</table>'
