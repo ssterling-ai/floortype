@@ -55,10 +55,11 @@ export default async function handler(req, res) {
     ? Object.entries(renders).map(([type, val]) => {
         const label = formatRenderLabel(type);
         const views = val && val.views ? val.views : 1;
+        const notes = val && val.notes ? val.notes : '';
         return '<tr>'
           + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;">' + label + '</td>'
           + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;text-align:center;">' + views + ' view' + (views > 1 ? 's' : '') + '</td>'
-          + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;text-align:right;">Included</td>'
+          + '<td style="padding:10px 0;border-bottom:1px solid #F0EDF9;font-size:14px;color:#333;text-align:right;">' + notes + '</td>'
           + '</tr>';
       }).join('')
     : '<tr><td colspan="3" style="padding:10px 0;font-size:14px;color:#999;">See project scope below</td></tr>';
