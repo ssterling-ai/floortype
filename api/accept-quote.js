@@ -87,8 +87,8 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Floortype <s.sterling@floortype.com>',
-          to: ['s.sterling@floortype.com'],
+          from: 'Floortype <orders@floortype.com>',
+          to: ['orders@floortype.com'],
           subject: `✅ Quote Accepted — ${q.project || ref} (${ref})`,
           html: `
             <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:32px;background:#F7F5FF;border-radius:12px;">
