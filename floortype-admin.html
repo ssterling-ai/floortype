@@ -920,10 +920,11 @@ function renderVersionPanel(q){
   if(hasVersions){
     selectorWrap.style.display = 'block';
     sel.innerHTML = q.quoteVersions.map((v,i) =>
-      `<option value="${i}">${v.label} — $${parseInt(v.price).toLocaleString('en-US')} · ${formatDate(v.sentAt)}</option>`
+      `<option value="${i}">${v.label} — $${parseInt(v.price).toLocaleString('en-US')} · Sent ${formatDate(v.sentAt)}</option>`
     ).join('');
-    sel.value = q.quoteVersions.length - 1;
-    selectVersion(q.quoteVersions.length - 1);
+    const lastIdx = q.quoteVersions.length - 1;
+    sel.value = String(lastIdx);
+    selectVersion(lastIdx);
   } else {
     selectorWrap.style.display = 'none';
     document.getElementById('qm-version-preview').style.display = 'none';
@@ -934,20 +935,19 @@ function renderVersionPanel(q){
 
 function selectVersion(i){
   const q = quotes.find(x=>x.ref===curQuoteRef);
-  if(!q||!q.quoteVersions[i]) return;
+  if(!q||!q.quoteVersions||!q.quoteVersions[i]) return;
   const v = q.quoteVersions[i];
   document.getElementById('qm-version-preview').style.display = 'block';
-  document.getElementById('qvp-label').textContent = v.label;
-  document.getElementById('qvp-meta').textContent = 'Sent ' + formatDate(v.sentAt) + ' → ' + v.to;
-  document.getElementById('qvp-price').textContent = '$' + parseInt(v.price).toLocaleString('en-US');
-  // Line items snapshot
+  document.getElementById('qvp-label').textContent = v.label || ('V'+(i+1));
+  document.getElementById('qvp-meta').textContent = 'Sent ' + formatDate(v.sentAt) + '  →  ' + (v.to||'');
+  document.getElementById('qvp-price').textContent = '$' + parseInt(v.price||0).toLocaleString('en-US');
   const items = v.lineItems || [];
   document.getElementById('qvp-items').innerHTML = items.length
-    ? items.map(item => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
-        <span>${item.label||getRenderLabel(item.key)}</span>
-        <span style="color:var(--muted);">${item.views} view${item.views>1?'s':''}${item.notes?' · '+item.notes:''}</span>
-      </div>`).join('')
-    : '<div style="color:var(--muted);font-size:12px;">No line items recorded</div>';
+    ? items.map(item => '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">'
+        + '<span style="font-size:12px;color:var(--dark);">' + (item.label||getRenderLabel(item.key)) + '</span>'
+        + '<span style="font-size:12px;color:var(--muted);">' + item.views + ' view' + (item.views>1?'s':'') + (item.notes?' &nbsp;·&nbsp; '+item.notes:'') + '</span>'
+        + '</div>').join('')
+    : '<div style="color:var(--muted);font-size:12px;padding:4px 0;">No line items recorded for this version</div>';
   const notesWrap = document.getElementById('qvp-notes-wrap');
   if(v.notes){ notesWrap.style.display='block'; document.getElementById('qvp-notes').textContent=v.notes; }
   else { notesWrap.style.display='none'; }
@@ -969,7 +969,7 @@ function startNewVersion(){
   document.getElementById('qm-add-item-btn').style.display = 'inline-block';
   renderLineItems(q);
   const nextNum = (q.quoteVersions||[]).length + 1;
-  const label = nextNum === 1 ? 'Quote 1' : 'Revision ' + (nextNum - 1);
+  const label = 'V' + nextNum;
   document.getElementById('qm-version-label').textContent = label;
   document.getElementById('qm-price').value = q.confirmedPrice || '';
   document.getElementById('qm-version-notes').value = '';
@@ -1221,7 +1221,7 @@ async function sendConfirmedQuote(confirmed = false) {
     const editIdxRaw = editor.dataset.editIdx;
     const editIdx = editIdxRaw !== '' && editIdxRaw !== undefined ? parseInt(editIdxRaw) : null;
     const nextNum = q.quoteVersions.length + 1;
-    const label = editIdx !== null ? q.quoteVersions[editIdx].label : (nextNum === 1 ? 'Quote 1' : 'Revision ' + (nextNum - 1));
+    const label = editIdx !== null ? q.quoteVersions[editIdx].label : ('V' + nextNum);
     const versionEntry = { label, price: parseInt(price), notes: versionNotes, to: toEmail, cc: cc||'', sent: true, sentAt: new Date().toISOString(), lineItems: JSON.parse(JSON.stringify(q.lineItems||[])) };
     if(editIdx !== null) q.quoteVersions[editIdx] = versionEntry;
     else q.quoteVersions.push(versionEntry);
@@ -1235,6 +1235,8 @@ async function sendConfirmedQuote(confirmed = false) {
     document.getElementById('qm-scope-title').textContent = 'Client Request';
     document.getElementById('qm-add-item-btn').style.display = 'none';
     document.getElementById('qm-version-editor').style.display = 'none';
+    q.lineItems = Object.entries(q.renders||{}).map(([key,val])=>({key,label:getRenderLabel(key),views:val.views||1,notes:val.notes||''}));
+    renderLineItems(q);
     renderVersionPanel(q);
     closeOverlayDirect('quote-preview-modal');
     closeOverlayDirect('quote-modal');
