@@ -603,16 +603,40 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       <div class="m-sec"><div class="m-sec-title">Project</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Project Name</div><div class="d-val p" id="qm-project">—</div></div><div class="d-item"><div class="d-lbl">Type</div><div class="d-val" id="qm-type">—</div></div><div class="d-item"><div class="d-lbl">Location</div><div class="d-val" id="qm-city">—</div></div><div class="d-item"><div class="d-lbl">Buildings / Phases</div><div class="d-val" id="qm-phases">—</div></div><div class="d-item"><div class="d-lbl">Complexity</div><div class="d-val" id="qm-complexity">—</div></div><div class="d-item"><div class="d-lbl">Timeline</div><div class="d-val" id="qm-timeline">—</div></div></div></div>
       <div class="m-sec">
         <div class="m-sec-title" style="display:flex;align-items:center;justify-content:space-between;">
-          Scope / Line Items
-          <button onclick="addLineItem()" style="font-size:11px;font-weight:600;padding:4px 10px;background:var(--purple-bg);color:var(--purple-deep);border:1.5px solid var(--purple-deep);border-radius:6px;cursor:pointer;">+ Add Item</button>
+          <span id="qm-scope-title">Client Request</span>
+          <button id="qm-add-item-btn" onclick="addLineItem()" style="display:none;font-size:11px;font-weight:600;padding:4px 10px;background:var(--purple-bg);color:var(--purple-deep);border:1.5px solid var(--purple-deep);border-radius:6px;cursor:pointer;">+ Add Item</button>
         </div>
         <div id="qm-lineitems"></div>
       </div>
       <div class="m-sec"><div class="m-sec-title">Reference Materials</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Files Uploaded</div><div class="d-val" id="qm-files">—</div></div><div class="d-item"><div class="d-lbl">Shared Folder</div><div class="d-val" id="qm-link">—</div></div></div></div>
       <div class="m-sec"><div class="m-sec-title">Client Notes</div><div class="m-notes" id="qm-notes">—</div></div>
-      <div class="m-sec"><div class="m-sec-title" style="display:flex;align-items:center;justify-content:space-between;">Quote Versions <button onclick="addQuoteVersion()" style="font-size:11px;font-weight:600;padding:4px 10px;background:var(--purple-bg);color:var(--purple-deep);border:1.5px solid var(--purple-deep);border-radius:6px;cursor:pointer;">+ New Version</button></div>
-        <div id="qm-version-history" style="margin-bottom:14px;"></div>
-        <div class="q-editor" id="qm-version-editor">
+      <div class="m-sec">
+        <div class="m-sec-title" style="display:flex;align-items:center;justify-content:space-between;">
+          Quote Versions
+          <button onclick="startNewVersion()" style="font-size:11px;font-weight:600;padding:4px 10px;background:var(--purple-bg);color:var(--purple-deep);border:1.5px solid var(--purple-deep);border-radius:6px;cursor:pointer;">+ New Version</button>
+        </div>
+        <!-- Version selector dropdown -->
+        <div id="qm-version-selector" style="margin-bottom:12px;display:none;">
+          <select id="qm-version-select" onchange="selectVersion(parseInt(this.value))" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--dark);background:white;">
+          </select>
+        </div>
+        <!-- Sent version preview (read-only) -->
+        <div id="qm-version-preview" style="display:none;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--dark);" id="qvp-label">—</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="qvp-meta">—</div>
+            </div>
+            <div style="font-size:18px;font-weight:700;color:var(--purple-deep);" id="qvp-price">—</div>
+          </div>
+          <div id="qvp-items" style="font-size:12px;color:var(--dark);"></div>
+          <div id="qvp-notes-wrap" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Internal Notes</div>
+            <div style="font-size:12px;color:var(--mid);" id="qvp-notes"></div>
+          </div>
+        </div>
+        <!-- Editor (hidden until New Version clicked) -->
+        <div class="q-editor" id="qm-version-editor" style="display:none;">
           <div class="qe-lbl" id="qm-version-label">Quote 1</div>
           <div class="qe-row">
             <div class="qe-field" style="flex:1;">
@@ -639,10 +663,13 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
             </div>
           </div>
           <div style="display:flex;gap:10px;margin-top:12px;">
-            <button class="qe-preview" onclick="previewQuote()" style="flex:1;padding:10px;border:1.5px solid var(--purple-deep);background:white;color:var(--purple-deep);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--purple-bg)'" onmouseout="this.style.background='white'">Preview Email</button>
-            <button class="qe-send" onclick="sendConfirmedQuote()" style="flex:2;">Send Quote to Client &#x2192;</button>
+            <button onclick="cancelNewVersion()" style="flex:1;padding:10px;border:1.5px solid var(--border);background:white;color:var(--mid);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button class="qe-preview" onclick="previewQuote()" style="flex:1;padding:10px;border:1.5px solid var(--purple-deep);background:white;color:var(--purple-deep);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--purple-bg)'" onmouseout="this.style.background='white'">Preview</button>
+            <button class="qe-send" onclick="sendConfirmedQuote()" style="flex:2;">Send &#x2192;</button>
           </div>
         </div>
+        <!-- Empty state -->
+        <div id="qm-version-empty" style="font-size:12px;color:var(--muted);padding:4px 0;">No quotes sent yet. Click + New Version to create one.</div>
       </div>
       <div class="m-sec"><div class="m-sec-title">Update Status</div><div style="display:flex;gap:10px;align-items:center"><select class="status-select" id="qm-status"><option>Received</option><option>Quoted</option><option>Approved</option><option>On Hold</option><option>Declined</option></select><button class="btn-convert" onclick="convertQuoteToOrder()">Convert to Order</button></div></div>
     </div>
@@ -860,36 +887,109 @@ function openOrderModal(ref){
   showOverlay('order-modal');
 }
 
+let curEditMode = false;
+
 function openQuoteModal(ref){
-  const q=quotes.find(x=>x.ref===ref);if(!q)return;curQuoteRef=ref;
-  const rN={'interior':'Interior','exterior':'Exterior','aerial':'Aerial','360':'360 Tour','flythrough':'Fly-Through','static-interior':'Static Interior','static-exterior':'Static Exterior','static-aerial':'Static Aerial','360-interior':'360 Interior','360-exterior':'360 Exterior','flythrough-exterior':'Fly-Through Ext.','flythrough-interior':'Fly-Through Int.'};
+  const q=quotes.find(x=>x.ref===ref);if(!q)return;curQuoteRef=ref;curEditMode=false;
   set('qm-ref',q.ref);set('qm-name',q.name);set('qm-email',q.email);set('qm-company',q.company||'—');set('qm-role',q.role||'—');
   set('qm-project',q.project);set('qm-type',q.type||'—');set('qm-city',q.city||'—');
   set('qm-phases',q.phases+' building'+(q.phases>1?'s':''));
   set('qm-complexity',q.complexity?q.complexity[0].toUpperCase()+q.complexity.slice(1):'—');
   set('qm-timeline',{standard:'Standard (4–8 wks)',expedited:'Expedited (2–4 wks)',urgent:'Urgent (<2 wks)'}[q.timeline]||'—');
+  if(!q.quoteVersions) q.quoteVersions=[];
+  // Always reset lineItems to original client request on open
+  q.lineItems = Object.entries(q.renders||{}).map(([key,val]) => ({
+    key, label: getRenderLabel(key), views: val.views||1, notes: val.notes||''
+  }));
   renderLineItems(q);
   set('qm-files',(q.totalFiles||0)+' files uploaded');
   document.getElementById('qm-link').innerHTML=q.sharedLink?`<a href="${q.sharedLink}" target="_blank" style="color:var(--purple-deep)">Open folder ↗</a>`:'None';
   set('qm-notes',q.notes||'No notes.');
   document.getElementById('qm-status').value=q.status;
-  document.getElementById('qm-to').value=q.email||'';
-  document.getElementById('qm-cc').value='';
-  // Init versions array if not present
-  if(!q.quoteVersions) q.quoteVersions=[];
-  renderVersionHistory(q);
-  // Set editor to latest unsent version or new one
-  const unsent = q.quoteVersions.find(v=>!v.sent);
-  if(unsent){
-    loadVersionIntoEditor(unsent);
-  } else {
-    const nextNum = q.quoteVersions.length+1;
-    const label = nextNum===1?'Quote 1':'Revision '+(nextNum-1);
-    document.getElementById('qm-version-label').textContent=label;
-    document.getElementById('qm-price').value=q.confirmedPrice||q.estimateLow||'';
-    document.getElementById('qm-version-notes').value='';
-  }
+  renderVersionPanel(q);
   showOverlay('quote-modal');
+}
+
+function renderVersionPanel(q){
+  const hasVersions = q.quoteVersions && q.quoteVersions.length;
+  // Empty state
+  document.getElementById('qm-version-empty').style.display = hasVersions ? 'none' : 'block';
+  // Dropdown
+  const sel = document.getElementById('qm-version-select');
+  const selectorWrap = document.getElementById('qm-version-selector');
+  if(hasVersions){
+    selectorWrap.style.display = 'block';
+    sel.innerHTML = q.quoteVersions.map((v,i) =>
+      `<option value="${i}">${v.label} — $${parseInt(v.price).toLocaleString('en-US')} · ${formatDate(v.sentAt)}</option>`
+    ).join('');
+    sel.value = q.quoteVersions.length - 1;
+    selectVersion(q.quoteVersions.length - 1);
+  } else {
+    selectorWrap.style.display = 'none';
+    document.getElementById('qm-version-preview').style.display = 'none';
+  }
+  // Editor always hidden on open
+  document.getElementById('qm-version-editor').style.display = 'none';
+}
+
+function selectVersion(i){
+  const q = quotes.find(x=>x.ref===curQuoteRef);
+  if(!q||!q.quoteVersions[i]) return;
+  const v = q.quoteVersions[i];
+  document.getElementById('qm-version-preview').style.display = 'block';
+  document.getElementById('qvp-label').textContent = v.label;
+  document.getElementById('qvp-meta').textContent = 'Sent ' + formatDate(v.sentAt) + ' → ' + v.to;
+  document.getElementById('qvp-price').textContent = '$' + parseInt(v.price).toLocaleString('en-US');
+  // Line items snapshot
+  const items = v.lineItems || [];
+  document.getElementById('qvp-items').innerHTML = items.length
+    ? items.map(item => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
+        <span>${item.label||getRenderLabel(item.key)}</span>
+        <span style="color:var(--muted);">${item.views} view${item.views>1?'s':''}${item.notes?' · '+item.notes:''}</span>
+      </div>`).join('')
+    : '<div style="color:var(--muted);font-size:12px;">No line items recorded</div>';
+  const notesWrap = document.getElementById('qvp-notes-wrap');
+  if(v.notes){ notesWrap.style.display='block'; document.getElementById('qvp-notes').textContent=v.notes; }
+  else { notesWrap.style.display='none'; }
+}
+
+function startNewVersion(){
+  const q = quotes.find(x=>x.ref===curQuoteRef);
+  if(!q) return;
+  curEditMode = true;
+  // Reset line items to last sent version's items, or original if no versions yet
+  if(q.quoteVersions && q.quoteVersions.length){
+    const last = q.quoteVersions[q.quoteVersions.length-1];
+    q.lineItems = last.lineItems ? JSON.parse(JSON.stringify(last.lineItems)) : Object.entries(q.renders||{}).map(([key,val])=>({key,label:getRenderLabel(key),views:val.views||1,notes:val.notes||''}));
+  } else {
+    q.lineItems = Object.entries(q.renders||{}).map(([key,val])=>({key,label:getRenderLabel(key),views:val.views||1,notes:val.notes||''}));
+  }
+  // Show editing UI
+  document.getElementById('qm-scope-title').textContent = 'Scope / Line Items — Editing';
+  document.getElementById('qm-add-item-btn').style.display = 'inline-block';
+  renderLineItems(q);
+  const nextNum = (q.quoteVersions||[]).length + 1;
+  const label = nextNum === 1 ? 'Quote 1' : 'Revision ' + (nextNum - 1);
+  document.getElementById('qm-version-label').textContent = label;
+  document.getElementById('qm-price').value = q.confirmedPrice || '';
+  document.getElementById('qm-version-notes').value = '';
+  document.getElementById('qm-to').value = q.email || '';
+  document.getElementById('qm-cc').value = '';
+  document.getElementById('qm-version-editor').style.display = 'block';
+  document.getElementById('qm-version-editor').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function cancelNewVersion(){
+  const q = quotes.find(x=>x.ref===curQuoteRef);
+  curEditMode = false;
+  // Restore read-only line items from original
+  if(q) {
+    q.lineItems = Object.entries(q.renders||{}).map(([key,val])=>({key,label:getRenderLabel(key),views:val.views||1,notes:val.notes||''}));
+    renderLineItems(q);
+  }
+  document.getElementById('qm-scope-title').textContent = 'Client Request';
+  document.getElementById('qm-add-item-btn').style.display = 'none';
+  document.getElementById('qm-version-editor').style.display = 'none';
 }
 
 
@@ -914,7 +1014,6 @@ function getRenderLabel(key) {
 }
 
 function renderLineItems(q) {
-  // Build editable line items from q.renders, preserving any edits in q.lineItems
   if(!q.lineItems) {
     q.lineItems = Object.entries(q.renders||{}).map(([key,val]) => ({
       key, label: getRenderLabel(key), views: val.views||1, notes: val.notes||''
@@ -922,26 +1021,39 @@ function renderLineItems(q) {
   }
   const container = document.getElementById('qm-lineitems');
   if(!q.lineItems.length) {
-    container.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">No items yet — click + Add Item.</div>';
+    container.innerHTML = curEditMode
+      ? '<div style="font-size:12px;color:var(--muted);padding:8px 0;">No items — click + Add Item.</div>'
+      : '<div style="font-size:12px;color:var(--muted);padding:8px 0;">No items in client request.</div>';
     return;
   }
-  const typeOptions = ALL_RENDER_TYPES.map(r =>
-    `<option value="${r.key}">${r.label}</option>`
-  ).join('');
+  if(!curEditMode) {
+    // Read-only: show as simple rows
+    container.innerHTML = '<div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:6px;margin-bottom:4px;">'
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Type</div>'
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);text-align:center;">Views</div>'
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Notes</div>'
+      + '</div>'
+      + q.lineItems.map(item => `<div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">`
+        + `<div style="font-size:13px;color:var(--dark);">${item.label||getRenderLabel(item.key)}</div>`
+        + `<div style="font-size:13px;color:var(--mid);text-align:center;">${item.views}</div>`
+        + `<div style="font-size:13px;color:var(--mid);">${item.notes||'—'}</div>`
+        + `</div>`).join('');
+    return;
+  }
+  // Editable mode
   container.innerHTML = q.lineItems.map((item,i) => `
-    <div style="display:grid;grid-template-columns:1fr 60px 1fr 28px;gap:6px;align-items:center;margin-bottom:8px;" data-idx="${i}">
+    <div style="display:grid;grid-template-columns:1fr 60px 1fr 28px;gap:6px;align-items:center;margin-bottom:8px;">
       <select onchange="updateLineItem(${i},'key',this.value)" style="padding:6px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;color:var(--dark);background:white;">
         ${ALL_RENDER_TYPES.map(r=>`<option value="${r.key}"${r.key===item.key?' selected':''}>${r.label}</option>`).join('')}
         ${!ALL_RENDER_TYPES.find(r=>r.key===item.key)?`<option value="${item.key}" selected>${item.label}</option>`:''}
       </select>
       <input type="number" min="1" max="99" value="${item.views}" oninput="updateLineItem(${i},'views',parseInt(this.value)||1)"
-        style="padding:6px 6px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;text-align:center;width:100%;font-family:inherit;" placeholder="Qty">
+        style="padding:6px 6px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;text-align:center;width:100%;font-family:inherit;">
       <input type="text" value="${item.notes||''}" oninput="updateLineItem(${i},'notes',this.value)"
-        style="padding:6px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;width:100%;font-family:inherit;" placeholder="Notes (e.g. Pool, Clubroom)">
+        style="padding:6px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;width:100%;font-family:inherit;" placeholder="e.g. Pool, Clubroom">
       <button onclick="removeLineItem(${i})" style="width:26px;height:26px;border:none;background:#FEE2E2;color:#EF4444;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:700;">&#215;</button>
     </div>
   `).join('');
-  // Column headers
   container.insertAdjacentHTML('afterbegin', `
     <div style="display:grid;grid-template-columns:1fr 60px 1fr 28px;gap:6px;margin-bottom:4px;">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Type</div>
@@ -978,24 +1090,6 @@ function addLineItem() {
   renderLineItems(q);
 }
 
-function renderVersionHistory(q){
-  const container=document.getElementById('qm-version-history');
-  if(!q.quoteVersions||!q.quoteVersions.length){container.innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:4px;">No quotes sent yet.</div>';return;}
-  container.innerHTML=q.quoteVersions.map((v,i)=>{
-    const isCurrent=!v.sent;
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;margin-bottom:6px;background:${isCurrent?'var(--purple-bg)':'var(--off-white)'};border:1.5px solid ${isCurrent?'var(--purple-deep)':'var(--border)'};">
-      <div>
-        <div style="font-size:12px;font-weight:700;color:${isCurrent?'var(--purple-deep)':'var(--dark)'};">${v.label}${isCurrent?' <span style="font-size:10px;font-weight:600;color:var(--purple-deep);">&#9679; Editing</span>':''}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px;">${v.sent?'Sent '+formatDate(v.sentAt)+' · $'+parseInt(v.price).toLocaleString('en-US'):'Draft · $'+(v.price?parseInt(v.price).toLocaleString('en-US'):'—')}</div>
-        ${v.notes?`<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:2px;">${v.notes}</div>`:''}
-      </div>
-      <div style="display:flex;gap:6px;">
-        <button onclick="loadVersionIntoEditor(${JSON.stringify(v).replace(/"/g,'&quot;')},${i})" style="font-size:11px;padding:4px 8px;background:white;border:1px solid var(--border);border-radius:5px;cursor:pointer;color:var(--dark);">${v.sent?'Re-send':'Edit'}</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 function loadVersionIntoEditor(v, idx){
   document.getElementById('qm-version-label').textContent=v.label;
   document.getElementById('qm-price').value=v.price||'';
@@ -1005,18 +1099,7 @@ function loadVersionIntoEditor(v, idx){
   document.getElementById('qm-version-editor').dataset.editIdx=idx!==undefined?idx:'';
 }
 
-function addQuoteVersion(){
-  const q=quotes.find(x=>x.ref===curQuoteRef);if(!q)return;
-  if(!q.quoteVersions)q.quoteVersions=[];
-  const nextNum=q.quoteVersions.length+1;
-  const label=nextNum===1?'Quote 1':'Revision '+(nextNum-1);
-  document.getElementById('qm-version-label').textContent=label;
-  document.getElementById('qm-price').value='';
-  document.getElementById('qm-version-notes').value='';
-  document.getElementById('qm-to').value=q.email||'';
-  document.getElementById('qm-cc').value='';
-  document.getElementById('qm-version-editor').dataset.editIdx='';
-}
+
 
 async function saveQuoteStatus(){
   const q=quotes.find(x=>x.ref===curQuoteRef);
@@ -1139,7 +1222,7 @@ async function sendConfirmedQuote(confirmed = false) {
     const editIdx = editIdxRaw !== '' && editIdxRaw !== undefined ? parseInt(editIdxRaw) : null;
     const nextNum = q.quoteVersions.length + 1;
     const label = editIdx !== null ? q.quoteVersions[editIdx].label : (nextNum === 1 ? 'Quote 1' : 'Revision ' + (nextNum - 1));
-    const versionEntry = { label, price: parseInt(price), notes: versionNotes, to: toEmail, cc: cc||'', sent: true, sentAt: new Date().toISOString() };
+    const versionEntry = { label, price: parseInt(price), notes: versionNotes, to: toEmail, cc: cc||'', sent: true, sentAt: new Date().toISOString(), lineItems: JSON.parse(JSON.stringify(q.lineItems||[])) };
     if(editIdx !== null) q.quoteVersions[editIdx] = versionEntry;
     else q.quoteVersions.push(versionEntry);
 
@@ -1148,6 +1231,11 @@ async function sendConfirmedQuote(confirmed = false) {
     saveData();
     renderAll();
 
+    curEditMode = false;
+    document.getElementById('qm-scope-title').textContent = 'Client Request';
+    document.getElementById('qm-add-item-btn').style.display = 'none';
+    document.getElementById('qm-version-editor').style.display = 'none';
+    renderVersionPanel(q);
     closeOverlayDirect('quote-preview-modal');
     closeOverlayDirect('quote-modal');
     showToast('Quote $' + parseInt(price).toLocaleString('en-US') + ' sent to ' + toEmail + ' ✓', 'success');
