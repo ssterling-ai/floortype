@@ -646,6 +646,11 @@
     My Orders
     <span class="nav-dot" id="navReviewDot" style="display:none;"></span>
   </button>
+  <button class="nav-item" id="nav-quotes" onclick="showView('quotes')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M5 5.5h4M5 10.5h3"/></svg>
+    My Quotes
+    <span class="nav-dot" id="navQuoteDot" style="display:none;"></span>
+  </button>
   <button class="nav-item" id="nav-files" onclick="showView('files')">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z"/><polyline points="9 2 9 6 13 6"/></svg>
     Delivered Files
@@ -684,6 +689,7 @@
   <div class="mobile-nav-item" onclick="showView('overview');toggleMobileNav()">Dashboard</div>
   <div class="mobile-nav-item" onclick="showView('projects');toggleMobileNav()">My Projects</div>
   <div class="mobile-nav-section">Account</div>
+  <div class="mobile-nav-item" onclick="showView('quotes');toggleMobileNav()">My Quotes</div>
   <div class="mobile-nav-item" onclick="showView('profile');toggleMobileNav()">Profile</div>
   <div class="mobile-nav-item" onclick="showView('newQuote');toggleMobileNav()">Request a Quote</div>
   <div style="margin-top:32px;">
@@ -777,6 +783,15 @@
       </div>
 
       <div class="order-cards" id="ordersListCards"></div>
+    </div>
+
+    <!-- ── QUOTES VIEW ── -->
+    <div class="view" id="view-quotes">
+      <div style="margin-bottom:24px;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--dark);margin-bottom:4px;">My Quotes</h2>
+        <p style="font-size:14px;color:var(--muted);font-weight:300;">Review quotes submitted and track their status.</p>
+      </div>
+      <div id="quotesListCards" class="order-cards"></div>
     </div>
 
     <!-- ── ORDER DETAIL VIEW ── -->
@@ -887,6 +902,7 @@
 // ── DATA ──
 let orders = [];
 let currentUser = null;
+let portalQuotes = [];
 let currentOrderRef = null;
 let orderFilter = 'all';
 
@@ -974,12 +990,19 @@ async function doLogin(){
     currentSession = authData;
     userToken = authData.access_token;
 
-    // Fetch orders for this user
-    const ordersRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/orders?client_email=eq.${encodeURIComponent(email)}&select=*,project_stage&order=created_at.desc`,
-      { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
-    );
+    // Fetch orders and quotes for this user
+    const [ordersRes, quotesRes] = await Promise.all([
+      fetch(
+        `${SUPABASE_URL}/rest/v1/orders?client_email=eq.${encodeURIComponent(email)}&select=*,project_stage&order=created_at.desc`,
+        { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
+      ),
+      fetch(
+        `${SUPABASE_URL}/rest/v1/quotes?client_email=eq.${encodeURIComponent(email)}&select=*&order=created_at.desc`,
+        { headers: { ...SB_HEADERS, 'Authorization': `Bearer ${userToken}` } }
+      )
+    ]);
     const sbOrders = await ordersRes.json();
+    const sbQuotes = await quotesRes.json();
 
     orders = Array.isArray(sbOrders) && sbOrders.length ? sbOrders.map(o => ({
       ref: o.ref,
@@ -998,6 +1021,21 @@ async function doLogin(){
       stage: o.project_stage || '',
       rounds: [],
       finalFiles: []
+    })) : [];
+
+    // Map quotes
+    portalQuotes = Array.isArray(sbQuotes) ? sbQuotes.map(q => ({
+      ref: q.ref,
+      date: q.created_at,
+      project: q.project_name || '—',
+      type: q.project_type || '',
+      status: q.status || 'Received',
+      confirmedPrice: q.confirmed_price || null,
+      complexity: q.complexity || '',
+      timeline: q.timeline || '',
+      renders: q.renders || {},
+      notes: q.notes || '',
+      city: q.city || ''
     })) : [];
 
     // Fetch deliverable files for each order
@@ -1591,6 +1629,7 @@ function showView(v){
   if(ni) ni.classList.add('active');
   if(v==='orders') renderOrdersList();
   if(v==='files') renderFilesView();
+  if(v==='quotes') renderQuotesView();
   if(v==='profile') populateProfileForm();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1726,6 +1765,58 @@ function checkReviewDot(){
 }
 
 // ── HELPERS ──
+
+function renderQuotesView() {
+  const container = document.getElementById('quotesListCards');
+  if (!container) return;
+  if (!portalQuotes.length) {
+    container.innerHTML = `<div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:40px;margin-bottom:16px;">📋</div>
+      <div style="font-size:16px;font-weight:600;color:var(--dark);margin-bottom:8px;">No quotes yet</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:24px;">Submit a 3D rendering quote request and it will appear here.</div>
+      <button onclick="openNewQuote()" style="padding:10px 24px;background:linear-gradient(135deg,var(--purple-deep),var(--mint-deep));color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Request a Quote →</button>
+    </div>`;
+    return;
+  }
+
+  const renderLabels = {
+    'static-exterior':'Static Exterior','static-interior':'Static Interior',
+    'static-aerial':'Static Aerial','360-exterior':'360° Exterior','360-interior':'360° Interior',
+    'flythrough-exterior':'Fly-Through (Ext.)','flythrough-interior':'Fly-Through (Int.)',
+    'exterior':'Exterior','interior':'Interior','aerial':'Aerial','flythrough':'Fly-Through'
+  };
+
+  const qStatusClass = s => ({
+    'Received':'s-received','Quoted':'s-progress','Approved':'s-complete',
+    'On Hold':'s-hold','Declined':'s-hold'
+  }[s] || 's-received');
+
+  container.innerHTML = portalQuotes.map(q => {
+    const renderList = Object.entries(q.renders || {}).map(([k, v]) =>
+      (renderLabels[k] || k) + (v.views > 1 ? ' ×' + v.views : '')
+    ).join(', ') || '—';
+
+    const isQuoted = q.status === 'Quoted' && q.confirmedPrice;
+    const isApproved = q.status === 'Approved';
+
+    return `<div class="order-card${isQuoted ? ' needs-review' : ''}" style="cursor:default;">
+      <div class="order-card-icon icon-purple">
+        <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" width="22" height="22"><rect x="3" y="3" width="16" height="16" rx="2"/><path d="M7 11h8M7 7.5h5M7 14.5h4"/></svg>
+      </div>
+      <div class="order-card-info">
+        <div class="order-card-ref">${q.ref}</div>
+        <div class="order-card-name">${q.project}</div>
+        <div class="order-card-meta">${renderList}</div>
+        ${isQuoted ? `<div style="margin-top:6px;font-size:12px;font-weight:700;color:var(--purple-deep);">Quote received: $${parseInt(q.confirmedPrice).toLocaleString('en-US')} — check your email</div>` : ''}
+        ${isApproved ? `<div style="margin-top:6px;font-size:12px;font-weight:700;color:var(--mint-deep);">✓ Accepted — see My Orders for project status</div>` : ''}
+      </div>
+      <div class="order-card-right">
+        <span class="status-badge ${qStatusClass(q.status)}">${q.status}</span>
+        <div class="order-card-date">${fmtDate(q.date)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
 // ── DEPOSIT PAYMENT ──────────────────────────────────────────────────────────
 let _stripeInstance = null;
