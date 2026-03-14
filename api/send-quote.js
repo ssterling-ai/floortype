@@ -82,8 +82,8 @@ export default async function handler(req, res) {
     // Header
     + '<div style="background:linear-gradient(135deg,#120F2A,#3D3660);padding:36px 40px;">'
     + '<div style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(196,181,244,0.7);margin-bottom:8px;">Project Quote</div>'
-    + '<div style="font-size:28px;font-weight:700;color:white;letter-spacing:0.06em;">' + ref + '</div>'
-    + '<div style="font-size:15px;color:rgba(255,255,255,0.6);margin-top:6px;">' + projectName + '</div>'
+    + '<div style="font-size:28px;font-weight:700;color:white;letter-spacing:0.04em;line-height:1.1;margin-bottom:6px;">' + projectName + '</div>'
+    + '<div style="font-size:12px;font-weight:600;letter-spacing:0.1em;color:rgba(196,181,244,0.5);">' + ref + '</div>'
     + '</div>'
 
     // Greeting
@@ -92,19 +92,19 @@ export default async function handler(req, res) {
     + '<p style="font-size:15px;color:#555;line-height:1.7;margin:0 0 24px;">Thank you for your quote request. We\'ve reviewed your project brief and put together the following proposal. Please review the details below &#8212; if you have any questions, reply to this email and we\'ll get back to you promptly.</p>'
     + '</div>'
 
-    // Price Banner - table layout for email client compatibility
+    // Price Banner - single column stacked for mobile compatibility
     + '<div style="margin:0 40px;">'
     + '<table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#EDE9FF,#DFF6F1);border-radius:12px;">'
-    + '<tr>'
-    + '<td style="padding:24px 28px;vertical-align:middle;">'
+    + '<tr><td style="padding:24px 28px 8px 28px;">'
     + '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B56C8;margin-bottom:4px;">Confirmed Project Price</div>'
     + '<div style="font-size:36px;font-weight:700;color:#120F2A;letter-spacing:0.02em;">$' + formattedPrice + '</div>'
-    + '</td>'
-    + '<td style="padding:24px 28px 24px 0;vertical-align:middle;text-align:right;white-space:nowrap;">'
-    + '<div style="font-size:11px;color:#8880AA;margin-bottom:2px;">Delivery</div>'
-    + '<div style="font-size:14px;font-weight:600;color:#333;">' + timelineLabel + '</div>'
-    + '<div style="font-size:11px;color:#8880AA;margin-top:6px;">Revision Rounds</div>'
-    + '<div style="font-size:14px;font-weight:600;color:#333;">' + revisionRounds + ' included</div>'
+    + '</td></tr>'
+    + '<tr>'
+    + '<td style="padding:0 28px 20px 28px;">'
+    + '<table cellpadding="0" cellspacing="0"><tr>'
+    + '<td style="padding-right:24px;"><div style="font-size:11px;color:#8880AA;margin-bottom:2px;">Delivery</div><div style="font-size:13px;font-weight:600;color:#333;">' + timelineLabel + '</div></td>'
+    + '<td><div style="font-size:11px;color:#8880AA;margin-bottom:2px;">Revision Rounds</div><div style="font-size:13px;font-weight:600;color:#333;">' + revisionRounds + ' included</div></td>'
+    + '</tr></table>'
     + '</td>'
     + '</tr>'
     + '</table>'
@@ -180,7 +180,7 @@ export default async function handler(req, res) {
         to: toList,
         cc: ccList.length ? ccList : undefined,
         reply_to: 'orders@floortype.com',
-        subject: 'Your Floortype Quote \u2014 ' + projectName + ' (' + ref + ')',
+        subject: 'Your Floortype Quote \u2014 ' + projectName,
         html
       })
     });
