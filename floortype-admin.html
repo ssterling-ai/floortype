@@ -934,9 +934,9 @@ function renderLineItems(q) {
         ${ALL_RENDER_TYPES.map(r=>`<option value="${r.key}"${r.key===item.key?' selected':''}>${r.label}</option>`).join('')}
         ${!ALL_RENDER_TYPES.find(r=>r.key===item.key)?`<option value="${item.key}" selected>${item.label}</option>`:''}
       </select>
-      <input type="number" min="1" max="99" value="${item.views}" onchange="updateLineItem(${i},'views',parseInt(this.value)||1)"
+      <input type="number" min="1" max="99" value="${item.views}" oninput="updateLineItem(${i},'views',parseInt(this.value)||1)"
         style="padding:6px 6px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;text-align:center;width:100%;font-family:inherit;" placeholder="Qty">
-      <input type="text" value="${item.notes||''}" onchange="updateLineItem(${i},'notes',this.value)"
+      <input type="text" value="${item.notes||''}" oninput="updateLineItem(${i},'notes',this.value)"
         style="padding:6px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;width:100%;font-family:inherit;" placeholder="Notes (e.g. Pool, Clubroom)">
       <button onclick="removeLineItem(${i})" style="width:26px;height:26px;border:none;background:#FEE2E2;color:#EF4444;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:700;">&#215;</button>
     </div>
@@ -1053,10 +1053,10 @@ function previewQuote() {
   const timelineLabel = {standard:'Standard (4–8 weeks)',expedited:'Expedited (2–4 weeks)',urgent:'Urgent (under 2 weeks)'}[q.timeline]||q.timeline||'Standard (4–8 weeks)';
   const complexityLabel = {standard:'Standard',premium:'Premium',luxury:'Luxury'}[q.complexity]||q.complexity||'Standard';
   const formattedPrice = parseInt(price).toLocaleString('en-US');
-  const renderRows = Object.entries(q.renders||{}).map(([t,v])=>{
-    const label=renderLabels[t]||t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-    const views=v&&v.views?v.views:1;
-    return `<tr><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#333;">${label}</td><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:center;">${views} view${views>1?'s':''}</td><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:right;">Included</td></tr>`;
+  const renderRows = (q.lineItems||[]).map(item=>{
+    const views = item.views||1;
+    const notes = item.notes||'';
+    return `<tr><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#333;">${item.label||getRenderLabel(item.key)}</td><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:center;">${views} view${views>1?'s':''}</td><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:right;">${notes}</td></tr>`;
   }).join('');
 
   const versionLabel = document.getElementById('qm-version-label').textContent;
