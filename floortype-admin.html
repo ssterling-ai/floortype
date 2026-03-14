@@ -395,7 +395,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
 <div id="adminBody" style="display:none;width:100%;min-height:100vh;flex-direction:row;">
 <div class="sidebar">
   <a href="#" onclick="showView('overview');return false;" class="s-logo">
-    <img src="/logo.png" alt="Floortype" style="height:34px;width:auto;mix-blend-mode:multiply;">
+    <img src="/logo.png" alt="Floortype" style="height:28px;width:auto;filter:brightness(0) invert(1);">
     FLOORTYPE
   </a>
   <div class="s-sub">Admin Dashboard</div>
@@ -604,13 +604,20 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
       <div class="m-sec"><div class="m-sec-title">Renderings Requested</div><div id="qm-renders"></div></div>
       <div class="m-sec"><div class="m-sec-title">Reference Materials</div><div class="d-grid"><div class="d-item"><div class="d-lbl">Files Uploaded</div><div class="d-val" id="qm-files">—</div></div><div class="d-item"><div class="d-lbl">Shared Folder</div><div class="d-val" id="qm-link">—</div></div></div></div>
       <div class="m-sec"><div class="m-sec-title">Client Notes</div><div class="m-notes" id="qm-notes">—</div></div>
-      <div class="m-sec"><div class="m-sec-title">Your Quote</div>
-        <div class="q-editor">
-          <div class="qe-lbl">Send Confirmed Quote to Client</div>
+      <div class="m-sec"><div class="m-sec-title" style="display:flex;align-items:center;justify-content:space-between;">Quote Versions <button onclick="addQuoteVersion()" style="font-size:11px;font-weight:600;padding:4px 10px;background:var(--purple-bg);color:var(--purple-deep);border:1.5px solid var(--purple-deep);border-radius:6px;cursor:pointer;">+ New Version</button></div>
+        <div id="qm-version-history" style="margin-bottom:14px;"></div>
+        <div class="q-editor" id="qm-version-editor">
+          <div class="qe-lbl" id="qm-version-label">Quote 1</div>
           <div class="qe-row">
             <div class="qe-field" style="flex:1;">
               <label>Confirmed Price ($)</label>
               <input class="qe-input" type="number" id="qm-price" placeholder="e.g. 5200">
+            </div>
+          </div>
+          <div class="qe-row" style="margin-top:10px;">
+            <div class="qe-field" style="flex:1;">
+              <label>Internal Notes <span style="font-weight:400;color:var(--muted);">(optional, not sent to client)</span></label>
+              <input class="qe-input" type="text" id="qm-version-notes" placeholder="e.g. Reduced scope, removed aerial views">
             </div>
           </div>
           <div class="qe-row" style="margin-top:10px;">
@@ -627,7 +634,7 @@ tr:last-child td{border-bottom:none;} tbody tr{transition:background 0.15s;curso
           </div>
           <div style="display:flex;gap:10px;margin-top:12px;">
             <button class="qe-preview" onclick="previewQuote()" style="flex:1;padding:10px;border:1.5px solid var(--purple-deep);background:white;color:var(--purple-deep);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--purple-bg)'" onmouseout="this.style.background='white'">Preview Email</button>
-            <button class="qe-send" onclick="sendConfirmedQuote()" style="flex:2;">Send Quote to Client →</button>
+            <button class="qe-send" onclick="sendConfirmedQuote()" style="flex:2;">Send Quote to Client &#x2192;</button>
           </div>
         </div>
       </div>
@@ -849,7 +856,7 @@ function openOrderModal(ref){
 
 function openQuoteModal(ref){
   const q=quotes.find(x=>x.ref===ref);if(!q)return;curQuoteRef=ref;
-  const rN={interior:'Interior',exterior:'Exterior',aerial:'Aerial','360':'360° Tour',flythrough:'Fly-Through'};
+  const rN={'interior':'Interior','exterior':'Exterior','aerial':'Aerial','360':'360 Tour','flythrough':'Fly-Through','static-interior':'Static Interior','static-exterior':'Static Exterior','static-aerial':'Static Aerial','360-interior':'360 Interior','360-exterior':'360 Exterior','flythrough-exterior':'Fly-Through Ext.','flythrough-interior':'Fly-Through Int.'};
   set('qm-ref',q.ref);set('qm-name',q.name);set('qm-email',q.email);set('qm-company',q.company||'—');set('qm-role',q.role||'—');
   set('qm-project',q.project);set('qm-type',q.type||'—');set('qm-city',q.city||'—');
   set('qm-phases',q.phases+' building'+(q.phases>1?'s':''));
@@ -862,32 +869,63 @@ function openQuoteModal(ref){
   document.getElementById('qm-status').value=q.status;
   document.getElementById('qm-to').value=q.email||'';
   document.getElementById('qm-cc').value='';
-  if(q.confirmedPrice)document.getElementById('qm-price').value=q.confirmedPrice;
-  else if(q.estimateLow)document.getElementById('qm-price').value=q.estimateLow;
+  // Init versions array if not present
+  if(!q.quoteVersions) q.quoteVersions=[];
+  renderVersionHistory(q);
+  // Set editor to latest unsent version or new one
+  const unsent = q.quoteVersions.find(v=>!v.sent);
+  if(unsent){
+    loadVersionIntoEditor(unsent);
+  } else {
+    const nextNum = q.quoteVersions.length+1;
+    const label = nextNum===1?'Quote 1':'Revision '+(nextNum-1);
+    document.getElementById('qm-version-label').textContent=label;
+    document.getElementById('qm-price').value=q.confirmedPrice||q.estimateLow||'';
+    document.getElementById('qm-version-notes').value='';
+  }
   showOverlay('quote-modal');
 }
 
-async function saveOrderStatus(){
-  const o=orders.find(x=>x.ref===curOrderRef);
-  if(o){
-    o.status=document.getElementById('om-status').value;
-    o.stage=document.getElementById('om-stage').value;
-    o.review_link=document.getElementById('om-review-link').value.trim();
-    o.project_name=document.getElementById('om-project-name-input').value.trim();
-    // Save stage to Supabase addons field temporarily (until schema updated)
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${curOrderRef}`,{
-        method:'PATCH',
-        headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-        body:JSON.stringify({status:o.status, project_stage: o.stage, review_link: o.review_link||null, project_name: o.project_name||null})
-      });
-    } catch(e){ console.warn('Stage save failed:',e); }
-    saveData();
-    renderAll();
-  }
-  closeOverlayDirect('order-modal');
-  showToast('Order updated ✓','success');
+function renderVersionHistory(q){
+  const container=document.getElementById('qm-version-history');
+  if(!q.quoteVersions||!q.quoteVersions.length){container.innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:4px;">No quotes sent yet.</div>';return;}
+  container.innerHTML=q.quoteVersions.map((v,i)=>{
+    const isCurrent=!v.sent;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;margin-bottom:6px;background:${isCurrent?'var(--purple-bg)':'var(--off-white)'};border:1.5px solid ${isCurrent?'var(--purple-deep)':'var(--border)'};">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:${isCurrent?'var(--purple-deep)':'var(--dark)'};">${v.label}${isCurrent?' <span style='font-size:10px;font-weight:600;color:var(--purple-deep);'>● Editing</span>':''}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">${v.sent?'Sent '+formatDate(v.sentAt)+' · $'+parseInt(v.price).toLocaleString('en-US'):'Draft · $'+(v.price?parseInt(v.price).toLocaleString('en-US'):'—')}</div>
+        ${v.notes?`<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:2px;">${v.notes}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="loadVersionIntoEditor(${JSON.stringify(v).replace(/"/g,'&quot;')},${i})" style="font-size:11px;padding:4px 8px;background:white;border:1px solid var(--border);border-radius:5px;cursor:pointer;color:var(--dark);">${v.sent?'Re-send':'Edit'}</button>
+      </div>
+    </div>`;
+  }).join('');
 }
+
+function loadVersionIntoEditor(v, idx){
+  document.getElementById('qm-version-label').textContent=v.label;
+  document.getElementById('qm-price').value=v.price||'';
+  document.getElementById('qm-version-notes').value=v.notes||'';
+  document.getElementById('qm-to').value=v.to||'';
+  document.getElementById('qm-cc').value=v.cc||'';
+  document.getElementById('qm-version-editor').dataset.editIdx=idx!==undefined?idx:'';
+}
+
+function addQuoteVersion(){
+  const q=quotes.find(x=>x.ref===curQuoteRef);if(!q)return;
+  if(!q.quoteVersions)q.quoteVersions=[];
+  const nextNum=q.quoteVersions.length+1;
+  const label=nextNum===1?'Quote 1':'Revision '+(nextNum-1);
+  document.getElementById('qm-version-label').textContent=label;
+  document.getElementById('qm-price').value='';
+  document.getElementById('qm-version-notes').value='';
+  document.getElementById('qm-to').value=q.email||'';
+  document.getElementById('qm-cc').value='';
+  document.getElementById('qm-version-editor').dataset.editIdx='';
+}
+
 async function saveQuoteStatus(){
   const q=quotes.find(x=>x.ref===curQuoteRef);
   if(q){
@@ -913,69 +951,48 @@ function previewQuote() {
   if(!q) return;
 
   const renderLabels = {
-    'interior':'Interior Rendering',
-    'exterior':'Exterior Rendering',
-    'aerial':'Aerial Rendering',
-    '360':'360° Virtual Tour',
-    'flythrough':'Fly-Through Animation',
-    'static-interior':'Static Interior',
-    'static-exterior':'Static Exterior',
-    'static-aerial':'Static Aerial',
-    '360-interior':'360° Interior Tour',
-    '360-exterior':'360° Exterior Tour',
-    'flythrough-exterior':'Fly-Through (Exterior)',
-    'flythrough-interior':'Fly-Through (Interior)',
+    'interior':'Interior Rendering','exterior':'Exterior Rendering','aerial':'Aerial Rendering',
+    '360':'360 Virtual Tour','flythrough':'Fly-Through Animation',
+    'static-interior':'Static Interior Rendering','static-exterior':'Static Exterior Rendering',
+    'static-aerial':'Static Aerial Rendering','360-interior':'360 Interior Tour',
+    '360-exterior':'360 Exterior Tour','flythrough-exterior':'Fly-Through (Exterior)',
+    'flythrough-interior':'Fly-Through (Interior)'
   };
-  const timelineLabel = { standard:'Standard (4–8 weeks)', expedited:'Expedited (2–4 weeks)', urgent:'Urgent (under 2 weeks)' }[q.timeline] || q.timeline || 'Standard (4–8 weeks)';
-  const complexityLabel = { standard:'Standard', premium:'Premium', luxury:'Luxury' }[q.complexity] || q.complexity || 'Standard';
+  const timelineLabel = {standard:'Standard (4–8 weeks)',expedited:'Expedited (2–4 weeks)',urgent:'Urgent (under 2 weeks)'}[q.timeline]||q.timeline||'Standard (4–8 weeks)';
+  const complexityLabel = {standard:'Standard',premium:'Premium',luxury:'Luxury'}[q.complexity]||q.complexity||'Standard';
   const formattedPrice = parseInt(price).toLocaleString('en-US');
-  const cc = document.getElementById('qm-cc').value;
-  const toEmail = document.getElementById('qm-to').value || q.email;
+  const renderRows = Object.entries(q.renders||{}).map(([t,v])=>{
+    const label=renderLabels[t]||t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    const views=v&&v.views?v.views:1;
+    return `<tr><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#333;">${label}</td><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:center;">${views} view${views>1?'s':''}</td><td style="padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;color:#555;text-align:right;">Included</td></tr>`;
+  }).join('');
 
-  const renderRows = q.renders && Object.keys(q.renders).length
-    ? Object.entries(q.renders).map(([type, val]) => {
-        const label = renderLabels[type] || type.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-        const views = val?.views || val || 1;
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F0EDF9;font-size:13px;gap:12px;"><span style="color:#333;flex:1;">${label}</span><span style="color:#666;white-space:nowrap;flex-shrink:0;">${views} view${views>1?'s':''}</span></div>`;
-      }).join('')
-    : '<div style="font-size:13px;color:#999;padding:8px 0;">See project scope</div>';
-
-  document.getElementById('preview-ref-label').textContent = q.ref;
+  const versionLabel = document.getElementById('qm-version-label').textContent;
+  const versionNotes = document.getElementById('qm-version-notes').value.trim();
   document.getElementById('quotePreviewBody').innerHTML = `
-    <div style="background:linear-gradient(135deg,#120F2A,#3D3660);border-radius:8px;padding:14px 18px;margin-bottom:10px;">
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(196,181,244,0.6);margin-bottom:3px;">Project Quote · ${q.ref}</div>
-      <div style="font-size:16px;font-weight:700;color:white;">${q.project}</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;">To: ${toEmail}${cc ? ' · CC: ' + cc : ''}</div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9B87E8;margin-bottom:4px;">Project</div>
+      <div style="font-size:18px;font-weight:700;color:#120F2A;">${q.project}</div>
+      <div style="font-size:12px;color:#8880AA;margin-top:2px;">${q.ref} &nbsp;·&nbsp; ${versionLabel}</div>
     </div>
-    <div style="background:linear-gradient(135deg,#EDE9FF,#DFF6F1);border-radius:8px;padding:12px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B56C8;margin-bottom:2px;">Confirmed Price</div>
-        <div style="font-size:24px;font-weight:700;color:#120F2A;">$${formattedPrice}</div>
-      </div>
-      <div style="text-align:right;font-size:12px;color:#555;line-height:1.6;">
-        <div><strong>Delivery:</strong> ${timelineLabel}</div>
-        <div><strong>Revisions:</strong> 2 rounds included</div>
-      </div>
+    <div style="background:linear-gradient(135deg,#EDE9FF,#DFF6F1);border-radius:10px;padding:16px 18px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6B56C8;margin-bottom:4px;">Confirmed Price</div>
+      <div style="font-size:30px;font-weight:700;color:#120F2A;">$${formattedPrice}</div>
+      <div style="font-size:12px;color:#8880AA;margin-top:6px;">${timelineLabel} &nbsp;·&nbsp; 2 revision rounds &nbsp;·&nbsp; ${complexityLabel}</div>
     </div>
-    <div style="margin-bottom:10px;">
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9B87E8;margin-bottom:6px;">Scope</div>
-      ${renderRows}
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9B87E8;margin-bottom:8px;">Scope</div>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <thead><tr>
+          <th style="padding:6px 0;font-size:11px;color:#AAA;text-align:left;border-bottom:1px solid #F0EDF9;">Item</th>
+          <th style="padding:6px 0;font-size:11px;color:#AAA;text-align:center;border-bottom:1px solid #F0EDF9;">Qty</th>
+          <th style="padding:6px 0;font-size:11px;color:#AAA;text-align:right;border-bottom:1px solid #F0EDF9;">Notes</th>
+        </tr></thead>
+        <tbody>${renderRows||'<tr><td colspan="3" style="padding:8px 0;font-size:13px;color:#999;">No renders specified</td></tr>'}</tbody>
+      </table>
     </div>
-    <div style="margin-bottom:10px;">
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9B87E8;margin-bottom:6px;">Project Details</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px;">
-        ${q.type ? `<div><span style="color:#888;">Type:</span> ${q.type}</div>` : ''}
-        ${q.city ? `<div><span style="color:#888;">Location:</span> ${q.city}</div>` : ''}
-        <div><span style="color:#888;">Quality:</span> ${complexityLabel}</div>
-        <div><span style="color:#888;">Timeline:</span> ${timelineLabel}</div>
-      </div>
-    </div>
-    <div style="background:#F7F5FF;border-radius:8px;padding:10px 12px;font-size:12px;color:#666;line-height:1.6;">
-      <strong style="display:block;margin-bottom:4px;color:#333;">What's Included</strong>
-      ✓ High-resolution files (JPEG + PNG) &nbsp;·&nbsp; ✓ 2 revision rounds via ReviewStudio<br>
-      ✓ Client portal access &nbsp;·&nbsp; ✓ 100% license-free &nbsp;·&nbsp; ✓ Direct communication
-    </div>
-    ${q.notes ? `<div style="margin-top:8px;background:#FFF8EC;border-radius:8px;padding:10px 12px;font-size:12px;color:#666;"><strong style="color:#333;">Notes:</strong> ${q.notes}</div>` : ''}
+    ${versionNotes?`<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9B87E8;margin-bottom:6px;">Internal Notes</div><div style="font-size:12px;color:#555;background:#F7F5FF;border-radius:8px;padding:10px 12px;">${versionNotes}</div></div>`:''}
+    ${q.notes?`<div><div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9B87E8;margin-bottom:6px;">Client Notes (in email)</div><div style="font-size:12px;color:#555;background:#F7F5FF;border-radius:8px;padding:10px 12px;">${q.notes}</div></div>`:''}
   `;
   showOverlay('quote-preview-modal');
 }
@@ -996,6 +1013,7 @@ async function sendConfirmedQuote(confirmed = false) {
 
   const cc = document.getElementById('qm-cc').value;
   const toEmail = document.getElementById('qm-to').value || q.email;
+  const versionNotes = document.getElementById('qm-version-notes').value.trim();
 
   try {
     const res = await fetch('/api/send-quote', {
@@ -1022,7 +1040,17 @@ async function sendConfirmedQuote(confirmed = false) {
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || 'Send failed');
 
-    // Update local state
+    // Save version to history
+    if(!q.quoteVersions) q.quoteVersions = [];
+    const editor = document.getElementById('qm-version-editor');
+    const editIdxRaw = editor.dataset.editIdx;
+    const editIdx = editIdxRaw !== '' && editIdxRaw !== undefined ? parseInt(editIdxRaw) : null;
+    const nextNum = q.quoteVersions.length + 1;
+    const label = editIdx !== null ? q.quoteVersions[editIdx].label : (nextNum === 1 ? 'Quote 1' : 'Revision ' + (nextNum - 1));
+    const versionEntry = { label, price: parseInt(price), notes: versionNotes, to: toEmail, cc: cc||'', sent: true, sentAt: new Date().toISOString() };
+    if(editIdx !== null) q.quoteVersions[editIdx] = versionEntry;
+    else q.quoteVersions.push(versionEntry);
+
     q.status = 'Quoted';
     q.confirmedPrice = parseInt(price);
     saveData();
@@ -1030,7 +1058,7 @@ async function sendConfirmedQuote(confirmed = false) {
 
     closeOverlayDirect('quote-preview-modal');
     closeOverlayDirect('quote-modal');
-    showToast(`Quote $${parseInt(price).toLocaleString()} sent to ${q.email} ✓`, 'success');
+    showToast('Quote $' + parseInt(price).toLocaleString('en-US') + ' sent to ' + toEmail + ' ✓', 'success');
 
   } catch(e) {
     console.error('Send quote failed:', e);
@@ -1038,7 +1066,16 @@ async function sendConfirmedQuote(confirmed = false) {
     if(sendBtn){ sendBtn.disabled = false; sendBtn.textContent = 'Confirm & Send →'; }
   }
 }
-function convertQuoteToOrder(){const q=quotes.find(x=>x.ref===curQuoteRef);if(!q)return;q.status='Approved';saveData();renderAll();closeOverlayDirect('quote-modal');showToast('Quote approved — client notified ✓','success');}
+
+function convertQuoteToOrder(){
+  const q=quotes.find(x=>x.ref===curQuoteRef);
+  if(!q)return;
+  q.status='Approved';
+  saveData();
+  renderAll();
+  closeOverlayDirect('quote-modal');
+  showToast('Quote approved ✓','success');
+}
 
 function showDataError(){const b=document.getElementById('data-error-banner');if(b)b.style.display='flex';}
 function hideDataError(){const b=document.getElementById('data-error-banner');if(b)b.style.display='none';}
