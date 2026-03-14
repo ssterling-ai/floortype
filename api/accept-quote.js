@@ -35,8 +35,8 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, alreadyAccepted: true, ref });
     }
 
-    const clientName = q.name || q.client_name || '';
-    const clientEmail = q.email || '';
+    const clientName = q.client_name || q.name || '';
+    const clientEmail = q.client_email || q.email || '';
     const projectName = q.project || q.project_name || ref;
     const confirmedPrice = q.confirmed_price || 0;
     const depositAmount = Math.round(confirmedPrice * 0.5);
@@ -54,10 +54,9 @@ export default async function handler(req, res) {
     const orderPayload = {
       ref: orderRef,
       quote_ref: ref,
-      name: clientName,
-      email: clientEmail,
+      client_name: clientName,
       client_email: clientEmail,
-      company: q.company || '',
+      client_company: q.company || '',
       address: q.city || q.address || '',
       style: q.project_type || q.type || 'Custom Rendering',
       floors: null,
