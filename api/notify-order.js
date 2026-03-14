@@ -116,8 +116,8 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Floortype Orders <s.sterling@floortype.com>',
-        to: [process.env.ADMIN_EMAIL || 's.sterling@floortype.com'],
+        from: 'Floortype Orders <orders@floortype.com>',
+        to: [process.env.ADMIN_EMAIL || 'orders@floortype.com'],
         subject: `New Order ${ref} — ${name}${paymentMethod === 'net30' ? ' [Net 30 Application]' : ''}`,
         html
       })
@@ -177,7 +177,7 @@ export default async function handler(req, res) {
 
         <div style="background:#120F2A;padding:20px 36px;text-align:center;">
           <div style="font-size:15px;font-weight:700;letter-spacing:0.12em;color:white;margin-bottom:4px;">FLOORTYPE</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.4);">Questions? Reply to this email or reach us at s.sterling@floortype.com</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.4);">Questions? Reply to this email or reach us at orders@floortype.com</div>
         </div>
 
       </div>
@@ -191,9 +191,9 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Floortype <s.sterling@floortype.com>',
+        from: 'Floortype <orders@floortype.com>',
         to: [email],
-        reply_to: 's.sterling@floortype.com',
+        reply_to: 'orders@floortype.com',
         subject: `Order Confirmed — ${ref}`,
         html: clientHtml
       })
