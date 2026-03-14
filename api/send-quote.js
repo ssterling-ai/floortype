@@ -157,7 +157,7 @@ export default async function handler(req, res) {
     // Footer
     + '<div style="background:#120F2A;padding:24px 40px;text-align:center;">'
     + '<div style="font-size:16px;font-weight:700;letter-spacing:0.12em;color:white;margin-bottom:6px;">FLOORTYPE</div>'
-    + '<div style="font-size:12px;color:rgba(255,255,255,0.4);">Architectural Visualization &middot; s.sterling@floortype.com</div>'
+    + '<div style="font-size:12px;color:rgba(255,255,255,0.4);">Architectural Visualization &middot; orders@floortype.com</div>'
     + '<div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:8px;">This quote is valid for 30 days from the date of issue.</div>'
     + '</div>'
 
@@ -176,10 +176,10 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Floortype <s.sterling@floortype.com>',
+        from: 'Floortype <orders@floortype.com>',
         to: toList,
         cc: ccList.length ? ccList : undefined,
-        reply_to: 's.sterling@floortype.com',
+        reply_to: 'orders@floortype.com',
         subject: 'Your Floortype Quote \u2014 ' + projectName + ' (' + ref + ')',
         html
       })
